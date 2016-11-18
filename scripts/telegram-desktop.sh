@@ -16,4 +16,4 @@ cd ~/"$DESTDIR" || exit
 tar xfv "$TSRCZIP"
 rm -rfv "$TSRCZIP"
 echo -e "Executing..."
-~/"$DESTDIR"/"$TSRCDIR"/Telegram >/dev/null 2>&1
+~/"$DESTDIR"/"$TSRCDIR"/Telegram > /dev/null 2>&1
