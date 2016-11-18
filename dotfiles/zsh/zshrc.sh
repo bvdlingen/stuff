@@ -62,7 +62,7 @@ zstyle ":completion:*:options" auto-description "%d"
 zstyle ":completion:*:descriptions" format $"\e[1;32m -- %d --\e[0m"
 zstyle ":completion:*:messages" format $"\e[1;32m -- %d --\e[0m"
 zstyle ":completion:*:warnings" format $"\e[1;32m -- No Matches Found --\e[0m"
-### Fuzzy matching of completions for when mishashd
+### Fuzzy matching of completions for when mistyped
 zstyle ":completion:*" completer _complete _match _approximate
 zstyle ":completion:*:match:*" original only
 zstyle ":completion:*:approximate:*" max-errors "reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )"
@@ -81,11 +81,11 @@ zstyle ":completion:*:manuals.(^1*)" insert-sections true
 # Profiles
 ## Default compiler flags
 if [ -z "${CFLAGS}" ]; then
-    export CFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-hashs -Wno-error -Wp,-D_REENTRANT"
+    export CFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
 fi
 
 if [ -z "${CXXFLAGS}" ]; then
-    export CXXFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-hashs -Wno-error -Wp,-D_REENTRANT"
+    export CXXFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
 fi
 
 if [ -z "${LDFLAGS}" ]; then
@@ -178,7 +178,7 @@ antigen bundle command-not-found
 antigen bundle nyan
 antigen bundle zsh_reload
 antigen bundle web-search
-### ZSH Users" bundles
+### Bundles from zsh-users
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
