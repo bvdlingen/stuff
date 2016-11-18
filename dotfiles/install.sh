@@ -59,7 +59,7 @@ function link_file() {
 
 function wipe_gpg_keys() {
     # Syntax: wipe_gpg_keys
-    # Clean all GPG keys (wipes ~/.gnupg)
+    # Clean all GNUPG keys (wipes ~/.gnupg)
 
     if [ -d ~/.gnupg ]; then
         rm -rf ~/.gnupg
@@ -68,7 +68,7 @@ function wipe_gpg_keys() {
 
 function gpg_key_import() {
     # Syntax: gpg_key_import [file] [type]
-    # Import a GPG [file]
+    # Import a GNUPG [file]
     type="$1"
     file="$2"
 
@@ -111,7 +111,7 @@ function post_hook() {
 
             if [ ! -f ~/"$file" ]; then
                 eprint 2 "File not found, executing hook"
-                ~/"$SCRIPTSDIR"/"$script".sh
+                bash ~/"$SCRIPTSDIR"/"$script".sh
             else
                 eprint 2 "File found, not executing hook"
             fi
@@ -143,17 +143,15 @@ function dotfile_link() {
 
 # Variables
 ## Set locations
-GITDIR="Git"
-STARTREPO="start"
-REPODIR="$STARTREPO/dotfiles"
+STARTREPO="Git/start"
+MAINDIR="$STARTREPO/dotfiles"
 SCRIPTSDIR="$STARTREPO/scripts"
-MAINDIR="$GITDIR/$REPODIR"
 ## Set default options
 GIT=true
-GPG=true
+GNUPG=true
 SOLUS=true
-NVIM=true
-ZSH=true
+NEOVIM=true
+ZSHELL=true
 
 # Parse options
 for option in "$@"; do
@@ -163,7 +161,7 @@ for option in "$@"; do
             shift
             ;;
         --exclude-gpg)
-            GPG=false
+            GNUPG=false
             shift
             ;;
         --exclude-solus)
@@ -171,11 +169,11 @@ for option in "$@"; do
             shift
             ;;
         --exclude-nvim)
-            NVIM=false
+            NEOVIM=false
             shift
             ;;
         --exclude-zsh)
-            ZSH=false
+            ZSHELL=false
             shift
             ;;
     esac
@@ -184,16 +182,17 @@ done
 # Start
 ## Show options
 eprint 3 "Git      " $GIT
+eprint 3 "GnuPG    " $GNUPG
 eprint 3 "Solus    " $SOLUS
-eprint 3 "NeoVIM   " $NVIM
-eprint 3 "ZSH      " $ZSH
+eprint 3 "NeoVim   " $NEOVIM
+eprint 3 "Z Shell  " $ZSHELL
 
 ## Link files
 if $GIT; then
     dotfile_link git/config.ini .gitconfig
 fi
 
-if $GPG; then
+if $GNUPG; then
     wipe_gpg_keys
     gpg_key_import private gpg/private.asc
     gpg_key_import public gpg/public.asc
@@ -203,13 +202,13 @@ if $SOLUS; then
     dotfile_link solus/packager.ini .solus packager
 fi
 
-if $NVIM; then
+if $NEOVIM; then
     dotfile_link nvim/init.vim .config/nvim init.vim
     post_hook run_script .config/nvim/autoload/plug.vim neovim-plug
     post_hook run_command nvim "nvim +PlugInstall +qa"
 fi
 
-if $ZSH; then
+if $ZSHELL; then
     dotfile_link zsh/zshrc.sh .zshrc
     post_hook run_script .antigen/antigen.zsh zsh-antigen
 fi

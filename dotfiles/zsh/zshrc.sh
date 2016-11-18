@@ -139,8 +139,10 @@ alias yauto='../common/Scripts/yauto.py'
 alias yconvert='../common/Scripts/yconvert.py'
 alias ybump='/usr/share/ypkg/ybump.py'
 alias yupdate='/usr/share/ypkg/yupdate.py'
-## Alias hub to git (better usage)
-alias git="hub"
+if which hub >/dev/null; then
+    ## Alias hub to git if exists (better usage)
+    alias git="hub"
+fi
 ## Extra aliases
 alias xopen='xdg-open'
 alias weather='curl wttr.in/Ezeiza'
@@ -170,20 +172,13 @@ antigen use oh-my-zsh
 ### Bundles from oh-my-zsh's repo
 antigen bundle colored-man-pages
 antigen bundle command-not-found
-antigen bundle git
-antigen bundle lol
 antigen bundle nyan
-antigen bundle sublime
 antigen bundle zsh_reload
 antigen bundle web-search
 ### ZSH Users' bundles
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
-### Autoupdate bundle
-antigen bundle unixorn/autoupdate-antigen.zshplugin
-### Bash-compatibility bundle
-antigen bundle chrissicool/zsh-bash
 ## Theme
 antigen theme fishy
 ## Apply changes
@@ -192,3 +187,7 @@ antigen apply
 ### Binding keys for history-substring-search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
+# Neofetch
+## Run it with disabled packages
+neofetch --disable packages
