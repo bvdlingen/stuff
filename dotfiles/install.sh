@@ -97,7 +97,7 @@ function post_hook() {
             executable="$var1"
             command="$var2"
 
-            if ! which "$executable" &>/dev/null; then
+            if ! hash "$executable" &>/dev/null; then
                 eprint 2 "Executable not found, not executing hook"
             else
                 eprint 2 "Executable $executable found, running hook"

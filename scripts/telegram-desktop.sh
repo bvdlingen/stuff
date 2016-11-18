@@ -6,7 +6,6 @@
 # Variables
 TSRCZIP="linux"
 TSRCURL="https://tdesktop.com/$TSRCZIP"
-TSRCDIR="Telegram"
 DESTDIR=".TelegramDesktop"
 
 # Start
@@ -17,4 +16,4 @@ cd ~/"$DESTDIR" || exit
 tar xfv "$TSRCZIP"
 rm -rfv "$TSRCZIP"
 echo -e "Executing..."
-~/"$DESTDIR"/Telegram/Telegram 2>&1 >/dev/null
+~/"$DESTDIR"/"$TSRCDIR"/Telegram >/dev/null 2>&1
