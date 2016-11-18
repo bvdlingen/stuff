@@ -26,8 +26,8 @@ function eprint() {
     esac
 }
 
-function remove_old() {
-    # Syntax: remove_old [file]
+function wipe_existing_file() {
+    # Syntax: wipe_existing_file [file]
     # Obviously it cleans the old [file]
     clean="$1"
 
@@ -36,8 +36,8 @@ function remove_old() {
     fi
 }
 
-function check_dir() {
-    # Syntax: check_dir [dir]
+function directory_check() {
+    # Syntax: directory_check [dir]
     # It check the [dir] directory
     check="$1"
 
@@ -57,8 +57,8 @@ function link_file() {
     fi
 }
 
-function wipe_gpgdir() {
-    # Syntax: wipe_gpgdir
+function wipe_gpg_keys() {
+    # Syntax: wipe_gpg_keys
     # Clean all GPG keys (wipes ~/.gnupg)
 
     if [ -d ~/.gnupg ]; then
@@ -66,11 +66,11 @@ function wipe_gpgdir() {
     fi
 }
 
-function import_gpg() {
-    # Syntax: import_gpg [file] [type]
+function gpg_key_import() {
+    # Syntax: gpg_key_import [file] [type]
     # Import a GPG [file]
-    file="$1"
-    type="$2"
+    type="$1"
+    file="$2"
 
     if [ ! -f ~/"$MAINDIR"/"$file" ]; then
         eprint 1 "File $file doesn't exists, remove it from script :)"
@@ -86,8 +86,8 @@ function import_gpg() {
     fi
 }
 
-function dot_install() {
-    # Syntax: dot_install [orig] [dest] {dir}
+function dotfile_link() {
+    # Syntax: dotfile_link [orig] [dest] {dir}
     # Links [orig] to [dest], if {dir} is specified,
     # the directory is created if necessary
     orig="$1"
@@ -102,31 +102,46 @@ function dot_install() {
         eprint 1 "File $orig doesn't exists, remove it from script :)"
     else
         eprint 1 "Linking file: $orig"
-        check_dir "$folder"
-        remove_old "$dest"
+        directory_check "$folder"
+        wipe_existing_file "$dest"
         link_file "$orig" "$dest"
     fi
 }
 
-function post_hook() {
-    # Syntax: post_hook [executable] [command]
+function hooks_post_cmd() {
+    # Syntax: hooks_post_cmd [executable] [command]
     # If [executable] exists, run the [command]
     executable="$1"
     command="$2"
 
-    if which "$executable" &>/dev/null; then
+    if ! which "$executable" &>/dev/null; then
+        eprint 2 "Executable not found, not executing hook"
+    else
         eprint 2 "Executable $executable found, running hook"
         bash -c "$command"
-    else
-        eprint 2 "Executable not found, not executing hook"
     fi
 }
 
+function hooks_post_script() {
+    # Syntax: hooks_post_script [file] [script]
+    # If [file] is not found, execute the [script] from ../scripts
+    file="$1"
+    script="$2"
+
+    if [ ! -f ~/"$file" ]; then
+        eprint 2 "File not found, executing hook"
+        ~/"$SCRIPTSDIR"/"$script".sh
+    else
+        eprint 2 "File found, not executing hook"
+    fi
+}
 
 # Variables
 ## Set locations
-DIR="Git"
-REPO="home/dotfiles"
+GITDIR="Git"
+HOMEDIR="home"
+REPODIR="$HOMEDIR/dotfiles"
+SCRIPTSDIR="$HOMEDIR/scripts"
 MAINDIR="$DIR/$REPO"
 ## Set default options
 GIT=true
@@ -170,24 +185,26 @@ eprint 3 "ZSH      " $ZSH
 
 ## Link files
 if $GIT; then
-    dot_install git/config.ini .gitconfig
+    dotfile_link git/config.ini .gitconfig
 fi
 
 if $GPG; then
-    wipe_gpgdir
-    import_gpg gpg/private.asc private
-    import_gpg gpg/public.asc public
+    wipe_gpg_keys
+    gpg_key_import private gpg/private.asc
+    gpg_key_import public gpg/public.asc
 fi
 
 if $SOLUS; then
-    dot_install solus/packager.ini .solus packager
+    dotfile_link solus/packager.ini .solus packager
 fi
 
 if $NVIM; then
-    dot_install nvim/init.vim .config/nvim init.vim
-    post_hook nvim "nvim +PlugInstall +qa"
+    dotfile_link nvim/init.vim .config/nvim init.vim
+    hooks_post_script .config/nvim/autoload/plug.vim neovim-plug
+    hooks_post_cmd nvim "nvim +PlugInstall +qa"
 fi
 
 if $ZSH; then
-    dot_install zsh/zshrc.sh .zshrc
+    dotfile_link zsh/zshrc.sh .zshrc
+    hooks_post_script .antigen/antigen.zsh zsh-antigen
 fi
