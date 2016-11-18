@@ -19,7 +19,9 @@ setopt completeinword
 setopt correctall
 ## The mighty =command expansion; try: print =vim (if you've vim installed)
 setopt equals
-# Save additional info to $HISTFILE
+## Extended globbing
+setopt extendedglob
+## Save additional info to $HISTFILE
 setopt extendedhistory
 ## Cycle through globbing matches like menu_complete
 setopt globcomplete
