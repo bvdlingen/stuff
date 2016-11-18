@@ -126,7 +126,7 @@ notify_me "Installing more software"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi  \
                       libreoffice-{writer,impress,calc,math,draw,base} gimp cheese  \
                       simplescreenrecorder inkscape simple-scan brasero lollypop    \
-                      neovim zsh git{,-extras} nodejs neofetch p7zip glances        \
+                      neovim zsh git{,-extras} hub nodejs neofetch p7zip glances    \
                       {noto-sans,font-ubuntu}-ttf
 ## Development component
 notify_me "Installing development component"

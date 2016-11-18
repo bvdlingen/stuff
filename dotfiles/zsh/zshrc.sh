@@ -139,6 +139,8 @@ alias yauto='../common/Scripts/yauto.py'
 alias yconvert='../common/Scripts/yconvert.py'
 alias ybump='/usr/share/ypkg/ybump.py'
 alias yupdate='/usr/share/ypkg/yupdate.py'
+## Alias hub to git (better usage)
+alias git="hub"
 ## Extra aliases
 alias xopen='xdg-open'
 alias weather='curl wttr.in/Ezeiza'
