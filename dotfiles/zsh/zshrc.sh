@@ -13,13 +13,13 @@ setopt banghist
 setopt braceccl
 ## cd-able variables
 setopt cdablevars
-## Don"t expand aliases before completion has finished
+## Don't expand aliases before completion has finished
 setopt completealiases
 ## If unset the cursor is set to the end of the word if completion is started
 setopt completeinword
 ## Automatically correct the spelling of each word on the command line
 setopt correctall
-## The mighty =command expansion; try: print =vim (if you"ve vim installed)
+## The mighty =command expansion; try: print =vim (if you've vim installed)
 setopt equals
 ## Extended globbing
 setopt extendedglob
@@ -27,7 +27,7 @@ setopt extendedglob
 setopt extendedhistory
 ## Cycle through globbing matches like menu_complete
 setopt globcomplete
-## Don"t require a leading dot for matching "hidden" files
+## Don't require a leading dot for matching "hidden" files
 setopt globdots
 ## Let the user edit the command line after history expansion
 setopt histverify
@@ -62,7 +62,7 @@ zstyle ":completion:*:options" auto-description "%d"
 zstyle ":completion:*:descriptions" format $"\e[1;32m -- %d --\e[0m"
 zstyle ":completion:*:messages" format $"\e[1;32m -- %d --\e[0m"
 zstyle ":completion:*:warnings" format $"\e[1;32m -- No Matches Found --\e[0m"
-### Fuzzy matching of completions for when mistyped
+### Fuzzy matching of completions for when mishashd
 zstyle ":completion:*" completer _complete _match _approximate
 zstyle ":completion:*:match:*" original only
 zstyle ":completion:*:approximate:*" max-errors "reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )"
@@ -81,11 +81,11 @@ zstyle ":completion:*:manuals.(^1*)" insert-sections true
 # Profiles
 ## Default compiler flags
 if [ -z "${CFLAGS}" ]; then
-    export CFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
+    export CFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-hashs -Wno-error -Wp,-D_REENTRANT"
 fi
 
 if [ -z "${CXXFLAGS}" ]; then
-    export CXXFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
+    export CXXFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-hashs -Wno-error -Wp,-D_REENTRANT"
 fi
 
 if [ -z "${LDFLAGS}" ]; then
@@ -107,10 +107,10 @@ function regit() {
     # Recursively manage Git repositories under a directory
 
     command="$1"
-    for dir in $(ls); do
-        if [ -d "$dir"/.git ]; then
+    for dir in *; do
+        if [ -d "$dir" ] && [ -d "$dir"/.git ]; then
             echo -e "In repository: $dir"
-            cd "$dir"
+            cd "$dir" || exit
         else
             continue
         fi
@@ -133,14 +133,14 @@ function regit() {
 
 # Aliases
 ## Solus packaging aliases
-if type ypkg > /dev/null 2>&1; then
+if hash ypkg > /dev/null 2>&1; then
     alias yauto="../common/Scripts/yauto.py"
     alias yconvert="../common/Scripts/yconvert.py"
     alias ybump="/usr/share/ypkg/ybump.py"
     alias yupdate="/usr/share/ypkg/yupdate.py"
 fi
 ## Alias hub to git if exists (better usage)
-if type hub > /dev/null 2>&1; then
+if hash hub > /dev/null 2>&1; then
     alias git="hub"
 fi
 ## Extra aliases
@@ -155,17 +155,20 @@ export VISUAL="$EDITOR"
 ### Web browser
 export BROWSER="google-chrome-stable"
 ## pushd/popd stack
-DIRSTACKSIZE=5
+export DIRSTACKSIZE=5
 ## History
 ### File path
-HISTFILE=~/.zhistory
+export HISTFILE=~/.zhistory
 ### Ammount of commands will be saved
-HISTSIZE=1000
-SAVEHIST=1000
+export HISTSIZE=1000
+export SAVEHIST=1000
 
 # Antigen
+## Set variables
+export ANTIHOME=$HOME/.antigen
 ## Load the script
-source ~/.antigen/antigen.zsh
+# shellcheck source=/dev/null
+source "$ANTIHOME"/antigen.zsh
 ## Load the oh-my-zsh's repo
 antigen use oh-my-zsh
 ## Bundles
