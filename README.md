@@ -1,2 +1,3 @@
-# home
-My home repository
+### Start
+
+My distribution bootstrapping repository.

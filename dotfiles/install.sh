@@ -144,9 +144,9 @@ function dotfile_link() {
 # Variables
 ## Set locations
 GITDIR="Git"
-HOMEREPO="home"
-REPODIR="$HOMEREPO/dotfiles"
-SCRIPTSDIR="$HOMEREPO/scripts"
+STARTREPO="start"
+REPODIR="$STARTREPO/dotfiles"
+SCRIPTSDIR="$STARTREPO/scripts"
 MAINDIR="$GITDIR/$REPODIR"
 ## Set default options
 GIT=true
