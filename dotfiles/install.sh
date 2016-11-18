@@ -86,6 +86,39 @@ function gpg_key_import() {
     fi
 }
 
+function post_hook() {
+    # Syntax: post_hook [hook] [var1] [var2]
+    hook="$1"
+    var1="$2"
+    var2="$3"
+
+    case "$hook" in
+        run_command)
+            executable="$var1"
+            command="$var2"
+
+            if ! which "$executable" &>/dev/null; then
+                eprint 2 "Executable not found, not executing hook"
+            else
+                eprint 2 "Executable $executable found, running hook"
+                bash -c "$command"
+            fi
+            ;;
+
+        run_script)
+            file="$var1"
+            script="$var2"
+
+            if [ ! -f ~/"$file" ]; then
+                eprint 2 "File not found, executing hook"
+                ~/"$SCRIPTSDIR"/"$script".sh
+            else
+                eprint 2 "File found, not executing hook"
+            fi
+            ;;
+    esac
+}
+
 function dotfile_link() {
     # Syntax: dotfile_link [orig] [dest] {dir}
     # Links [orig] to [dest], if {dir} is specified,
@@ -108,41 +141,13 @@ function dotfile_link() {
     fi
 }
 
-function hooks_post_cmd() {
-    # Syntax: hooks_post_cmd [executable] [command]
-    # If [executable] exists, run the [command]
-    executable="$1"
-    command="$2"
-
-    if ! which "$executable" &>/dev/null; then
-        eprint 2 "Executable not found, not executing hook"
-    else
-        eprint 2 "Executable $executable found, running hook"
-        bash -c "$command"
-    fi
-}
-
-function hooks_post_script() {
-    # Syntax: hooks_post_script [file] [script]
-    # If [file] is not found, execute the [script] from ../scripts
-    file="$1"
-    script="$2"
-
-    if [ ! -f ~/"$file" ]; then
-        eprint 2 "File not found, executing hook"
-        ~/"$SCRIPTSDIR"/"$script".sh
-    else
-        eprint 2 "File found, not executing hook"
-    fi
-}
-
 # Variables
 ## Set locations
 GITDIR="Git"
-HOMEDIR="home"
-REPODIR="$HOMEDIR/dotfiles"
-SCRIPTSDIR="$HOMEDIR/scripts"
-MAINDIR="$DIR/$REPO"
+HOMEREPO="home"
+REPODIR="$HOMEREPO/dotfiles"
+SCRIPTSDIR="$HOMEREPO/scripts"
+MAINDIR="$GITDIR/$REPODIR"
 ## Set default options
 GIT=true
 GPG=true
@@ -200,11 +205,11 @@ fi
 
 if $NVIM; then
     dotfile_link nvim/init.vim .config/nvim init.vim
-    hooks_post_script .config/nvim/autoload/plug.vim neovim-plug
-    hooks_post_cmd nvim "nvim +PlugInstall +qa"
+    post_hook run_script .config/nvim/autoload/plug.vim neovim-plug
+    post_hook run_command nvim "nvim +PlugInstall +qa"
 fi
 
 if $ZSH; then
     dotfile_link zsh/zshrc.sh .zshrc
-    hooks_post_script .antigen/antigen.zsh zsh-antigen
+    post_hook run_script .antigen/antigen.zsh zsh-antigen
 fi
