@@ -108,6 +108,21 @@ function dot_install() {
     fi
 }
 
+function post_hook() {
+    # Syntax: post_hook [executable] [command]
+    # If [executable] exists, run the [command]
+    executable="$1"
+    command="$2"
+
+    if which "$executable" &>/dev/null; then
+        eprint 2 "Executable $executable found, running hook"
+        bash -c "$command"
+    else
+        eprint 2 "Executable not found, not executing hook"
+    fi
+}
+
+
 # Variables
 ## Set locations
 DIR="Git"
@@ -170,6 +185,7 @@ fi
 
 if $NVIM; then
     dot_install nvim/init.vim .config/nvim init.vim
+    post_hook nvim "nvim +PlugInstall +qa"
 fi
 
 if $ZSH; then
