@@ -20,7 +20,6 @@ PERSONAL_GIT_REPOS=(start
                     nekovim
                     olimpia)
 #### Directory names
-REPO_BLOG="$GIT_DIR/blog"
 REPO_START="$GIT_DIR/start"
 DOTFILES_DIR="$REPO_START/dotfiles"
 SCRIPTS_DIR="$REPO_START/scripts"
@@ -28,8 +27,8 @@ SYSTEM_DIR="$REPO_START/system/solus"
 ### Solus Git
 SOLUS_GIT_URL="https://git.solus-project.com"
 #### Directory names
-SOLUS_GIT_DEST="$GIT_DIR/packages"
-SOLUS_COMMON_DIR="$SOLUS_GIT_DEST/common"
+SOLUS_PACKAGES_DIR="$GIT_DIR/packages"
+SOLUS_COMMON_DIR="$SOLUS_PACKAGES_DIR/common"
 
 # Functions
 function notify_me() {
@@ -87,6 +86,16 @@ function run_setup() {
     done
 }
 
+function pypi_install() {
+    # Usage: pypi_install [targets]
+    # Install [targets] via PyPI
+    targets="$*"
+
+    for py in 2 3; do
+        sudo pip"$py" install "$targets"
+    done
+}
+
 # Welcome
 notify_me "$SCRIPT_NAME is running, don't touch anything now :)"
 
@@ -126,8 +135,8 @@ notify_me "Installing more software"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi  \
                       libreoffice-{writer,impress,calc,math,draw,base} gimp cheese  \
                       simplescreenrecorder inkscape simple-scan brasero lollypop    \
-                      neovim zsh git{,-extras} hub nodejs neofetch p7zip glances    \
-                      {noto-sans,font-ubuntu}-ttf
+                      zsh git{,-extras} hub neovim nodejs glances neofetch p7zip    \
+                      pip shellcheck {noto-sans,font-ubuntu}-ttf
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -151,7 +160,7 @@ cd ~ || exit
 ## Solus packaging repository
 ### Create Solus packaging directory
 notify_me "Setting up Solus packaging directory"
-enter_dir ~/"$SOLUS_GIT_DEST"
+enter_dir ~/"$SOLUS_PACKAGES_DIR"
 ### FUCKING CLONE common repository from Solus git
 notify_me "Cloning common repository"
 while true; do
@@ -166,9 +175,9 @@ while true; do
 done
 ### Link Makefile(s)
 notify_me "Linking Makefiles"
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.common ~/"$SOLUS_GIT_DEST"/Makefile.common
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.toplevel ~/"$SOLUS_GIT_DEST"/Makefile
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.iso ~/"$SOLUS_GIT_DEST"/Makefile.iso
+ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.common ~/"$SOLUS_PACKAGES_DIR"/Makefile.common
+ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.toplevel ~/"$SOLUS_PACKAGES_DIR"/Makefile
+ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.iso ~/"$SOLUS_PACKAGES_DIR"/Makefile.iso
 ### Return to home
 cd ~ || exit
 
@@ -189,6 +198,16 @@ bash ~/"$SYSTEM_DIR"/install.sh
 ## Run installer
 notify_me "Installing Telegram Desktop"
 bash ~/"$SCRIPTS_DIR"/telegram-desktop.sh
+
+# Development libraries
+## Python
+### Install libraries
+#### Via Python Package index
+notify_me "Installing Python development libraries via PyPI"
+pypi_install neovim python-telegram-bot
+#### Via eopkg
+notify_me "Installing Python development libraries via eopkg"
+sudo eopkg install -y python{,3}-gobject-devel
 
 # Personalization
 ## Make GSettings set things
