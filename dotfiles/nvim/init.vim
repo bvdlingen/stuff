@@ -5,7 +5,6 @@ call plug#begin('~/.config/nvim/plugins')
 """ Look and feel
 Plug 'sonph/onehalf', {'rtp': 'vim/'}  " OneDark-like color scheme
 Plug 'vim-airline/vim-airline'         " Da fecking Airline
-Plug 'powerline/fonts'                 " Powerline fonts for Airline
 """ Tools
 Plug 'tpope/vim-fugitive'              " Best Git wrapper ever
 Plug 'airblade/vim-gitgutter'          " Git gutters
@@ -39,8 +38,6 @@ set t_Co=256
 """" Activate italics, they're pretty
 let g:onedark_terminal_italics = 1
 "" Airline
-""" Enable Powerline fonts
-let g:airline_powerline_fonts = 1
 """ Set theme
 let g:airline_theme='onehalfdark'
 """ Transparent background
