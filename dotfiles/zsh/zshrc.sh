@@ -13,13 +13,13 @@ setopt banghist
 setopt braceccl
 ## cd-able variables
 setopt cdablevars
-## Don't expand aliases before completion has finished
+## Don"t expand aliases before completion has finished
 setopt completealiases
 ## If unset the cursor is set to the end of the word if completion is started
 setopt completeinword
 ## Automatically correct the spelling of each word on the command line
 setopt correctall
-## The mighty =command expansion; try: print =vim (if you've vim installed)
+## The mighty =command expansion; try: print =vim (if you"ve vim installed)
 setopt equals
 ## Extended globbing
 setopt extendedglob
@@ -27,7 +27,7 @@ setopt extendedglob
 setopt extendedhistory
 ## Cycle through globbing matches like menu_complete
 setopt globcomplete
-## Don't require a leading dot for matching 'hidden' files
+## Don"t require a leading dot for matching "hidden" files
 setopt globdots
 ## Let the user edit the command line after history expansion
 setopt histverify
@@ -55,30 +55,28 @@ setopt shortloops
 # Settings
 ## Completion
 ### Name groups during completion
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*:matches' group 'yes'
-zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:descriptions' format $'\e[1;32m -- %d --\e[0m'
-zstyle ':completion:*:messages' format $'\e[1;32m -- %d --\e[0m'
-zstyle ':completion:*:warnings' format $'\e[1;32m -- No Matches Found --\e[0m'
+zstyle ":completion:*" group-name ""
+zstyle ":completion:*:matches" group "yes"
+zstyle ":completion:*:options" description "yes"
+zstyle ":completion:*:options" auto-description "%d"
+zstyle ":completion:*:descriptions" format $"\e[1;32m -- %d --\e[0m"
+zstyle ":completion:*:messages" format $"\e[1;32m -- %d --\e[0m"
+zstyle ":completion:*:warnings" format $"\e[1;32m -- No Matches Found --\e[0m"
 ### Fuzzy matching of completions for when mistyped
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )'
-zstyle ':completion::approximate*:*' prefix-needed false
+zstyle ":completion:*" completer _complete _match _approximate
+zstyle ":completion:*:match:*" original only
+zstyle ":completion:*:approximate:*" max-errors "reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )"
+zstyle ":completion::approximate*:*" prefix-needed false
 ### If using a directory as argument, remove the trailing slash
-zstyle ':completion:*' squeeze-slashes true
+zstyle ":completion:*" squeeze-slashes true
 ### Ignore completion functions for unexistent commands
-zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ":completion:*:functions" ignored-patterns "_*"
 ### Completing process IDs with menu selection
-zstyle ':completion:*:*:kill:*' menu yes select
-zstyle ':completion:*:kill:*' force-list always
+zstyle ":completion:*:*:kill:*" menu yes select
+zstyle ":completion:*:kill:*" force-list always
 ### Better-ize manual handling
-zstyle ':completion:*:manuals' separate-sections true
-zstyle ':completion:*:manuals.(^1*)' insert-sections true
-
-
+zstyle ":completion:*:manuals" separate-sections true
+zstyle ":completion:*:manuals.(^1*)" insert-sections true
 
 # Profiles
 ## Default compiler flags
@@ -125,7 +123,7 @@ function regit() {
                 ;;
             commit)
                 git add .
-                git commit -s -m "Forced recursive push"
+                git scommit -m "Forced recursive push"
                 git push
                 ;;
         esac
@@ -135,17 +133,19 @@ function regit() {
 
 # Aliases
 ## Solus packaging aliases
-alias yauto='../common/Scripts/yauto.py'
-alias yconvert='../common/Scripts/yconvert.py'
-alias ybump='/usr/share/ypkg/ybump.py'
-alias yupdate='/usr/share/ypkg/yupdate.py'
-if which hub >/dev/null; then
-    ## Alias hub to git if exists (better usage)
+if type ypkg > /dev/null 2>&1; then
+    alias yauto="../common/Scripts/yauto.py"
+    alias yconvert="../common/Scripts/yconvert.py"
+    alias ybump="/usr/share/ypkg/ybump.py"
+    alias yupdate="/usr/share/ypkg/yupdate.py"
+fi
+## Alias hub to git if exists (better usage)
+if type hub > /dev/null 2>&1; then
     alias git="hub"
 fi
 ## Extra aliases
-alias xopen='xdg-open'
-alias weather='curl wttr.in/Ezeiza'
+alias xopen="xdg-open"
+alias weather="curl wttr.in/Ezeiza"
 
 # Variables
 ## Applications
@@ -169,13 +169,13 @@ source ~/.antigen/antigen.zsh
 ## Load the oh-my-zsh's repo
 antigen use oh-my-zsh
 ## Bundles
-### Bundles from oh-my-zsh's repo
+### Bundles from oh-my-zsh
 antigen bundle colored-man-pages
 antigen bundle command-not-found
 antigen bundle nyan
 antigen bundle zsh_reload
 antigen bundle web-search
-### ZSH Users' bundles
+### ZSH Users" bundles
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -185,8 +185,8 @@ antigen theme fishy
 antigen apply
 ## Extra
 ### Binding keys for history-substring-search
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
 
 # Neofetch
 ## Run it with disabled packages
