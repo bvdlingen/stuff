@@ -11,6 +11,8 @@ setopt autopushd
 setopt banghist
 ## Enable globbing using braces
 setopt braceccl
+## cd-able variables
+setopt cdablevars
 ## Don't expand aliases before completion has finished
 setopt completealiases
 ## If unset the cursor is set to the end of the word if completion is started
@@ -19,7 +21,9 @@ setopt completeinword
 setopt correctall
 ## The mighty =command expansion; try: print =vim (if you've vim installed)
 setopt equals
-# Save additional info to $HISTFILE
+## Extended globbing
+setopt extendedglob
+## Save additional info to $HISTFILE
 setopt extendedhistory
 ## Cycle through globbing matches like menu_complete
 setopt globcomplete
@@ -27,14 +31,24 @@ setopt globcomplete
 setopt globdots
 ## Let the user edit the command line after history expansion
 setopt histverify
+## Ignore duplicates on history
+setopt histignorealldups
 ## Show an error if no matches are found on globbing
 setopt nomatch
 ## No beep on error
 setopt nobeep
+## Erase errors when globbing
+unsetopt nomatch
 ## Notify
 setopt notify
 ## Ignore duplicates on auto_pushd
 setopt pushdignoredups
+## Not idea of what this does
+setopt pushdminus
+## Silent pushd
+setopt pushdsilent
+## pushd to $HOME
+setopt pushdtohome
 ## Allow short loop forms
 setopt shortloops
 
@@ -64,14 +78,29 @@ zstyle ':completion:*:kill:*' force-list always
 zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
 
-# History
-## Set file path
-HISTFILE=~/.zhistory
-## Set ammount of commands will be saved
-HISTSIZE=1000
-SAVEHIST=1000
-## Ignore duplicates and lines starting with spaces
-HISTCONTROL=ignoreboth
+
+
+# Profiles
+## Default compiler flags
+if [ -z "${CFLAGS}" ]; then
+    export CFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
+fi
+
+if [ -z "${CXXFLAGS}" ]; then
+    export CXXFLAGS="-mtune=generic -march=x86-64 -ftree-vectorize -g2 -O2 -pipe -fPIC -Wformat -Wformat-security -fno-omit-frame-pointer -fstack-protector-strong --param ssp-buffer-size=4 -fexceptions -D_FORTIFY_SOURCE=2 -feliminate-unused-debug-types -Wno-error -Wp,-D_REENTRANT"
+fi
+
+if [ -z "${LDFLAGS}" ]; then
+    export LDFLAGS="-Wl,--copy-dt-needed-entries -Wl,-O1 -Wl,-z,relro -Wl,-z,now"
+fi
+
+if [ -z "${FCFLAGS}" ]; then
+    export FCFLAGS="${CFLAGS}"
+fi
+
+if [ -z "${FFLAGS}" ]; then
+    export FFLAGS="${CFLAGS}"
+fi
 
 # Functions
 ## Manage a lot of Git repositories
@@ -110,15 +139,27 @@ alias yauto='../common/Scripts/yauto.py'
 alias yconvert='../common/Scripts/yconvert.py'
 alias ybump='/usr/share/ypkg/ybump.py'
 alias yupdate='/usr/share/ypkg/yupdate.py'
+## Alias hub to git (better usage)
+alias git="hub"
 ## Extra aliases
 alias xopen='xdg-open'
 alias weather='curl wttr.in/Ezeiza'
 
 # Variables
-## Editor and visual editor
+## Applications
+### Editor and visual editor
 export EDITOR="nvim"
-export VISUAL="nvim"
+export VISUAL="$EDITOR"
+### Web browser
 export BROWSER="google-chrome-stable"
+## pushd/popd stack
+DIRSTACKSIZE=5
+## History
+### File path
+HISTFILE=~/.zhistory
+### Ammount of commands will be saved
+HISTSIZE=1000
+SAVEHIST=1000
 
 # Antigen
 ## Load the script

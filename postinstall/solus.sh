@@ -1,6 +1,5 @@
 #
-# Solus: Post Install
-# HERE BE DERGHUNS
+# Solus Post Install Script
 #
 
 # Variables
@@ -15,26 +14,22 @@ TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 GIT_DIR="Git"
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
-PERSONAL_GIT_REPOS=(blog
+PERSONAL_GIT_REPOS=(start
                     deezload
-                    dotfiles
-                    neogvim
-                    pinstall
-                    inscripts
-                    wallpapers)
+                    kydebot
+                    nekovim
+                    olimpia)
 #### Directory names
 REPO_BLOG="$GIT_DIR/blog"
-REPO_DOTFILES="$GIT_DIR/dotfiles"
-REPO_INSCRIPTS="$GIT_DIR/inscripts"
+REPO_START="$GIT_DIR/start"
+DOTFILES_DIR="$REPO_START/dotfiles"
+SCRIPTS_DIR="$REPO_START/scripts"
+SYSTEM_DIR="$REPO_START/system/solus"
 ### Solus Git
 SOLUS_GIT_URL="https://git.solus-project.com"
 #### Directory names
 SOLUS_GIT_DEST="$GIT_DIR/packages"
 SOLUS_COMMON_DIR="$SOLUS_GIT_DEST/common"
-### Setup scripts
-INSCRIPTS_RUN=(zsh-antigen
-               neovim-plug
-               telegram-desktop)
 
 # Functions
 function notify_me() {
@@ -65,7 +60,7 @@ function tparty_get() {
     component="$1"
     package="$2"
 
-    sudo eopkg build -y --ignore-safety "$TRDPARTY_REPO/$component/$package/pspec.xml"
+    sudo eopkg build -y --ignore-safety "$TRDPARTY_REPO"/"$component"/"$package"/pspec.xml
     sudo eopkg install -y "$package"*.eopkg
     sudo rm -rfv "$package"*.eopkg
 }
@@ -88,17 +83,12 @@ function run_setup() {
     scripts="$1"
 
     for script in ${scripts[*]}; do
-        bash ~/"$REPO_INSCRIPTS"/"$script".sh
+        bash ~/"$SCRIPTS_DIR"/"$script".sh
     done
 }
 
 # Welcome
 notify_me "$SCRIPT_NAME is running, don't touch anything now :)"
-
-# Set-up needed directories
-## LightDM and Arc-Paper variant
-notify_me "Setting-up needed directories"
-sudo mkdir -pv /etc/lightdm /usr/share/icons/Arc-Paper
 
 # Password-less user
 ## Remove password for Casa
@@ -108,18 +98,13 @@ sudo passwd -du casa
 notify_me "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
 sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/g" -i /etc/pam.d/system-password
 sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
-## Enable autologin
-notify_me "Enabling autologin"
-echo -e "[Seat:*]\nautologin-user=casa" | sudo tee /etc/lightdm/lightdm.conf
 
 # Software stuff
 ## Remove ugly bloatware (Mozilla stuff), accesibility stuff and unused packages
 notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge thunderbird orca rhythmbox     \
-                             tlp thermald doflicky yelp     \
-                             rhythmbox-alternative-toolbar  \
-                             {moka,faba{,-mono}}-icon-theme \
-                             breeze{,-snow}-cursor-theme
+sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird rhythmbox               \
+                             tlp thermald doflicky yelp orca rhythmbox-alternative-toolbar \
+                             {moka,faba{,-mono}}-icon-theme breeze{,-snow}-cursor-theme
 ### Move to unstable
 notify_me "Moving to Unstable"
 #### Remove Shannon
@@ -131,15 +116,18 @@ sudo eopkg add-repo -y "$REPOSITORY_NAME" "$UNSTABLE_URL"
 ### Upgrade the system
 notify_me "Upgrading system"
 sudo eopkg upgrade -y
+## Install 3rd-party applications
+notify_me "Installing Third Party applications"
+tparty_get network/web/browser google-chrome-stable          # SANER WEB BROWSER, TAKE THIS, MOZILLA!
+tparty_get multimedia/music spotify                          # I DON'T USE THIS, BUT FAMILY IS FAMILY
+tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICROSOFT FONTS :S
 ## Install other applications, fonts and some more thingies
 notify_me "Installing more software"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary     \
-                      libreoffice-{writer,impress,calc,math,draw,base} gimp       \
-                      simplescreenrecorder inkscape simple-scan brasero cheese    \
-                      lollypop kodi neovim simplescreenrecorder zsh git{,-extras} \
-                      nodejs neofetch p7zip glances {noto-sans,font-ubuntu}-ttf   \
-                      flashplugin-nonfree
-
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi  \
+                      libreoffice-{writer,impress,calc,math,draw,base} gimp cheese  \
+                      simplescreenrecorder inkscape simple-scan brasero lollypop    \
+                      neovim zsh git{,-extras} hub nodejs neofetch p7zip glances    \
+                      {noto-sans,font-ubuntu}-ttf
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -149,12 +137,6 @@ notify_me "Setting up EvoBuild"
 sudo evobuild -p unstable-x86_64 init
 ### Update
 sudo evobuild -p unstable-x86_64 update
-## Delete cache and clean
-notify_me "Cleaning eopkg databases and cache"
-### Delete cache
-sudo eopkg delete-cache -y
-### Clean databases
-sudo eopkg clean -y
 
 # Git clones
 ## Create dir and enter
@@ -193,42 +175,22 @@ cd ~ || exit
 # Dotfiles
 ## Set up dotfiles
 notify_me "Installing dotfiles"
-bash ~/"$REPO_DOTFILES"/install.sh
+bash ~/"$DOTFILES_DIR"/install.sh
 ## Make ZSH default shell
 notify_me "Making ZSH the default shell"
 sudo chsh -s /bin/zsh casa
 
-# Install scripts
-## Run install scripts
-notify_me "Running Install Scripts"
-run_setup "${INSCRIPTS_RUN[*]}"
+# Deploy system
+## Install system files
+notify_me "Installing system files"
+bash ~/"$SYSTEM_DIR"/install.sh
 
-# Blog
-## Install Hexo
-notify_me "Installing Hexo"
-sudo npm install hexo-cli -g
-## Install dependencies
-notify_me "Setting-up blog dependencies"
-enter_dir ~/"$REPO_BLOG"
-npm install
-## Return to home
-cd ~ || exit
-
-# NeoVim
-## Install plugins
-notify_me "Installing NeoVim plugins"
-nvim +PlugInstall +quitall
+# Install Telegram Desktop
+## Run installer
+notify_me "Installing Telegram Desktop"
+bash ~/"$SCRIPTS_DIR"/telegram-desktop.sh
 
 # Personalization
-notify_me "Personalizing system"
-## Create a theme index for Arc-Paper variant
-notify_me "Setting up Arc-Paper variant"
-sudo cp -Rfv /usr/share/icons/Arc/index.theme /usr/share/icons/Arc-Paper/index.theme
-sudo sed -e "s/Inherits=Moka/Inherits=Paper/g" -i /usr/share/icons/Arc-Paper/index.theme
-## Fix LightDM
-notify_me "Fixing LightDM"
-### Use Arc-Paper on LightDM GTK Greeter
-echo -e "[greeter]\nicon-theme-name=Arc-Paper" | sudo tee /etc/lightdm/lightdm-gtk-greeter.conf
 ## Make GSettings set things
 notify_me "Setting stuff with GSettings"
 ### Interface

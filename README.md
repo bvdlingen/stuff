@@ -1,3 +1,3 @@
-# @feskyde's Home
+### Start
 
-**PERSONAL STUFF HERE!** But you can still fork this if you want.
+My distribution bootstrapping repository.
