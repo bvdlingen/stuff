@@ -15,7 +15,8 @@ GIT_DIR="Git"
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
 PERSONAL_GIT_REPOS=(start
-                    deezload
+                    deezloader
+                    gdesktop
                     kydebot
                     nekovim
                     olimpia)
@@ -204,7 +205,7 @@ bash ~/"$SCRIPTS_DIR"/telegram-desktop.sh
 ### Install libraries
 #### Via Python Package index
 notify_me "Installing Python development libraries via PyPI"
-pypi_install neovim python-telegram-bot
+pypi_install neovim github3.py python-telegram-bot
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
 sudo eopkg install -y python{,3}-gobject-devel
