@@ -19,7 +19,10 @@ PERSONAL_GIT_REPOS=(start
                     gdesktop
                     kydebot
                     nekovim
-                    olimpia)
+                    olimpia
+                    budgie-emoji-applet
+                    budgie-mpris-applet
+                    budgie-window-list-applet)
 #### Directory names
 REPO_START="$GIT_DIR/start"
 DOTFILES_DIR="$REPO_START/dotfiles"
@@ -208,7 +211,7 @@ notify_me "Installing Python development libraries via PyPI"
 pypi_install neovim github3.py python-telegram-bot
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
-sudo eopkg install -y python{,3}-gobject-devel
+sudo eopkg install -y python{,3}-gobject-devel budgie-desktop-devel
 
 # Personalization
 ## Make GSettings set things
