@@ -90,16 +90,6 @@ function run_setup() {
     done
 }
 
-function pypi_install() {
-    # Usage: pypi_install [targets]
-    # Install [targets] via PyPI
-    targets="$*"
-
-    for py in 2 3; do
-        sudo pip"$py" install "$targets"
-    done
-}
-
 # Welcome
 notify_me "$SCRIPT_NAME is running, don't touch anything now :)"
 
@@ -208,7 +198,7 @@ bash ~/"$SCRIPTS_DIR"/telegram-desktop.sh
 ### Install libraries
 #### Via Python Package index
 notify_me "Installing Python development libraries via PyPI"
-pypi_install neovim github3.py python-telegram-bot
+sudo pip3 install neovim github3.py python-telegram-bot
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
 sudo eopkg install -y python{,3}-gobject-devel budgie-desktop-devel
