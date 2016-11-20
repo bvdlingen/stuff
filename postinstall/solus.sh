@@ -201,7 +201,7 @@ notify_me "Installing Python development libraries via PyPI"
 sudo pip3 install neovim github3.py python-telegram-bot
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
-sudo eopkg install -y python{,3}-gobject-devel budgie-desktop-devel
+sudo eopkg install -y python3-gobject-devel budgie-desktop-devel
 
 # Personalization
 ## Make GSettings set things
