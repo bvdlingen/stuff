@@ -3,7 +3,8 @@
 call plug#begin('~/.config/nvim/plugins')
 "" Add the plugins
 """ Look and feel
-Plug 'sonph/onehalf', {'rtp': 'vim/'}  " OneDark-like color scheme
+" OneDark-like color scheme
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
 Plug 'vim-airline/vim-airline'         " Da fecking Airline
 """ Tools
 Plug 'tpope/vim-fugitive'              " Best Git wrapper ever
@@ -23,7 +24,8 @@ Plug 'fisadev/vim-isort'               " Sort python imports (:Isort or V-Block 
 Plug 'sheerun/vim-polyglot'            " Polyglot highlighting
 Plug 'scrooloose/syntastic'            " External syntax checkers
 """ Completions
-Plug 'Shougo/deoplete.nvim'            " Deoplete completion system
+" Deoplete completion system
+Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 Plug 'ervandew/supertab'               " Sublime-like completion for text already on file
 """ Extra
 Plug 'mhinz/vim-startify'              " Start page for Vim

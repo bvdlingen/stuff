@@ -77,9 +77,9 @@ function gpg_key_import() {
     else
         eprint 1 "Importing $type key: $file"
         if [ "$type" == "private" ]; then
-            gpg2 --allow-secret-key-import --import ~/"$MAINDIR"/"$file"
+            gpg --allow-secret-key-import --import ~/"$MAINDIR"/"$file"
         elif [ "$type" == "public" ]; then
-            gpg2 --import ~/"$MAINDIR"/"$file"
+            gpg --import ~/"$MAINDIR"/"$file"
         else
             eprint 1 "Unknown key type!"
         fi
