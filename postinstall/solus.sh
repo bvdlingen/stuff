@@ -105,8 +105,7 @@ sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 # Software stuff
 ## Remove ugly bloatware (Mozilla stuff), accesibility stuff and unused packages
 notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird rhythmbox               \
-                             tlp thermald doflicky yelp orca rhythmbox-alternative-toolbar \
+sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird tlp thermald orca yelp \
                              {moka,faba{,-mono}}-icon-theme breeze{,-snow}-cursor-theme
 ### Move to unstable
 notify_me "Moving to Unstable"
@@ -126,11 +125,10 @@ tparty_get multimedia/music spotify                          # I DON'T USE THIS,
 tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICROSOFT FONTS :S
 ## Install other applications, fonts and some more thingies
 notify_me "Installing more software"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi  \
-                      libreoffice-{writer,impress,calc,math,draw,base} gimp cheese  \
-                      simplescreenrecorder inkscape simple-scan brasero lollypop    \
-                      zsh git{,-extras} hub neovim nodejs glances neofetch p7zip    \
-                      pip shellcheck {noto-sans,font-ubuntu}-ttf
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi cheese    \
+                      simplescreenrecorder gimp inkscape brasero libreoffice-all simple-scan \
+                      zsh git{,-extras} hub neovim nodejs glances neofetch p7zip             \
+                      {noto-sans,font-ubuntu}-ttf
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
