@@ -4,16 +4,17 @@
 #
 
 # Variables
-TSRCZIP="linux"
-TSRCURL="https://tdesktop.com/$TSRCZIP"
+TSRCZIP="current?alpha=1"
+TSRCURL="https://tdesktop.com/linux/$TSRCZIP"
 DESTDIR=".TelegramDesktop"
+TDSTZIP="telegram-alpha.tar.xz"
 
 # Start
 rm -rfv ~/"$DESTDIR"
 mkdir -pv ~/"$DESTDIR"
-wget "$TSRCURL" -O ~/"$DESTDIR"/"$TSRCZIP"
+wget "$TSRCURL" -O ~/"$DESTDIR"/"$TDSTZIP"
 cd ~/"$DESTDIR" || exit
-tar xfv "$TSRCZIP"
-rm -rfv "$TSRCZIP"
+tar xfv "$TDSTZIP"
+rm -rfv "$TDSTZIP"
 echo -e "Executing..."
-~/"$DESTDIR"/"$TSRCDIR"/Telegram > /dev/null 2>&1
+~/"$DESTDIR"/Telegram/Telegram > /dev/null 2>&1 &
