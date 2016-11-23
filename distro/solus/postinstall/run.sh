@@ -13,15 +13,15 @@ TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 ## Git-related
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
-PERSONAL_GIT_REPOS=(start
+PERSONAL_GIT_REPOS=(stuff
                     deezloader
                     kydebot
                     nekovim)
 #### Directory names
 GIT_DIR="Git"
-REPO_START="$GIT_DIR/start"
-SCRIPTS_DIR="$REPO_START/scripts"
-SYSTEM_DIR="$REPO_START/distro/solus/system"
+STUFF_REPO="$GIT_DIR/stuff"
+SCRIPTS_DIR="$STUFF_REPO/scripts"
+SYSTEM_DIR="$STUFF_REPO/distro/solus/system"
 ### Solus Git
 SOLUS_GIT_URL="https://git.solus-project.com"
 #### Directory names
