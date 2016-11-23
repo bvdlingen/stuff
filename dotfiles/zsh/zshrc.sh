@@ -123,7 +123,7 @@ function regit() {
                 ;;
             commit)
                 git add .
-                git scommit -m "Forced recursive push"
+                git commit -m "Forced recursive push"
                 git push
                 ;;
         esac
