@@ -126,7 +126,7 @@ tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICR
 notify_me "Installing more software"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi cheese    \
                       brasero simplescreenrecorder gimp inkscape simple-scan libreoffice-all \
-                      pitivi steam zsh git{,-extras} hub neovim glances neofetch p7zip
+                      pitivi steam zsh git{,-extras} hub yadm neovim glances neofetch p7zip
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
