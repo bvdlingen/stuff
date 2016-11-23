@@ -125,8 +125,8 @@ tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICR
 ## Install other applications, fonts and some more thingies
 notify_me "Installing more software"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese \
-                      brasero simplescreenrecorder gimp inkscape libreoffice-all    \
-                      zsh git{,-extras} hub yadm neovim glances neofetch
+                      geary brasero obs-studio gimp inkscape libreoffice-all neovim \
+                      zsh git{,-extras} hub yadm glances neofetch
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
