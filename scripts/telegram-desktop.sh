@@ -16,5 +16,3 @@ wget "$TSRCURL" -O ~/"$DESTDIR"/"$TDSTZIP"
 cd ~/"$DESTDIR" || exit
 tar xfv "$TDSTZIP"
 rm -rfv "$TDSTZIP"
-echo -e "Executing..."
-~/"$DESTDIR"/Telegram/Telegram > /dev/null 2>&1 &
