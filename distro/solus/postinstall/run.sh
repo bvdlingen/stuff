@@ -181,7 +181,7 @@ yadm clone "$DOTFILES_REPO"
 yadm decrypt
 ## Set ZSH as default shell
 notify_me "Set ZSH as default shell"
-sudo chsh -s /bin/zsh casa
+sudo chsh -s $(which zsh) casa
 
 # Install scripts
 ## Run install scripts
