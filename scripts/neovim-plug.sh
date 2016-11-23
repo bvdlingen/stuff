@@ -12,3 +12,6 @@ NVPLDST=".config/nvim/autoload"
 rm -rfv ~/"$NVPLDST"
 mkdir -pv ~/"$NVPLDST"
 wget "$NVPLURL" -O ~/"$NVPLDST"/"$NVPLBIN"
+
+# Post hook
+nvim +PlugInstall +qa

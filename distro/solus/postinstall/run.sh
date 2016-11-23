@@ -11,21 +11,15 @@ UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
 ## 3rd-Party related
 TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 ## Git-related
-GIT_DIR="Git"
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
 PERSONAL_GIT_REPOS=(start
                     deezloader
-                    gdesktop
                     kydebot
-                    nekovim
-                    olimpia
-                    budgie-emoji-applet
-                    budgie-mpris-applet
-                    budgie-window-list-applet)
+                    nekovim)
 #### Directory names
+GIT_DIR="Git"
 REPO_START="$GIT_DIR/start"
-DOTFILES_DIR="$REPO_START/dotfiles"
 SCRIPTS_DIR="$REPO_START/scripts"
 SYSTEM_DIR="$REPO_START/distro/solus/system"
 ### Solus Git
@@ -33,6 +27,12 @@ SOLUS_GIT_URL="https://git.solus-project.com"
 #### Directory names
 SOLUS_PACKAGES_DIR="$GIT_DIR/packages"
 SOLUS_COMMON_DIR="$SOLUS_PACKAGES_DIR/common"
+## YADM-related
+DOTFILES_REPO="$PERSONAL_GIT_URL/dotfiles"
+## Install Scripts
+SCRIPTS_RUN=(zsh-antigen
+             neovim-plug
+             telegram-desktop)
 
 # Functions
 function notify_me() {
@@ -105,7 +105,7 @@ sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 # Software stuff
 ## Remove ugly bloatware (Mozilla stuff), accesibility stuff and unused packages
 notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird orca \
+sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird orca yelp doflicky  \
                              {moka,faba{,-mono}}-icon-theme breeze{,-snow}-cursor-theme
 ### Move to unstable
 notify_me "Moving to Unstable"
@@ -124,9 +124,9 @@ tparty_get network/web/browser google-chrome-stable          # SANER WEB BROWSER
 tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICROSOFT FONTS :S
 ## Install other applications, fonts and some more thingies
 notify_me "Installing more software"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet geary kodi cheese    \
-                      brasero simplescreenrecorder gimp inkscape simple-scan libreoffice-all \
-                      pitivi steam zsh git{,-extras} hub yadm neovim glances neofetch p7zip
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese \
+                      brasero simplescreenrecorder gimp inkscape libreoffice-all    \
+                      zsh git{,-extras} hub yadm neovim glances neofetch
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -137,8 +137,8 @@ sudo evobuild -p unstable-x86_64 init
 ### Update
 sudo evobuild -p unstable-x86_64 update
 
-# Git clones
-## Create dir and enter
+# Git repositories
+## Create directory and enter
 notify_me "Creating Git directory"
 enter_dir ~/"$GIT_DIR"
 ## Personal repositories
@@ -147,57 +147,61 @@ notify_me "Cloning personal Git repositories"
 clone_list "$PERSONAL_GIT_URL" "${PERSONAL_GIT_REPOS[*]}"
 ## Return to home
 cd ~ || exit
-## Solus packaging repository
-### Create Solus packaging directory
+
+# Solus packaging repository
+## Create Solus packaging directory
 notify_me "Setting up Solus packaging directory"
 enter_dir ~/"$SOLUS_PACKAGES_DIR"
-### FUCKING CLONE common repository from Solus git
+## FUCKING CLONE common repository from Solus
 notify_me "Cloning common repository"
 while true; do
   if [ ! -f "$SOLUS_COMMON_DIR"/Makefile.common ]; then
     if git clone "$SOLUS_GIT_URL"/common ~/"$SOLUS_COMMON_DIR"; then
-      echo -e "YEAH IT WORKED!"
+      notify_me "YEAH IT WORKED!"
       break
     else
-      echo -e "It failed! Retrying..."
+      notify_me "It failed! Retrying..."
     fi
   fi
 done
-### Link Makefile(s)
+## Link Makefile(s)
 notify_me "Linking Makefiles"
 ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.common ~/"$SOLUS_PACKAGES_DIR"/Makefile.common
 ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.toplevel ~/"$SOLUS_PACKAGES_DIR"/Makefile
 ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.iso ~/"$SOLUS_PACKAGES_DIR"/Makefile.iso
-### Return to home
+## Return to home
 cd ~ || exit
 
 # Dotfiles
 ## Set up dotfiles
-notify_me "Installing dotfiles"
-bash ~/"$DOTFILES_DIR"/install.sh
-## Make ZSH default shell
-notify_me "Making ZSH the default shell"
+notify_me "Setting-up dotfiles"
+### Clone the repository
+yadm clone "$DOTFILES_REPO"
+### Decrypt files
+yadm decrypt
+## Set ZSH as default shell
+notify_me "Set ZSH as default shell"
 sudo chsh -s /bin/zsh casa
 
-# Deploy system
+# Install scripts
+## Run install scripts
+notify_me "Running Install Scripts"
+run_setup "${SCRIPTS_RUN[*]}"
+
+# Stupidly deployable system
 ## Install system files
 notify_me "Installing system files"
 bash ~/"$SYSTEM_DIR"/install.sh
-
-# Install Telegram Desktop
-## Run installer
-notify_me "Installing Telegram Desktop"
-bash ~/"$SCRIPTS_DIR"/telegram-desktop.sh
 
 # Development libraries
 ## Python
 ### Install libraries
 #### Via Python Package index
 notify_me "Installing Python development libraries via PyPI"
-sudo pip3 install neovim github3.py python-telegram-bot
+sudo pip3 install neovim python-telegram-bot
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
-sudo eopkg install -y python3-gobject-devel budgie-desktop-devel
+sudo eopkg install -y python3-gobject-devel
 
 # Personalization
 ## Make GSettings set things
