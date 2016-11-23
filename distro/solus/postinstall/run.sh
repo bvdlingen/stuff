@@ -207,7 +207,6 @@ sudo eopkg install -y python3-gobject-devel
 ## Make GSettings set things
 notify_me "Setting stuff with GSettings"
 ### Interface
-gsettings set org.gnome.desktop.interface gtk-theme "Arc"
 gsettings set org.gnome.desktop.interface icon-theme "Arc-Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
 ### Privacy
@@ -219,8 +218,6 @@ gsettings set org.gnome.system.location enabled true
 gsettings set org.gnome.desktop.sound event-sounds true
 gsettings set org.gnome.desktop.sound input-feedback-sounds true
 gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-### Screenshoter
-gsettings set org.gnome.gnome-screenshot auto-save-directory "file:///home/casa/Im%C3%A1genes/Capturas"
 ### Terminal
 gsettings set org.gnome.Terminal.Legacy.Settings theme-variant "dark"
 gsettings set org.gnome.Terminal.Legacy.Settings new-terminal-mode "tab"
