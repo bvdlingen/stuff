@@ -103,10 +103,9 @@ sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/
 sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
 # Software stuff
-## Remove ugly bloatware (Mozilla stuff), accesibility stuff and unused packages
+## Remove unneed packages
 notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge firefox arc-firefox-theme thunderbird orca yelp doflicky  \
-                             {moka,faba{,-mono}}-icon-theme breeze{,-snow}-cursor-theme
+sudo eopkg remove -y --purge orca yelp doflicky {moka,faba{,-mono}}-icon-theme
 ### Move to unstable
 notify_me "Moving to Unstable"
 #### Remove Shannon
@@ -118,15 +117,10 @@ sudo eopkg add-repo -y "$REPOSITORY_NAME" "$UNSTABLE_URL"
 ### Upgrade the system
 notify_me "Upgrading system"
 sudo eopkg upgrade -y
-## Install 3rd-party applications
-notify_me "Installing Third Party applications"
-tparty_get network/web/browser google-chrome-stable          # SANER WEB BROWSER, TAKE THIS, MOZILLA!
-tparty_get desktop/font mscorefonts                          # OH, THE UGLY MICROSOFT FONTS :S
-## Install other applications, fonts and some more thingies
-notify_me "Installing more software"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese \
-                      geary brasero obs-studio gimp inkscape libreoffice-all neovim \
-                      zsh git{,-extras} hub yadm glances neofetch
+## Install more applications and stuff
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese  \
+                      geary brasero obs-studio gimp inkscape libreoffice-all neovim  \
+                      zsh git{,-extras} hub yadm glances neofetch flashplugin-nonfree
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
