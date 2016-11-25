@@ -14,7 +14,7 @@ TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
 PERSONAL_GIT_REPOS=(stuff
-                    neko
+                    nekovim
                     deezloader)
 #### Directory names
 GIT_DIR="Git"
