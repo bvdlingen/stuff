@@ -105,7 +105,7 @@ sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 # Software stuff
 ## Remove unneed packages
 notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge orca yelp doflicky {moka,faba{,-mono}}-icon-theme
+sudo eopkg remove -y --purge orca {moka,faba{,-mono}}-icon-theme
 ### Move to unstable
 notify_me "Moving to Unstable"
 #### Remove Shannon
@@ -118,9 +118,9 @@ sudo eopkg add-repo -y "$REPOSITORY_NAME" "$UNSTABLE_URL"
 notify_me "Upgrading system"
 sudo eopkg upgrade -y
 ## Install more applications and stuff
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese  \
-                      geary brasero obs-studio gimp inkscape libreoffice-all neovim  \
-                      zsh git{,-extras} hub yadm glances neofetch flashplugin-nonfree
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese    \
+                      brasero obs-studio gimp inkscape libreoffice-all neovim          \
+                      zsh git{,-extras} hub yadm glances neofetch flash-player-nonfree
 ## Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -202,7 +202,6 @@ sudo eopkg install -y python3-gobject-devel
 notify_me "Setting stuff with GSettings"
 ### Interface
 gsettings set org.gnome.desktop.interface icon-theme "Arc-Paper"
-gsettings set org.gnome.desktop.interface cursor-theme "Paper"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
