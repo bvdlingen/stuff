@@ -14,9 +14,8 @@ TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 ### My repositories
 PERSONAL_GIT_URL="https://github.com/feskyde"
 PERSONAL_GIT_REPOS=(stuff
-                    deezloader
-                    kydebot
-                    nekovim)
+                    neko
+                    deezloader)
 #### Directory names
 GIT_DIR="Git"
 STUFF_REPO="$GIT_DIR/stuff"
@@ -192,7 +191,7 @@ bash ~/"$SYSTEM_DIR"/install.sh
 ### Install libraries
 #### Via Python Package index
 notify_me "Installing Python development libraries via PyPI"
-sudo pip3 install neovim python-telegram-bot
+sudo pip3 install neovim
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
 sudo eopkg install -y python3-gobject-devel
