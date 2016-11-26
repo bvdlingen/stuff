@@ -3,41 +3,42 @@
 #
 
 # Variables
-## Script name
-SCRIPT_NAME="Solus: Post Install"
+
 ## Repositories
+### Names
 REPOSITORY_NAME="Solus"
-UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
-## 3rd-Party related
-TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
-## Git repositories
-GIT_DIR="Git"
-### Personal
+### URLs
+REPOSITORY_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
+
+## Git
+### Repositories path
+GIT_REPOS_PATH="Git"
+
+## Personal Git repositories
+### User URL
 PERSONAL_GIT_URL="https://github.com/feskyde"
-#### Projects
-PERSONAL_GIT_REPOS=(stuff
-                    feskyde.github.io
-                    blog
-                    hexo-theme-materialite
-                    nekovim
-                    deezloader)
-##### Locations
-###### Stuff repository
-STUFF_DIR="$GIT_DIR/stuff"
-SCRIPTS_DIR="$STUFF_DIR/scripts"
-SYSTEM_DIR="$STUFF_DIR/distro/solus/system"
-###### Blog
-BLOG_DIR="$GIT_DIR/blog"
+### User repositories
+PERSONAL_GIT_REPOS=(stuff nekovim deezloader feskyde.github.io blog hexo-theme-materialite)
+### Locations
+#### Stuff (including system files and install scripts)
+STUFF_REPO_PATH="$GIT_REPOS_PATH/stuff"
+INSCRIPTS_PATH="$STUFF_REPO_PATH/scripts"
+SYSFILES_PATH="$STUFF_REPO_PATH/distro/solus/system"
+#### Blog
+BLOG_REPO_PATH="$GIT_REPOS_PATH/blog"
 #### Dotfiles
-DOTFILES_GIT_REPO="$PERSONAL_GIT_URL/dotfiles"
-### Solus packaging
+DOTFILES_GIT_URL="$PERSONAL_GIT_URL/dotfiles"
+
+## Solus packaging
+### Main Solus Git URL
 SOLUS_GIT_URL="https://git.solus-project.com"
-##### Locations
-###### Common repository
-COMMON_DIR="$GIT_DIR/common"
-###### Packages
-PACKAGES_DIR="$GIT_DIR/packages"
-### Install scripts
+### Locations
+#### Common repository
+COMMON_REPO_PATH="$GIT_REPOS_PATH/common"
+#### Packages
+PACKAGES_PATH="$GIT_REPOS_PATH/packages"
+
+## Install scripts
 INSCRIPTS_RUN=(zsh-antigen
                neovim-plug
                telegram-desktop)
@@ -48,8 +49,8 @@ function notify_me() {
     # Print the [message] and send a notification
     message="$1"
 
-    echo -e "\e[1m$SCRIPT_NAME: $message\e[0m"
-    notify-send "$SCRIPT_NAME" "$message" -i distributor-logo-solus
+    echo -e "\e[1m>> $message\e[0m"
+    notify-send "Post Install" "$message" -i distributor-logo-solus
 }
 
 function enter_dir() {
@@ -58,22 +59,11 @@ function enter_dir() {
     # exists, create it
     directory="$1"
 
+    notify_me "Entering in directory: $directory"
     if [ ! -d "$directory" ]; then
       mkdir -pv "$directory"
     fi
     cd "$directory" || exit
-}
-
-function tparty_get() {
-    # Usage: tparty_get [component] [package]
-    # Build and install a third-party package
-    # with the given [component] and [package]
-    component="$1"
-    package="$2"
-
-    sudo eopkg build -y --ignore-safety "$TRDPARTY_REPO"/"$component"/"$package"/pspec.xml
-    sudo eopkg install -y "$package"*.eopkg
-    sudo rm -rfv "$package"*.eopkg
 }
 
 function clone_list() {
@@ -84,7 +74,8 @@ function clone_list() {
     list="$2"
 
     for repo in ${list[*]}; do
-        git clone --recursive "$url"/"$repo"
+        notify_me "Cloning repository: $url/$repo"
+        git clone --recursive "$url/$repo"
     done
 }
 
@@ -94,12 +85,13 @@ function run_setup() {
     scripts="$1"
 
     for script in ${scripts[*]}; do
-        bash ~/"$INSCRIPTS_DIR"/"$script".sh
+        notify_me "Running script: $script"
+        bash ~/"$INSCRIPTS_PATH/$script.sh"
     done
 }
 
 # Welcome
-notify_me "$SCRIPT_NAME is running, don't touch anything now :)"
+notify_me "Script is now running, don't touch anything until it finishes :)"
 
 # Password-less user
 ## Remove password for Casa
@@ -110,41 +102,45 @@ notify_me "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
 sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/g" -i /etc/pam.d/system-password
 sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
-# Software stuff
-## Remove unneed packages
-notify_me "Removing unneded stuff"
-sudo eopkg remove -y --purge orca {moka,faba{,-mono}}-icon-theme
-### Move to unstable
+# Manage repositories
 notify_me "Moving to Unstable"
-#### Remove Shannon
+## Remove Solus (Shannon)
 notify_me "Removing $REPOSITORY_NAME repository"
 sudo eopkg remove-repo -y "$REPOSITORY_NAME"
-#### Add Unstable
-notify_me "Adding unstable repository"
-sudo eopkg add-repo -y "$REPOSITORY_NAME" "$UNSTABLE_URL"
-### Upgrade the system
-notify_me "Upgrading system"
+## Add Unstable
+notify_me "Adding Unstable repository"
+sudo eopkg add-repo -y "$REPOSITORY_NAME" "$REPOSITORY_UNSTABLE_URL"
+
+# Manage packages
+## Remove unneeded packages
+notify_me "Removing unneeded packages"
+sudo eopkg remove -y --purge orca {moka,faba{,-mono}}-icon-theme
+## Upgrade the system
+notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install more applications and stuff
+notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese    \
                       brasero obs-studio gimp inkscape libreoffice-all neovim nodejs   \
                       zsh git{,-extras} hub yadm glances neofetch flash-player-nonfree
-## Development component
+
+# Development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
-## Evobuild
+
+# Evobuild
 notify_me "Setting up EvoBuild"
-### Initialize
+## Initialize
 sudo evobuild -p unstable-x86_64 init
-### Update
+## Update
 sudo evobuild -p unstable-x86_64 update
 
 # Git repositories
-## Create directory and enter
 notify_me "Creating Git directory"
-enter_dir ~/"$GIT_DIR"
-## Personal repositories
-### Clone my repositories
+enter_dir ~/"$GIT_REPOS_PATH"
+
+# Personal Git repositories
+## Clone my repositories
 notify_me "Cloning personal Git repositories"
 clone_list "$PERSONAL_GIT_URL" "${PERSONAL_GIT_REPOS[*]}"
 ## Return to home
@@ -153,37 +149,35 @@ cd ~ || exit
 # Solus packaging repository
 ## Create Solus packaging directory
 notify_me "Setting up Solus packaging directory"
-enter_dir ~/"$SOLUS_PACKAGES_DIR"
-## FUCKING CLONE common repository from Solus
+enter_dir ~/"$PACKAGES_PATH"
+## Clone common repository
 notify_me "Cloning common repository"
 while true; do
-  if [ ! -f "$SOLUS_COMMON_DIR"/Makefile.common ]; then
-    if git clone "$SOLUS_GIT_URL"/common ~/"$SOLUS_COMMON_DIR"; then
-      notify_me "YEAH IT WORKED!"
+  if [ ! -f "$COMMON_REPO_PATH"/Makefile.common ]; then
+    if git clone "$SOLUS_GIT_URL"/common ~/"$COMMON_REPO_PATH"; then
+      notify_me "Common repository cloned"
       break
     else
-      notify_me "It failed! Retrying..."
+      notify_me "Cloning common repository failed, retrying..."
     fi
   fi
 done
 ## Link Makefile(s)
 notify_me "Linking Makefiles"
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.common ~/"$SOLUS_PACKAGES_DIR"/Makefile.common
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.toplevel ~/"$SOLUS_PACKAGES_DIR"/Makefile
-ln -srfv ~/"$SOLUS_COMMON_DIR"/Makefile.iso ~/"$SOLUS_PACKAGES_DIR"/Makefile.iso
+ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.common ~/"$PACKAGES_PATH"/Makefile.common
+ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.toplevel ~/"$PACKAGES_PATH"/Makefile
+ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.iso ~/"$PACKAGES_PATH"/Makefile.iso
 ## Return to home
 cd ~ || exit
 
 # Dotfiles
-## Set up dotfiles
 notify_me "Setting-up dotfiles"
-### Clone the repository
-yadm clone "$DOTFILES_REPO"
-### Decrypt files
+yadm clone "$DOTFILES_GIT_URL"
 yadm decrypt
-## Set ZSH as default shell
-notify_me "Set ZSH as default shell"
-sudo chsh -s $(which zsh) casa
+
+# Defaults
+notify_me "Setting ZSH as default shell"
+sudo chsh -s "$(which zsh)" casa
 
 # Install scripts
 ## Run install scripts
@@ -193,25 +187,25 @@ run_setup "${INSCRIPTS_RUN[*]}"
 # Stupidly deployable system
 ## Install system files
 notify_me "Installing system files"
-bash ~/"$SYSTEM_DIR"/install.sh
+bash ~/"$SYSFILES_PATH"/install.sh
 
 # Development libraries
-## Python
-### Install libraries
-#### Via Python Package index
-notify_me "Installing Python development libraries via PyPI"
-sudo pip3 install neovim
-#### Via eopkg
-notify_me "Installing Python development libraries via eopkg"
+## Install libraries
+### Via eopkg
+notify_me "Installing development libraries via eopkg"
 sudo eopkg install -y python3-gobject-devel
+### Via PyPI
+notify_me "Installing development libraries via PyPI"
+sudo pip3 install neovim
 
 # Blog
 ## Install Hexo
+notify_me "Installing Hexo"
 sudo npm install -g hexo
 ## Install blog dependencies
-enter_dir ~/"$BLOG_DIR"
+notify_me "Installing blog dependencies"
+enter_dir ~/"$BLOG_REPO_PATH"
 npm install
-
 
 # Personalization
 ## Make GSettings set things
