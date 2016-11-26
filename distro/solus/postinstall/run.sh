@@ -10,28 +10,37 @@ REPOSITORY_NAME="Solus"
 UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
 ## 3rd-Party related
 TRDPARTY_REPO="https://raw.githubusercontent.com/solus-project/3rd-party/master"
-## Git-related
-### My repositories
+## Git repositories
+GIT_DIR="Git"
+### Personal
 PERSONAL_GIT_URL="https://github.com/feskyde"
+#### Projects
 PERSONAL_GIT_REPOS=(stuff
+                    feskyde.github.io
+                    blog
+                    hexo-theme-materialite
                     nekovim
                     deezloader)
-#### Directory names
-GIT_DIR="Git"
-STUFF_REPO="$GIT_DIR/stuff"
-SCRIPTS_DIR="$STUFF_REPO/scripts"
-SYSTEM_DIR="$STUFF_REPO/distro/solus/system"
-### Solus Git
+##### Locations
+###### Stuff repository
+STUFF_DIR="$GIT_DIR/stuff"
+SCRIPTS_DIR="$STUFF_DIR/scripts"
+SYSTEM_DIR="$STUFF_DIR/distro/solus/system"
+###### Blog
+BLOG_DIR="$GIT_DIR/blog"
+#### Dotfiles
+DOTFILES_GIT_REPO="$PERSONAL_GIT_URL/dotfiles"
+### Solus packaging
 SOLUS_GIT_URL="https://git.solus-project.com"
-#### Directory names
-SOLUS_PACKAGES_DIR="$GIT_DIR/packages"
-SOLUS_COMMON_DIR="$SOLUS_PACKAGES_DIR/common"
-## YADM-related
-DOTFILES_REPO="$PERSONAL_GIT_URL/dotfiles"
-## Install Scripts
-SCRIPTS_RUN=(zsh-antigen
-             neovim-plug
-             telegram-desktop)
+##### Locations
+###### Common repository
+COMMON_DIR="$GIT_DIR/common"
+###### Packages
+PACKAGES_DIR="$GIT_DIR/packages"
+### Install scripts
+INSCRIPTS_RUN=(zsh-antigen
+               neovim-plug
+               telegram-desktop)
 
 # Functions
 function notify_me() {
@@ -85,7 +94,7 @@ function run_setup() {
     scripts="$1"
 
     for script in ${scripts[*]}; do
-        bash ~/"$SCRIPTS_DIR"/"$script".sh
+        bash ~/"$INSCRIPTS_DIR"/"$script".sh
     done
 }
 
@@ -118,7 +127,7 @@ notify_me "Upgrading system"
 sudo eopkg upgrade -y
 ## Install more applications and stuff
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese    \
-                      brasero obs-studio gimp inkscape libreoffice-all neovim          \
+                      brasero obs-studio gimp inkscape libreoffice-all neovim nodejs   \
                       zsh git{,-extras} hub yadm glances neofetch flash-player-nonfree
 ## Development component
 notify_me "Installing development component"
@@ -179,7 +188,7 @@ sudo chsh -s $(which zsh) casa
 # Install scripts
 ## Run install scripts
 notify_me "Running Install Scripts"
-run_setup "${SCRIPTS_RUN[*]}"
+run_setup "${INSCRIPTS_RUN[*]}"
 
 # Stupidly deployable system
 ## Install system files
@@ -195,6 +204,14 @@ sudo pip3 install neovim
 #### Via eopkg
 notify_me "Installing Python development libraries via eopkg"
 sudo eopkg install -y python3-gobject-devel
+
+# Blog
+## Install Hexo
+sudo npm install -g hexo
+## Install blog dependencies
+enter_dir ~/"$BLOG_DIR"
+npm install
+
 
 # Personalization
 ## Make GSettings set things
