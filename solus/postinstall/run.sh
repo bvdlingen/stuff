@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Solus Post Install Script
 #
@@ -18,15 +19,14 @@ GIT_REPOS_PATH="Git"
 ### User URL
 PERSONAL_GIT_URL="https://github.com/feskyde"
 ### User repositories
-PERSONAL_GIT_REPOS=(stuff nekovim deezloader feskyde.github.io blog hexo-theme-materialite)
+PERSONAL_GIT_REPOS=(stuff nekovim deezloader)
 ### Locations
 #### Stuff (including system files and install scripts)
 STUFF_REPO_PATH="$GIT_REPOS_PATH/stuff"
-INSCRIPTS_PATH="$STUFF_REPO_PATH/scripts"
-SYSFILES_PATH="$STUFF_REPO_PATH/distro/solus/system"
-#### Blog
-BLOG_REPO_PATH="$GIT_REPOS_PATH/blog"
-#### Dotfiles
+SYSFILES_PATH="$STUFF_REPO_PATH/solus/system"
+
+## Dotfiles
+### Dotfiles URL
 DOTFILES_GIT_URL="$PERSONAL_GIT_URL/dotfiles"
 
 ## Solus packaging
@@ -38,10 +38,14 @@ COMMON_REPO_PATH="$GIT_REPOS_PATH/common"
 #### Packages
 PACKAGES_PATH="$GIT_REPOS_PATH/packages"
 
-## Install scripts
-INSCRIPTS_RUN=(zsh-antigen
-               neovim-plug
-               telegram-desktop)
+## Telegram Desktop
+### Download URL
+TELEGRAM_SOURCE="current?alpha=1"
+TELEGRAM_URL="https://tdesktop.com/linux/$TELEGRAM_SOURCE"
+### Destination file
+TELEGRAM_FILE="telegram-alpha.tar.xz"
+### Destination path
+TELEGRAM_PATH=".TelegramDesktop"
 
 # Functions
 function notify_me() {
@@ -79,17 +83,6 @@ function clone_list() {
     done
 }
 
-function run_setup() {
-    # Usage: run_setup [script]
-    # Run a setup [script]
-    scripts="$1"
-
-    for script in ${scripts[*]}; do
-        notify_me "Running script: $script"
-        bash ~/"$INSCRIPTS_PATH/$script.sh"
-    done
-}
-
 # Welcome
 notify_me "Script is now running, don't touch anything until it finishes :)"
 
@@ -103,7 +96,6 @@ sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/
 sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
 # Manage repositories
-notify_me "Moving to Unstable"
 ## Remove Solus (Shannon)
 notify_me "Removing $REPOSITORY_NAME repository"
 sudo eopkg remove-repo -y "$REPOSITORY_NAME"
@@ -128,12 +120,6 @@ sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi che
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
 
-# Evobuild
-notify_me "Setting up EvoBuild"
-## Initialize
-sudo evobuild -p unstable-x86_64 init
-## Update
-sudo evobuild -p unstable-x86_64 update
 
 # Git repositories
 notify_me "Creating Git directory"
@@ -179,10 +165,13 @@ yadm decrypt
 notify_me "Setting ZSH as default shell"
 sudo chsh -s "$(which zsh)" casa
 
-# Install scripts
-## Run install scripts
-notify_me "Running Install Scripts"
-run_setup "${INSCRIPTS_RUN[*]}"
+# Telegram Desktop
+notify_me "Installing Telegram Desktop"
+mkdir -pv ~/"$TELEGRAM_PATH"
+wget "$TELEGRAM_URL" --output-file=~/"$TELEGRAM_PATH/$TELEGRAM_FILE"
+enter_dir "$TELEGRAM_PATH"
+tar xfv "$TELEGRAM_FILE"
+rm -rfv "$TELEGRAM_FILE"
 
 # Stupidly deployable system
 ## Install system files
@@ -198,14 +187,12 @@ sudo eopkg install -y python3-gobject-devel
 notify_me "Installing development libraries via PyPI"
 sudo pip3 install neovim
 
-# Blog
-## Install Hexo
-notify_me "Installing Hexo"
-sudo npm install -g hexo
-## Install blog dependencies
-notify_me "Installing blog dependencies"
-enter_dir ~/"$BLOG_REPO_PATH"
-npm install
+# Evobuild
+notify_me "Setting up EvoBuild"
+## Initialize
+sudo evobuild -p unstable-x86_64 init
+## Update
+sudo evobuild -p unstable-x86_64 update
 
 # Personalization
 ## Make GSettings set things
@@ -226,4 +213,4 @@ gsettings set org.gnome.Terminal.Legacy.Settings theme-variant "dark"
 gsettings set org.gnome.Terminal.Legacy.Settings new-terminal-mode "tab"
 
 # FINISHED!
-notify_me "Script finished! You SHOULD reboot now :)"
+notify_me "Script has finished! You SHOULD reboot as soon as possible"
