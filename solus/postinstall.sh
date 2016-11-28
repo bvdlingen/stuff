@@ -34,6 +34,7 @@ DOTFILES_GIT_URL="$PERSONAL_GIT_URL/dotfiles"
 SOLUS_GIT_URL="https://git.solus-project.com"
 ### Locations
 #### Common repository
+COMMON_REPO_URL="$SOLUS_GIT_URL/common"
 COMMON_REPO_PATH="$GIT_REPOS_PATH/common"
 #### Packages
 PACKAGES_PATH="$GIT_REPOS_PATH/packages"
@@ -120,7 +121,6 @@ sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi che
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
 
-
 # Git repositories
 notify_me "Creating Git directory"
 enter_dir ~/"$GIT_REPOS_PATH"
@@ -139,14 +139,11 @@ enter_dir ~/"$PACKAGES_PATH"
 ## Clone common repository
 notify_me "Cloning common repository"
 while true; do
-  if [ ! -f "$COMMON_REPO_PATH"/Makefile.common ]; then
-    if git clone "$SOLUS_GIT_URL"/common ~/"$COMMON_REPO_PATH"; then
-      notify_me "Common repository cloned"
-      break
+    if [ ! -d ~/"$COMMON_REPO_PATH" ]; then
+        git clone "$COMMON_REPO_URL" ~/"$COMMON_REPO_PATH"
     else
-      notify_me "Cloning common repository failed, retrying..."
+        break
     fi
-  fi
 done
 ## Link Makefile(s)
 notify_me "Linking Makefiles"
