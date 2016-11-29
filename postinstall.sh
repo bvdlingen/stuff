@@ -7,7 +7,7 @@
 
 ## Repositories
 ### Names
-REPOSITORY_NAME="Solus"
+REPOSITORY_SHANNON_NAME="Solus"
 ### URLs
 REPOSITORY_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
 
@@ -19,7 +19,7 @@ GIT_REPOS_PATH="Git"
 ### User URL
 PERSONAL_GIT_URL="https://github.com/feskyde"
 ### User repositories
-PERSONAL_GIT_REPOS=(stuff nekovim deezloader)
+PERSONAL_GIT_REPOS=(deezloader nekovim stuff)
 ### Locations
 #### Stuff (including system files and install scripts)
 STUFF_REPO_PATH="$GIT_REPOS_PATH/stuff"
@@ -98,11 +98,11 @@ sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
 # Manage repositories
 ## Remove Solus (Shannon)
-notify_me "Removing $REPOSITORY_NAME repository"
-sudo eopkg remove-repo -y "$REPOSITORY_NAME"
+notify_me "Removing $REPOSITORY_SHANNON_NAME repository"
+sudo eopkg remove-repo -y "$REPOSITORY_SHANNON_NAME"
 ## Add Unstable
 notify_me "Adding Unstable repository"
-sudo eopkg add-repo -y "$REPOSITORY_NAME" "$REPOSITORY_UNSTABLE_URL"
+sudo eopkg add-repo -y "$REPOSITORY_SHANNON_NAME" "$REPOSITORY_UNSTABLE_URL"
 
 # Manage packages
 ## Remove unneeded packages
@@ -165,7 +165,7 @@ sudo chsh -s "$(which zsh)" casa
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
 mkdir -pv ~/"$TELEGRAM_PATH"
-wget "$TELEGRAM_URL" --output-file=~/"$TELEGRAM_PATH/$TELEGRAM_FILE"
+wget "$TELEGRAM_URL" --output-document=~/"$TELEGRAM_PATH/$TELEGRAM_FILE"
 enter_dir "$TELEGRAM_PATH"
 tar xfv "$TELEGRAM_FILE"
 rm -rfv "$TELEGRAM_FILE"
@@ -179,10 +179,7 @@ bash ~/"$SYSFILES_PATH"/install.sh
 ## Install libraries
 ### Via eopkg
 notify_me "Installing development libraries via eopkg"
-sudo eopkg install -y python3-gobject-devel
-### Via PyPI
-notify_me "Installing development libraries via PyPI"
-sudo pip3 install neovim
+sudo eopkg install -y python3-gobject-devel python-neovim
 
 # Evobuild
 notify_me "Setting up EvoBuild"
@@ -196,6 +193,7 @@ sudo evobuild -p unstable-x86_64 update
 notify_me "Setting stuff with GSettings"
 ### Interface
 gsettings set org.gnome.desktop.interface icon-theme "Arc-Paper"
+gsettings set org.gnome.desktop.interface cursor-theme "Paper"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
