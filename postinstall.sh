@@ -113,9 +113,10 @@ notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet kodi cheese    \
-                      brasero obs-studio gimp inkscape libreoffice-all neovim nodejs   \
-                      zsh git{,-extras} hub yadm glances neofetch flash-player-nonfree
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
+                      kodi brasero cheese obs-studio libreoffice-all    \
+                      neovim zsh yadm git hub glances neofetch          \
+                      flash-player-nonfree
 
 # Development component
 notify_me "Installing development component"
@@ -156,7 +157,6 @@ cd ~ || exit
 # Dotfiles
 notify_me "Setting-up dotfiles"
 yadm clone "$DOTFILES_GIT_URL"
-yadm decrypt
 
 # Defaults
 notify_me "Setting ZSH as default shell"
@@ -179,7 +179,10 @@ bash ~/"$SYSFILES_PATH"/install.sh
 ## Install libraries
 ### Via eopkg
 notify_me "Installing development libraries via eopkg"
-sudo eopkg install -y python3-gobject-devel python-neovim
+sudo eopkg install -y python3-gobject-devel
+### Via PyPI
+notify_me "Installing development libraries via PyPI"
+sudo pip3 install neovim
 
 # Evobuild
 notify_me "Setting up EvoBuild"
