@@ -71,6 +71,18 @@ function enter_dir() {
     cd "$directory" || exit
 }
 
+function tparty_get() {
+    # Usage: tparty_get [component] [package]
+    # Build and install a third-party package
+    # with the given [component] and [package]
+    component="$1"
+    package="$2"
+
+    sudo eopkg build -y --ignore-safety "$TRDPARTY_REPO"/"$component"/"$package"/pspec.xml
+    sudo eopkg install -y "$package"*.eopkg
+    sudo rm -rfv "$package"*.eopkg
+}
+
 function clone_list() {
     # Usage: clone_list [url] [list]
     # Clone every item on [list] using the Git
@@ -107,16 +119,18 @@ sudo eopkg add-repo -y "$REPOSITORY_SHANNON_NAME" "$REPOSITORY_UNSTABLE_URL"
 # Manage packages
 ## Remove unneeded packages
 notify_me "Removing unneeded packages"
-sudo eopkg remove -y --purge orca {moka,faba{,-mono}}-icon-theme
+sudo eopkg remove -y --purge firefox thunderbird orca arc-{icon,firefox}-theme {moka,faba{,-mono}}-icon-theme
 ## Upgrade the system
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
+## Install third-party stuff
+tparty_get network/web/browser google-chrome-stable                     # Pretty web browser
+tparty_get desktop/font mscorefonts                                     # Microsoft Core Fonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
                       kodi brasero cheese obs-studio libreoffice-all    \
-                      neovim zsh yadm git hub glances neofetch          \
-                      flash-player-nonfree
+                      neovim zsh yadm git hub glances neofetch
 
 # Development component
 notify_me "Installing development component"
@@ -195,7 +209,7 @@ sudo evobuild -p unstable-x86_64 update
 ## Make GSettings set things
 notify_me "Setting stuff with GSettings"
 ### Interface
-gsettings set org.gnome.desktop.interface icon-theme "Arc-Paper"
+gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
