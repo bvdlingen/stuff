@@ -116,7 +116,7 @@ sudo eopkg upgrade -y
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
                       kodi brasero cheese obs-studio libreoffice-all    \
-                      zsh yadm git hub neovim neofetch cargo solbuild   \
+                      zsh yadm git hub neovim neofetch golang solbuild  \
                       solbuild-config-unstable flash-player-nonfree
 
 # Development component
