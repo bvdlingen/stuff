@@ -19,7 +19,7 @@ GIT_REPOS_PATH="Git"
 ### User URL
 PERSONAL_GIT_URL="https://github.com/feskyde"
 ### User repositories
-PERSONAL_GIT_REPOS=(deezloader nekovim stuff)
+PERSONAL_GIT_REPOS=("deezloader" "stuff")
 ### Locations
 #### Stuff (including system files and install scripts)
 STUFF_REPO_PATH="$GIT_REPOS_PATH/stuff"
@@ -60,8 +60,8 @@ function notify_me() {
 
 function enter_dir() {
     # Usage: enter_dir [directory]
-    # Enter into a [directory], if it doesn't
-    # exists, create it
+    # Enter into a [directory], if it does not
+    # exists, just create it
     directory="$1"
 
     notify_me "Entering in directory: $directory"
@@ -69,18 +69,6 @@ function enter_dir() {
       mkdir -pv "$directory"
     fi
     cd "$directory" || exit
-}
-
-function tparty_get() {
-    # Usage: tparty_get [component] [package]
-    # Build and install a third-party package
-    # with the given [component] and [package]
-    component="$1"
-    package="$2"
-
-    sudo eopkg build -y --ignore-safety "$TRDPARTY_REPO"/"$component"/"$package"/pspec.xml
-    sudo eopkg install -y "$package"*.eopkg
-    sudo rm -rfv "$package"*.eopkg
 }
 
 function clone_list() {
@@ -97,7 +85,7 @@ function clone_list() {
 }
 
 # Welcome
-notify_me "Script is now running, don't touch anything until it finishes :)"
+notify_me "Script is now running, do not touch anything until it finishes :)"
 
 # Password-less user
 ## Remove password for Casa
@@ -119,18 +107,17 @@ sudo eopkg add-repo -y "$REPOSITORY_SHANNON_NAME" "$REPOSITORY_UNSTABLE_URL"
 # Manage packages
 ## Remove unneeded packages
 notify_me "Removing unneeded packages"
-sudo eopkg remove -y --purge firefox thunderbird orca arc-{icon,firefox}-theme {moka,faba{,-mono}}-icon-theme
+#shellcheck disable=SC1083
+sudo eopkg remove -y --purge orca {arc,moka,faba{,-mono}}-icon-theme
 ## Upgrade the system
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
-## Install third-party stuff
-tparty_get network/web/browser google-chrome-stable                     # Pretty web browser
-tparty_get desktop/font mscorefonts                                     # Microsoft Core Fonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
                       kodi brasero cheese obs-studio libreoffice-all    \
-                      neovim zsh yadm git hub glances neofetch
+                      zsh yadm git hub neovim neofetch cargo solbuild   \
+                      solbuild-config-unstable flash-player-nonfree
 
 # Development component
 notify_me "Installing development component"
@@ -138,35 +125,35 @@ sudo eopkg install -y -c system.devel
 
 # Git repositories
 notify_me "Creating Git directory"
-enter_dir ~/"$GIT_REPOS_PATH"
+enter_dir "$HOME/$GIT_REPOS_PATH"
 
 # Personal Git repositories
 ## Clone my repositories
 notify_me "Cloning personal Git repositories"
 clone_list "$PERSONAL_GIT_URL" "${PERSONAL_GIT_REPOS[*]}"
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Solus packaging repository
 ## Create Solus packaging directory
 notify_me "Setting up Solus packaging directory"
-enter_dir ~/"$PACKAGES_PATH"
+enter_dir "$HOME/$PACKAGES_PATH"
 ## Clone common repository
 notify_me "Cloning common repository"
 while true; do
-    if [ ! -d ~/"$COMMON_REPO_PATH" ]; then
-        git clone "$COMMON_REPO_URL" ~/"$COMMON_REPO_PATH"
+    if [ ! -d "$HOME/$COMMON_REPO_PATH" ]; then
+        git clone "$COMMON_REPO_URL" "$HOME/$COMMON_REPO_PATH"
     else
         break
     fi
 done
 ## Link Makefile(s)
 notify_me "Linking Makefiles"
-ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.common ~/"$PACKAGES_PATH"/Makefile.common
-ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.toplevel ~/"$PACKAGES_PATH"/Makefile
-ln -srfv ~/"$COMMON_REPO_PATH"/Makefile.iso ~/"$PACKAGES_PATH"/Makefile.iso
+ln -srfv "$HOME/$COMMON_REPO_PATH/Makefile.common" "$HOME/$PACKAGES_PATH/Makefile.common"
+ln -srfv "$HOME/$COMMON_REPO_PATH/Makefile.toplevel" "$HOME/$PACKAGES_PATH/Makefile"
+ln -srfv "$HOME/$COMMON_REPO_PATH/Makefile.iso" "$HOME/$PACKAGES_PATH/Makefile.iso"
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Dotfiles
 notify_me "Setting-up dotfiles"
@@ -178,8 +165,7 @@ sudo chsh -s "$(which zsh)" casa
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
-mkdir -pv ~/"$TELEGRAM_PATH"
-wget "$TELEGRAM_URL" --output-document=~/"$TELEGRAM_PATH/$TELEGRAM_FILE"
+curl "$TELEGRAM_URL" --create-dirs -o "$HOME/$TELEGRAM_PATH/$TELEGRAM_FILE"
 enter_dir "$TELEGRAM_PATH"
 tar xfv "$TELEGRAM_FILE"
 rm -rfv "$TELEGRAM_FILE"
@@ -187,23 +173,11 @@ rm -rfv "$TELEGRAM_FILE"
 # Stupidly deployable system
 ## Install system files
 notify_me "Installing system files"
-bash ~/"$SYSFILES_PATH"/install.sh
-
-# Development libraries
-## Install libraries
-### Via eopkg
-notify_me "Installing development libraries via eopkg"
-sudo eopkg install -y python3-gobject-devel
-### Via PyPI
-notify_me "Installing development libraries via PyPI"
-sudo pip3 install neovim
+bash "$HOME/$SYSFILES_PATH/install.sh"
 
 # Evobuild
-notify_me "Setting up EvoBuild"
-## Initialize
-sudo evobuild -p unstable-x86_64 init
-## Update
-sudo evobuild -p unstable-x86_64 update
+notify_me "Setting up solbuild"
+sudo solbuild init -u
 
 # Personalization
 ## Make GSettings set things

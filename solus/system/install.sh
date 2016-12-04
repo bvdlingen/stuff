@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+#
+# System files installer
+#
+
 # Variables
 ## Set locations
 GITDIR="Git/stuff"
@@ -13,6 +18,6 @@ for dir in ${DIRECTORIES[*]}; do
 done
 
 # Copy files
-sudo cp ~/"$MAINDIR"/lightdm/lightdm.conf /etc/lightdm/lightdm.conf
-sudo cp ~/"$MAINDIR"/lightdm/greeter.conf /etc/lightdm/lightdm-gtk-greeter.conf
-sudo cp ~/"$MAINDIR"/themes/default.cursor /usr/share/icons/default/index.theme
+sudo cp "$HOME/$MAINDIR/lightdm/lightdm.conf" /etc/lightdm/lightdm.conf
+sudo cp "$HOME/$MAINDIR/lightdm/greeter.conf" /etc/lightdm/lightdm-gtk-greeter.conf
+sudo cp "$HOME/$MAINDIR/themes/default.cursor" /usr/share/icons/default/index.theme
