@@ -43,10 +43,11 @@ PACKAGES_PATH="$GIT_REPOS_PATH/packages"
 ### Download URL
 TELEGRAM_SOURCE="current?alpha=1"
 TELEGRAM_URL="https://tdesktop.com/linux/$TELEGRAM_SOURCE"
-### Destination file
+### Destination
+TELEGRAM_PATH=".TelegramDesktop"
 TELEGRAM_FILE="telegram-alpha.tar.xz"
 ### Destination path
-TELEGRAM_PATH=".TelegramDesktop"
+TELEGRAM_DEST="$HOME/$TELEGRAM_PATH/$TELEGRAM_FILE"
 
 # Functions
 function notify_me() {
@@ -116,7 +117,7 @@ sudo eopkg upgrade -y
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
                       kodi brasero cheese obs-studio libreoffice-all    \
-                      zsh yadm git hub neovim neofetch golang solbuild  \
+                      zsh yadm git hub neovim neofetch cargo solbuild   \
                       solbuild-config-unstable flash-player-nonfree
 
 # Development component
@@ -165,10 +166,10 @@ sudo chsh -s "$(which zsh)" casa
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
-curl "$TELEGRAM_URL" --create-dirs -o "$HOME/$TELEGRAM_PATH/$TELEGRAM_FILE"
+curl -kLo "$TELEGRAM_DEST" --create-dirs "$TELEGRAM_URL"
 enter_dir "$TELEGRAM_PATH"
-tar xfv "$TELEGRAM_FILE"
-rm -rfv "$TELEGRAM_FILE"
+tar xfv "$TELEGRAM_DEST"
+rm -rfv "$TELEGRAM_DEST"
 
 # Stupidly deployable system
 ## Install system files
