@@ -23,7 +23,7 @@ PERSONAL_GIT_REPOS=("deezloader" "stuff")
 ### Locations
 #### Stuff (including system files and install scripts)
 STUFF_REPO_PATH="$GIT_REPOS_PATH/stuff"
-SYSFILES_PATH="$STUFF_REPO_PATH/solus/system"
+SYSFILES_PATH="$STUFF_REPO_PATH/system"
 
 ## Dotfiles
 ### Dotfiles URL

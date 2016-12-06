@@ -6,7 +6,7 @@
 # Variables
 ## Set locations
 GITDIR="Git/stuff"
-REPODIR="solus/system"
+REPODIR="system"
 MAINDIR="$GITDIR/$REPODIR"
 DIRECTORIES=(/etc/lightdm /usr/share/icons/default)
 
