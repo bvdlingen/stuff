@@ -11,6 +11,10 @@ REPOSITORY_SHANNON_NAME="Solus"
 ### URLs
 REPOSITORY_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
 
+## Third Party
+### Source
+THIRD_PARTY_SOURCE="https://raw.githubusercontent.com/solus-project/3rd-party/master"
+
 ## Git
 ### Repositories path
 GIT_REPOS_PATH="Git"
@@ -33,11 +37,11 @@ DOTFILES_GIT_URL="$PERSONAL_GIT_URL/dotfiles"
 ### Main Solus Git URL
 SOLUS_GIT_URL="https://git.solus-project.com"
 ### Locations
-#### Common repository
-COMMON_REPO_URL="$SOLUS_GIT_URL/common"
-COMMON_REPO_PATH="$GIT_REPOS_PATH/common"
 #### Packages
 PACKAGES_PATH="$GIT_REPOS_PATH/packages"
+#### Common repository
+COMMON_REPO_URL="$SOLUS_GIT_URL/common"
+COMMON_REPO_PATH="$PACKAGES_PATH/common"
 
 ## Telegram Desktop
 ### Download URL
@@ -72,6 +76,18 @@ function enter_dir() {
     cd "$directory" || exit
 }
 
+function tparty_get() {
+    # Usage: tparty_get [component] [package]
+    # Build and install a third-party package
+    # with the given [component] and [package]
+    component="$1"
+    package="$2"
+
+    sudo eopkg build -y --ignore-safety "$THIRD_PARTY_SOURCE"/"$component"/"$package"/pspec.xml
+    sudo eopkg install -y "$package"*.eopkg
+    sudo rm -rfv "$package"*.eopkg
+}
+
 function clone_list() {
     # Usage: clone_list [url] [list]
     # Clone every item on [list] using the Git
@@ -91,7 +107,7 @@ notify_me "Script is now running, do not touch anything until it finishes :)"
 # Password-less user
 ## Remove password for Casa
 notify_me "Setting password-less user"
-sudo passwd -du casa
+sudo passwd -du "$(whoami)"
 ## Add nullok option to PAM files
 notify_me "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
 sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/g" -i /etc/pam.d/system-password
@@ -109,16 +125,19 @@ sudo eopkg add-repo -y "$REPOSITORY_SHANNON_NAME" "$REPOSITORY_UNSTABLE_URL"
 ## Remove unneeded packages
 notify_me "Removing unneeded packages"
 #shellcheck disable=SC1083
-sudo eopkg remove -y --purge orca {arc,moka,faba{,-mono}}-icon-theme
+sudo eopkg remove -y --purge firefox thunderbird orca {arc,moka,faba{,-mono}}-icon-theme
 ## Upgrade the system
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
+## Install third party stuff
+tparty_get network/web/browser google-chrome-stable           # Google Chrome Stable
+tparty_get desktop/font mscorefonts                           # Microsoft Core Fonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
-                      kodi brasero cheese obs-studio libreoffice-all    \
-                      zsh yadm git hub neovim neofetch cargo solbuild   \
-                      solbuild-config-unstable flash-player-nonfree
+                      geary kodi brasero obs-studio libreoffice-all     \
+                      zsh yadm git hub neovim neofetch golang solbuild  \
+                      solbuild-config-unstable
 
 # Development component
 notify_me "Installing development component"
@@ -162,7 +181,7 @@ yadm clone "$DOTFILES_GIT_URL"
 
 # Defaults
 notify_me "Setting ZSH as default shell"
-sudo chsh -s "$(which zsh)" casa
+sudo chsh -s "$(which zsh)" "$(whoami)"
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
@@ -186,6 +205,9 @@ notify_me "Setting stuff with GSettings"
 ### Interface
 gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
+### Background
+gsettings set org.gnome.desktop.background picture-uri "file:///home/casa/Git/stuff/wallpapers/Material.png"
+gsettings set org.gnome.desktop.screensaver picture-uri "file:///home/casa/Git/stuff/wallpapers/Material.png"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
