@@ -45,8 +45,7 @@ COMMON_REPO_PATH="$PACKAGES_PATH/common"
 
 ## Telegram Desktop
 ### Download URL
-TELEGRAM_SOURCE="current?alpha=1"
-TELEGRAM_URL="https://tdesktop.com/linux/$TELEGRAM_SOURCE"
+TELEGRAM_URL="https://tdesktop.com/linux/current"
 ### Destination
 TELEGRAM_PATH=".TelegramDesktop"
 TELEGRAM_FILE="telegram-alpha.tar.xz"
@@ -54,16 +53,16 @@ TELEGRAM_FILE="telegram-alpha.tar.xz"
 TELEGRAM_DEST="$HOME/$TELEGRAM_PATH/$TELEGRAM_FILE"
 
 # Functions
-function notify_me() {
+notify_me() {
     # Usage: notify_me [message]
     # Print the [message] and send a notification
     message="$1"
 
-    echo -e "\e[1m>> $message\e[0m"
+    echo "\e[1m>> $message\e[0m"
     notify-send "Post Install" "$message" -i distributor-logo-solus
 }
 
-function enter_dir() {
+enter_dir() {
     # Usage: enter_dir [directory]
     # Enter into a [directory], if it does not
     # exists, just create it
@@ -76,7 +75,7 @@ function enter_dir() {
     cd "$directory" || exit
 }
 
-function tparty_get() {
+tparty_get() {
     # Usage: tparty_get [component] [package]
     # Build and install a third-party package
     # with the given [component] and [package]
@@ -88,7 +87,7 @@ function tparty_get() {
     sudo rm -rfv "$package"*.eopkg
 }
 
-function clone_list() {
+clone_list() {
     # Usage: clone_list [url] [list]
     # Clone every item on [list] using the Git
     # repositories from [url] as main url
@@ -134,8 +133,8 @@ tparty_get network/web/browser google-chrome-stable           # Google Chrome St
 tparty_get desktop/font mscorefonts                           # Microsoft Core Fonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y {paper-icon,adapta-gtk}-theme budgie-{screenshot,haste}-applet gimp \
-                      inkscape geary kodi obs-studio libreoffice-all golang zsh yadm git  \
+sudo eopkg install -y {paper-icon,adapta-gtk}-theme budgie-{screenshot,haste}-applet kodi \
+                      geary obs-studio gimp inkscape libreoffice-all zsh yadm git golang  \
                       {python-,}neovim neofetch solbuild{,-config-unstable} noto-sans-ttf
 
 # Development component
@@ -207,8 +206,8 @@ gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
 ### Fonts
 gsettings set org.gnome.desktop.interface font-name "Noto Sans 10"
-gsettings set org.gnome.desktop.interface document-font-name "Arial 10"
 gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Bold 10"
+gsettings set org.gnome.desktop.interface document-font-name "Arial 10"
 ### Panel
 gsettings set com.solus-project.budgie-panel builtin-theme false
 ### Background
