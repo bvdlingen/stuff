@@ -134,10 +134,9 @@ tparty_get network/web/browser google-chrome-stable           # Google Chrome St
 tparty_get desktop/font mscorefonts                           # Microsoft Core Fonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet \
-                      geary kodi brasero obs-studio libreoffice-all     \
-                      zsh yadm git hub neovim neofetch golang solbuild  \
-                      solbuild-config-unstable
+sudo eopkg install -y {paper-icon,adapta-gtk}-theme budgie-{screenshot,haste}-applet gimp \
+                      inkscape geary kodi obs-studio libreoffice-all golang zsh yadm git  \
+                      {python-,}neovim neofetch solbuild{,-config-unstable} noto-sans-ttf
 
 # Development component
 notify_me "Installing development component"
@@ -203,8 +202,15 @@ sudo solbuild init -u
 ## Make GSettings set things
 notify_me "Setting stuff with GSettings"
 ### Interface
+gsettings set org.gnome.desktop.interface gtk-theme "Adapta-Eta"
 gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
+### Fonts
+gsettings set org.gnome.desktop.interface font-name "Noto Sans 10"
+gsettings set org.gnome.desktop.interface document-font-name "Arial 10"
+gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Bold 10"
+### Panel
+gsettings set com.solus-project.budgie-panel builtin-theme false
 ### Background
 gsettings set org.gnome.desktop.background picture-uri "file:///home/casa/Git/stuff/wallpapers/Material.png"
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///home/casa/Git/stuff/wallpapers/Material.png"
@@ -220,6 +226,9 @@ gsettings set org.gnome.desktop.sound theme-name "freedesktop"
 ### Terminal
 gsettings set org.gnome.Terminal.Legacy.Settings theme-variant "dark"
 gsettings set org.gnome.Terminal.Legacy.Settings new-terminal-mode "tab"
+### Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
+gsettings set com.solus-project.budgie-wm force-unredirect true
 
 # FINISHED!
-notify_me "Script has finished! You SHOULD reboot as soon as possible"
+notify_me "Script has finished! You should reboot as soon as possible"
