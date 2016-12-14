@@ -175,6 +175,9 @@ cd || exit
 ## Install the dotfiles
 notify_me "Setting-up dotfiles"
 yadm clone "$DOTFILES_GIT_URL"
+## Decrypt them
+notify_me "Decrypting dotfiles"
+yadm decrypt
 ## Set default shell
 notify_me "Setting default shell"
 sudo chsh -s "$(which zsh)" "$(whoami)"
