@@ -129,8 +129,10 @@ sudo eopkg remove -y --purge orca {arc,moka,faba{,-mono}}-icon-theme
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-tparty_get multimedia/video flash-player-npapi                # NPAPI Flash Player
-tparty_get desktop/font mscorefonts                           # Microsoft Core Fonts
+### NPAPI Flash Player
+tparty_get multimedia/video flash-player-npapi
+### Microsoft Core Fonts
+tparty_get desktop/font mscorefonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet obs-studio libreoffice-all zsh yadm git{,-extras} neofetch {python-,}neovim golang solbuild{,-config-unstable}
@@ -209,6 +211,14 @@ notify_me "Setting stuff with GSettings"
 ### Interface
 gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
+### Fonts
+gsettings set org.gnome.desktop.interface font-name "Clear Sans 10"
+gsettings set org.gnome.desktop.wm.preferences titlebar-font "Clear Sans Bold 11"
+gsettings set org.gnome.settings-daemon.plugins.xsettings antialiasing "rgba"
+gsettings set org.gnome.settings-daemon.plugins.xsettings hinting "slight"
+### Background
+gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
+gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
