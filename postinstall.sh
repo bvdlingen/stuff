@@ -135,7 +135,7 @@ tparty_get multimedia/video flash-player-npapi
 tparty_get desktop/font mscorefonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet obs-studio libreoffice-all zsh yadm git{,-extras} neofetch {python-,}neovim golang solbuild{,-config-unstable}
+sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet obs-studio libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
 
 # Development component
 notify_me "Installing development component"
@@ -182,7 +182,7 @@ notify_me "Decrypting dotfiles"
 yadm decrypt
 ## Set default shell
 notify_me "Setting default shell"
-sudo chsh -s "$(which zsh)" "$(whoami)"
+sudo chsh -s "$(which fish)" "$(whoami)"
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
@@ -201,7 +201,7 @@ cd || exit
 notify_me "Installing system files"
 bash "$SYSFILES_PATH/bootstrap.sh"
 
-# Evobuild
+# solbuild
 notify_me "Setting up solbuild"
 sudo solbuild init -u
 
@@ -211,11 +211,6 @@ notify_me "Setting stuff with GSettings"
 ### Interface
 gsettings set org.gnome.desktop.interface icon-theme "Paper"
 gsettings set org.gnome.desktop.interface cursor-theme "Paper"
-### Fonts
-gsettings set org.gnome.desktop.interface font-name "Clear Sans 10"
-gsettings set org.gnome.desktop.wm.preferences titlebar-font "Clear Sans Bold 11"
-gsettings set org.gnome.settings-daemon.plugins.xsettings antialiasing "rgba"
-gsettings set org.gnome.settings-daemon.plugins.xsettings hinting "slight"
 ### Background
 gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
