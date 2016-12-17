@@ -172,8 +172,6 @@ cd || exit
 ## Install the dotfiles
 notify_me "Setting-up dotfiles"
 yadm clone "$DOTFILES_GIT_URL"
-## Decrypt them
-notify_me "Decrypting dotfiles"
 yadm decrypt
 ## Set default shell
 notify_me "Setting default shell"
@@ -191,12 +189,11 @@ rm -rfv "$TELEGRAM_DEST_PATH"
 ## Back to home
 cd || exit
 
-# Stupidly deployable system
-## Install system files
+# System files
 notify_me "Installing system files"
 bash "$SYSFILES_PATH/bootstrap.sh"
 
-# solbuild
+# Solbuild
 notify_me "Setting up solbuild"
 sudo solbuild init -u
 
