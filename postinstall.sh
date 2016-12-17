@@ -45,7 +45,7 @@ COMMON_REPO_PATH="$PACKAGES_PATH/common"
 
 ## Telegram Desktop
 ### Download URL
-TELEGRAM_URL="https://tdesktop.com/linux/current"
+TELEGRAM_URL="https://tdesktop.com/linux/current?alpha=1"
 ### Destination
 TELEGRAM_FOLDER="$HOME/.TelegramDesktop"
 TELEGRAM_FILE="$TELEGRAM_FOLDER/telegram-alpha.tar.xz"
@@ -121,10 +121,6 @@ notify_me "Adding Unstable repository"
 sudo eopkg add-repo -y "$REPOSITORY_SHANNON_NAME" "$REPOSITORY_UNSTABLE_URL"
 
 # Manage packages
-## Remove unneeded packages
-notify_me "Removing unneeded packages"
-#shellcheck disable=SC1083
-sudo eopkg remove -y --purge orca {arc,moka,faba{,-mono}}-icon-theme
 ## Upgrade the system
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
@@ -135,9 +131,8 @@ tparty_get multimedia/video flash-player-npapi
 tparty_get desktop/font mscorefonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y paper-icon-theme budgie-{screenshot,haste}-applet obs-studio libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
-
-# Development component
+sudo eopkg install -y budgie-{screenshot,haste}-applet obs-studio libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
+## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
 
@@ -208,12 +203,6 @@ sudo solbuild init -u
 # Personalization
 ## Make GSettings set things
 notify_me "Setting stuff with GSettings"
-### Interface
-gsettings set org.gnome.desktop.interface icon-theme "Paper"
-gsettings set org.gnome.desktop.interface cursor-theme "Paper"
-### Background
-gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
-gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/solus/TullamoreGrandCanal.jpg"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
