@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Solus Post Install Script
+# Solus MATE Post Install Script
 #
 
 # Variables
@@ -58,8 +58,8 @@ notify_me() {
     # Print the [message] and send a notification
     message="$1"
 
-    echo "\e[1m>> $message\e[0m"
-    notify-send "Post Install" "$message" -i distributor-logo-solus
+    echo -e "\e[1m>> $message\e[0m"
+    notify-send "Solus MATE Post Install" "$message" -i distributor-logo-solus
 }
 
 enter_dir() {
@@ -131,7 +131,7 @@ tparty_get multimedia/video flash-player-npapi
 tparty_get desktop/font mscorefonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet obs-studio libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
+sudo eopkg install -y obs-studio kodi libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
 ## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -196,24 +196,6 @@ bash "$SYSFILES_PATH/bootstrap.sh"
 # Solbuild
 notify_me "Setting up solbuild"
 sudo solbuild init -u
-
-# Personalization
-## Make GSettings set things
-notify_me "Setting stuff with GSettings"
-### Privacy
-gsettings set org.gnome.desktop.privacy remove-old-temp-files true
-gsettings set org.gnome.desktop.privacy remove-old-trash-files true
-### Location
-gsettings set org.gnome.system.location enabled true
-### Sounds
-gsettings set org.gnome.desktop.sound event-sounds true
-gsettings set org.gnome.desktop.sound input-feedback-sounds true
-gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-### Terminal
-gsettings set org.gnome.Terminal.Legacy.Settings theme-variant "dark"
-gsettings set org.gnome.Terminal.Legacy.Settings new-terminal-mode "tab"
-### Window manager
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # FINISHED!
 notify_me "Script has finished! You should reboot as soon as possible"
