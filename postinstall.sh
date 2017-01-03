@@ -23,11 +23,11 @@ REPOS_PATH="$HOME/Git"
 ### User URL
 PERSONAL_URL="https://github.com/feskyde"
 ### User repositories
-PERSONAL_REPOS=("deezloader" "stuff")
+PERSONAL_REPOS=("budgie" "deezloader" "ninite" "nish" "shikon" "solus-awesome" "solus-meta" "stuff")
 ### Locations
 #### Stuff (including system files and install scripts)
 STUFF_DEST="$REPOS_PATH/stuff"
-SYSFILES_PATH="$STUFF_DEST/system"
+STATELESS_PATH="$STUFF_DEST/statelessnessness"
 
 ## Dotfiles
 ### Dotfiles URL
@@ -57,7 +57,7 @@ TELEGRAM_FILE="$TELEGRAM_FOLDER/telegram-alpha.tar.xz"
 TELEGRAM_PATH="$TELEGRAM_FOLDER/$TELEGRAM_FILE"
 
 # Functions
-notify_me() {
+function notify_me() {
     # Usage: notify_me [message]
     # Print the [message] and send a notification
     message="$1"
@@ -66,20 +66,36 @@ notify_me() {
     notify-send "Solus MATE Post Install" "$message" -i distributor-logo-solus
 }
 
-enter_dir() {
+function create_dir() {
+    # Usage: create_dir [directory]
+    # Create a [directory]
+    directory="$1"
+
+    if [ ! -d "$directory" ]; then
+        notify_me "Creating directory: $directory"
+        mkdir -pv "$directory"
+    fi
+}
+
+function enter_dir() {
     # Usage: enter_dir [directory]
     # Enter into a [directory], if it does not
     # exists, just create it
     directory="$1"
 
+    create_dir "$directory"
     notify_me "Entering in directory: $directory"
-    if [ ! -d "$directory" ]; then
-      mkdir -pv "$directory"
-    fi
     cd "$directory" || exit
 }
 
-tparty_get() {
+function close_dir() {
+    # Usage: close_dir
+    # Return to $HOME
+
+    cd || exit
+}
+
+function tparty_get() {
     # Usage: tparty_get [component] [package]
     # Build and install a third-party package
     # with the given [component] and [package]
@@ -91,7 +107,29 @@ tparty_get() {
     sudo rm -rfv "$package"*.eopkg
 }
 
-clone_list() {
+function clone_repo() {
+    # Usage: clone_repo [url] [repo] {dest}
+    # Clone a Git repository, if the clone fails,
+    # start again, if {dest} is specified, clone into it
+    url="$1"
+    repo="$2"
+    if [ -z "$3" ]; then
+        dest="$3"
+    else
+        dest="$2"
+    fi
+
+    notify_me "Cloning repository: $url/$repo to $dest"
+    while true; do
+        if [ ! -d "$repo" ]; then
+            git clone --recursive "$url/$repo" "$dest"
+        else
+            break
+        fi
+    done
+}
+
+function clone_list() {
     # Usage: clone_list [url] [list]
     # Clone every item on [list] using the Git
     # repositories from [url] as main url
@@ -99,8 +137,7 @@ clone_list() {
     list="$2"
 
     for repo in ${list[*]}; do
-        notify_me "Cloning repository: $url/$repo"
-        git clone --recursive "$url/$repo"
+        clone_repo "$url/$repo" "$repo"
     done
 }
 
@@ -135,21 +172,22 @@ tparty_get multimedia/video flash-player-npapi
 tparty_get desktop/font mscorefonts
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y simplescreenrecorder libreoffice-all fish yadm git {python-,}neovim golang solbuild{,-config-unstable}
+sudo eopkg install -y simplescreenrecorder kodi libreoffice-all galculator lutris fish yadm git hub {python-,}neovim golang solbuild{,-config-unstable}
 ## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
 
 # Git repositories
 notify_me "Creating Git directory"
-enter_dir "$REPOS_PATH"
+create_dir "$REPOS_PATH"
 
 # Personal Git repositories
 ## Clone my repositories
 notify_me "Cloning personal Git repositories"
+enter_dir "$REPOS_PATH"
 clone_list "$PERSONAL_URL" "${PERSONAL_REPOS[*]}"
 ## Return to home
-cd || exit
+close_dir
 
 # Solus packaging repository
 ## Create Solus packaging directory
@@ -157,13 +195,7 @@ notify_me "Setting up Solus packaging directory"
 enter_dir "$PACKAGING_PATH"
 ## Clone common repository
 notify_me "Cloning common repository"
-while true; do
-    if [ ! -d "$COMMON_PATH" ]; then
-        git clone "$COMMON_URL" "$COMMON_PATH"
-    else
-        break
-    fi
-done
+clone_repo "$SOLUS_URL" "$COMMON_PATH" "$COMMON_PATH"
 ## Link Makefile(s)
 notify_me "Linking Makefiles"
 ln -srfv "$COMMON_PATH/Makefile.common" "$PACKAGING_PATH/Makefile.common"
@@ -173,7 +205,7 @@ ln -srfv "$COMMON_PATH/Makefile.iso" "$PACKAGING_PATH/Makefile.iso"
 notify_me "Cloning my packages"
 clone_list "$PACKAGES_URL" "${PACKAGES_REPOS[*]}"
 ## Return to home
-cd || exit
+close_dir
 
 # Dotfiles
 ## Install the dotfiles
@@ -194,11 +226,11 @@ enter_dir "$TELEGRAM_FOLDER"
 tar xfv "$TELEGRAM_PATH"
 rm -rfv "$TELEGRAM_PATH"
 ## Back to home
-cd || exit
+close_dir
 
-# System files
-notify_me "Installing system files"
-bash "$SYSFILES_PATH/bootstrap.sh"
+# STATELESSNESSNESS
+notify_me "Installing stateless files"
+bash "$STATELESS_PATH/install.sh"
 
 # Solbuild
 notify_me "Setting up solbuild"
