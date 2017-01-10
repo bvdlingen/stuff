@@ -17,44 +17,43 @@ TPARTY_SOURCE="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
 ## Git
 ### Repositories path
-REPOS_PATH="$HOME/Git"
+GIT_DIR="$HOME/Git"
+### The main directory struct for this script
+STUFF_DIR="$GIT_DIR/stuff"
+CONFIGS_DIR="$STUFF_DIR/config"
+FILES_DIR="$STUFF_DIR/files"
 
-## Personal Git repositories
-### User URL
-PERSONAL_URL="https://github.com/feskyde"
-### User repositories
-PERSONAL_REPOS=("deezloader" "stuff")
+## GitHub repositories
+### GitHub main URL
+GITHUB_URL="https://github.com"
+### Repositories list
+GITHUB_REPO_LIST="$FILES_DIR/github_repos.txt"
+
+## Solus repositories
+### Solus Git main URL
+SOLUS_URL="https://git.solus-project.com"
+### Repositories list
+SOLUS_REPO_LIST="$FILES_DIR/solus_repos.txt"
 ### Locations
-#### Stuff (including system files and install scripts)
-STUFF_DEST="$REPOS_PATH/stuff"
-STATELESS_PATH="$STUFF_DEST/statelessnessness"
+#### Packaging path
+PACKAGES_DIR="$GIT_DIR/packages"
+#### Common repository
+COMMON_REPO_DIR="$PACKAGING_DIR/common"
 
 ## Dotfiles
 ### Dotfiles URL
-DOTFILES_SOURCE="$PERSONAL_URL/dotfiles"
-
-## Solus packaging
-### Main Solus Git URL
-SOLUS_URL="https://git.solus-project.com"
-### Packages Git URL
-PACKAGES_URL="$SOLUS_URL/packages"
-### Packages I maintain
-PACKAGES_REPOS=("asciinema" "gnome-pomodoro" "gnome-sound-recorder" "gnome-twitch" "gourmet" "hub" "jq" "mutagen" "python-greenlet" "python-msgpack" "python-musicbrainzngs" "python-neovim" "python-notify2" "python-setproctitle" "python-sqlalchemy" "python-trollius" "quodlibet" "xaut" "xdotool" "zuki-themes" "sc-controller")
-### Locations
-#### Packaging path
-PACKAGING_PATH="$REPOS_PATH/packaging"
-#### Common repository
-COMMON_URL="$SOLUS_URL/common"
-COMMON_PATH="$PACKAGING_PATH/common"
+DOTFILES_URL="$PERSONAL_URL/dotfiles"
 
 ## Telegram Desktop
 ### Download URL
 TELEGRAM_URL="https://tdesktop.com/linux/current?alpha=1"
 ### Destination
 TELEGRAM_FOLDER="$HOME/.TelegramDesktop"
-TELEGRAM_FILE="$TELEGRAM_FOLDER/telegram-alpha.tar.xz"
-### Destination path
-TELEGRAM_PATH="$TELEGRAM_FOLDER/$TELEGRAM_FILE"
+TELEGRAM_TARBALL="$TELEGRAM_FOLDER/telegram-desktop.tar.xz"
+
+## Go packages
+### Go packages list
+GO_PACKAGES_LIST="$FILES_DIR/go_packages.txt"
 
 # Functions
 function notify_me() {
@@ -120,20 +119,36 @@ function clone_repo() {
     fi
 
     notify_me "Cloning repository: $url/$repo to $dest"
-        git clone --recursive "$url/$repo" "$dest"
+    while true; do
+        if [ ! -d "$repo" ]; then
+            git clone --recursive "$url/$repo" "$dest"
+        else
+            break
+        fi
     done
 }
 
 function clone_list() {
     # Usage: clone_list [url] [list]
-    # Clone every item on [list] using the Git
-    # repositories from [url] as main url
+    # Clone every item on [list] file using the
+    # Git repositories from [url] as main URL
     url="$1"
     list="$2"
 
-    for repo in ${list[*]}; do
+    while ISC='' read -r repo || [ -n "$repo" ]; do
         clone_repo "$url/$repo" "$repo"
-    done
+    done < "$list"
+}
+
+function go_get_list() {
+    # Usage: go_get_list [list]
+    # Get every package listed in the file [list]
+    list="$1"
+
+    while ISC='' read -r package || [ -n "$package" ]; do
+        notify_me "Installing Go package: $package"
+        go get -u "$package"
+    done < "$list"
 }
 
 # Welcome
@@ -174,38 +189,35 @@ sudo eopkg install -y -c system.devel
 
 # Git repositories
 notify_me "Creating Git directory"
-create_dir "$REPOS_PATH"
+create_dir "$GIT_DIR"
 
-# Personal Git repositories
-## Clone my repositories
-notify_me "Cloning personal Git repositories"
-enter_dir "$REPOS_PATH"
-clone_list "$PERSONAL_URL" "${PERSONAL_REPOS[*]}"
+# GitHub repositories
+## Clone repositories
+notify_me "Cloning GithUB repositories"
+enter_dir "$GIT_DIR"
+clone_list "$GITHUB_URL" "$GITHUB_REPO_LIST"
 ## Return to home
 close_dir
 
 # Solus packaging repository
-## Create Solus packaging directory
-notify_me "Setting up Solus packaging directory"
-enter_dir "$PACKAGING_PATH"
-## Clone common repository
-notify_me "Cloning common repository"
-clone_repo "$SOLUS_URL" "$COMMON_PATH" "$COMMON_PATH"
-## Link Makefile(s)
-notify_me "Linking Makefiles"
-ln -srfv "$COMMON_PATH/Makefile.common" "$PACKAGING_PATH/Makefile.common"
-ln -srfv "$COMMON_PATH/Makefile.toplevel" "$PACKAGING_PATH/Makefile"
-ln -srfv "$COMMON_PATH/Makefile.iso" "$PACKAGING_PATH/Makefile.iso"
-## Clone my packages
-notify_me "Cloning my packages"
-clone_list "$PACKAGES_URL" "${PACKAGES_REPOS[*]}"
+## Create packages directory
+notify_me "Setting up Solus packages directory"
+enter_dir "$PACKAGES_DIR"
+## Clone package repositories
+notify_me "Cloning package repositories"
+clone_list "$SOLUS_URL" "$SOLUS_REPO_LIST"
+## Link makefiles
+notify_me "Linking makefiles"
+ln -srfv "$COMMON_REPO_DIR/Makefile.common" "$PACKAGING_DIR/Makefile.common"
+ln -srfv "$COMMON_REPO_DIR/Makefile.toplevel" "$PACKAGING_DIR/Makefile"
+ln -srfv "$COMMON_REPO_DIR/Makefile.iso" "$PACKAGING_DIR/Makefile.iso"
 ## Return to home
 close_dir
 
 # Dotfiles
 ## Install the dotfiles
 notify_me "Setting-up dotfiles"
-yadm clone "$DOTFILES_SOURCE"
+yadm clone "$DOTFILES_URL"
 yadm decrypt
 ## Set default shell
 notify_me "Setting default shell"
@@ -213,23 +225,27 @@ sudo chsh -s "$(which fish)" "$(whoami)"
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
-## Download the tarball
-curl -kLo "$TELEGRAM_PATH" --create-dirs "$TELEGRAM_URL"
 ## Enter into the Telegram directory
 enter_dir "$TELEGRAM_FOLDER"
+## Download the tarball
+curl -kLo "$TELEGRAM_URL"
 ## Unpack it
-tar xfv "$TELEGRAM_PATH"
-rm -rfv "$TELEGRAM_PATH"
+tar xfv "$TELEGRAM_TARBALL"
+rm -rfv "$TELEGRAM_TARBALL"
 ## Back to home
 close_dir
 
-# STATELESSNESSNESS
-notify_me "Installing stateless files"
-bash "$STATELESS_PATH/install.sh"
+# Stateless configuration files
+notify_me "Installing stateless configuration files"
+bash "$CONFIGS_DIR/install.sh"
 
 # Solbuild
 notify_me "Setting up solbuild"
 sudo solbuild init -u
+
+# Go packages
+notify_me "Installing Go packages"
+go_get_list "$GO_PACKAGES_LIST"
 
 # Personalization
 ## Make GSettings set things
