@@ -1,0 +1,2 @@
+multimedia/video/flash-player-npapi
+desktop/font/mscorefonts

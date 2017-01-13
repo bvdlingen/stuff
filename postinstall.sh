@@ -13,7 +13,7 @@ REPO_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.x
 
 ## Third Party
 ### Source
-TPARTY_SOURCE="https://raw.githubusercontent.com/solus-project/3rd-party/master"
+THIRD_PARTY_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
 ## Git
 ### Repositories path
@@ -94,18 +94,6 @@ function close_dir() {
     cd || exit
 }
 
-function tparty_get() {
-    # Usage: tparty_get [component] [package]
-    # Build and install a third-party package
-    # with the given [component] and [package]
-    component="$1"
-    package="$2"
-
-    sudo eopkg build -y --ignore-safety "$TPARTY_SOURCE"/"$component"/"$package"/pspec.xml
-    sudo eopkg install -y "$package"*.eopkg
-    sudo rm -rfv "$package"*.eopkg
-}
-
 function clone_repo() {
     # Usage: clone_repo [url] [repo] {dest}
     # Clone a Git repository, if the clone fails,
@@ -126,6 +114,22 @@ function clone_repo() {
             break
         fi
     done
+}
+
+function get_third_party_list() {
+    # Usage: get_third_party_list [list]
+    # Build and install third party packages
+    # from the given [list]
+    list="$1"
+
+    while ISC='' read -r package || [ -n "$package" ]; do
+        enter_dir build
+        sudo eopkg build -y --ignore-safety $THIRD_PARTY_URL/$package/pspec.xml
+        sudo eopkg install -y *.eopkg
+        sudo rm -rfv *.eopkg
+        close_dir
+        rm -rfv build
+    done < "$list"
 }
 
 function clone_list() {
@@ -176,10 +180,7 @@ sudo eopkg add-repo -y "$REPO_SHANNON_NAME" "$REPO_UNSTABLE_URL"
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-### NPAPI Flash Player
-tparty_get multimedia/video flash-player-npapi
-### Microsoft Core Fonts
-tparty_get desktop/font mscorefonts
+get_third_party_list "$FILES_DIR/third_party.txt"
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder kodi libreoffice-all lutris fish yadm git hub {python-,}neovim golang solbuild{,-config-unstable}
@@ -230,7 +231,7 @@ enter_dir "$TELEGRAM_FOLDER"
 ## Download the tarball
 curl -kLo "$TELEGRAM_URL"
 ## Unpack it
-tar xfv "$TELEGRAM_TARBALL"
+tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
 rm -rfv "$TELEGRAM_TARBALL"
 ## Back to home
 close_dir
