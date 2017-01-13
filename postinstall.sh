@@ -124,9 +124,9 @@ function get_third_party_list() {
 
     while ISC='' read -r package || [ -n "$package" ]; do
         enter_dir build
-        sudo eopkg build -y --ignore-safety $THIRD_PARTY_URL/$package/pspec.xml
-        sudo eopkg install -y *.eopkg
-        sudo rm -rfv *.eopkg
+        sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
+        sudo eopkg install -y ./*.eopkg
+        sudo rm -rfv ./*.eopkg
         close_dir
         rm -rfv build
     done < "$list"
