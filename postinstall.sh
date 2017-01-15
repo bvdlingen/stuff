@@ -65,8 +65,8 @@ function notify_me() {
     notify-send "Solus Post Install" "$message" -i distributor-logo-solus
 }
 
-function create_dir() {
-    # Usage: create_dir [directory]
+function folder_create() {
+    # Usage: folder_create [directory]
     # Create a [directory]
     directory="$1"
 
@@ -76,26 +76,36 @@ function create_dir() {
     fi
 }
 
-function enter_dir() {
-    # Usage: enter_dir [directory]
+function folder_enter() {
+    # Usage: folder_enter [directory]
     # Enter into a [directory], if it does not
     # exists, just create it
     directory="$1"
 
-    create_dir "$directory"
+    folder_create "$directory"
     notify_me "Entering in directory: $directory"
     cd "$directory" || exit
 }
 
-function close_dir() {
-    # Usage: close_dir
+function folder_close() {
+    # Usage: folder_close
     # Return to $HOME
 
     cd || exit
 }
 
-function clone_repo() {
-    # Usage: clone_repo [url] [repo] {dest}
+function folder_npmi() {
+    # Usage: folder_npmi [folder]
+    # Execute npm install in the given [folder]
+    directory="$1"
+
+    folder_enter "$directory"
+    notify_me "Installing NodeJS packages in directory: $directory"
+    npm install
+}
+
+function repo_clone() {
+    # Usage: repo_clone [url] [repo] {dest}
     # Clone a Git repository, if the clone fails,
     # start again, if {dest} is specified, clone into it
     url="$1"
@@ -116,36 +126,36 @@ function clone_repo() {
     done
 }
 
-function tparty_get_list() {
-    # Usage: get_third_party_list [list]
+function list_get_tparty() {
+    # Usage: list_get_tparty [list]
     # Build and install third party packages
     # from the given [list]
     list="$1"
 
     while ISC='' read -r package || [ -n "$package" ]; do
-        enter_dir build
+        folder_enter build
         sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
         sudo eopkg install -y ./*.eopkg
         sudo rm -rfv ./*.eopkg
-        close_dir
+        folder_close
         rm -rfv build
     done < "$list"
 }
 
-function clone_list() {
-    # Usage: clone_list [url] [list]
+function list_clone() {
+    # Usage: list_clone [url] [list]
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
     url="$1"
     list="$2"
 
     while ISC='' read -r repo || [ -n "$repo" ]; do
-        clone_repo "$url/$repo" "$repo"
+        repo_clone "$url/$repo" "$repo"
     done < "$list"
 }
 
-function go_get_list() {
-    # Usage: go_get_list [list]
+function list_go_get() {
+    # Usage: list_go_get [list]
     # Get every package listed in the file [list]
     list="$1"
 
@@ -180,10 +190,10 @@ sudo eopkg add-repo -y "$REPO_SHANNON_NAME" "$REPO_UNSTABLE_URL"
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-tparty_get_list "$FILES_DIR/third_party.txt"
+list_get_tparty "$FILES_DIR/third_party.txt"
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape brasero cheese simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub {python-,}neovim golang hugo solbuild{,-config-unstable} glances neofetch
+sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape brasero cheese simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub glances neofetch {python-,}neovim golang nodejs solbuild{,-config-unstable}
 ## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -193,30 +203,30 @@ sudo solbuild init -u
 
 # Git repositories
 notify_me "Creating Git directory"
-create_dir "$GIT_DIR"
+folder_create "$GIT_DIR"
 
 # GitHub repositories
 ## Clone repositories
 notify_me "Cloning GithUB repositories"
-enter_dir "$GIT_DIR"
-clone_list "$GITHUB_URL" "$GITHUB_REPO_LIST"
+folder_enter "$GIT_DIR"
+list_clone "$GITHUB_URL" "$GITHUB_REPO_LIST"
 ## Return to home
-close_dir
+folder_close
 
 # Solus packaging repository
 ## Create packages directory
 notify_me "Setting up Solus packages directory"
-enter_dir "$PACKAGES_DIR"
+folder_enter "$PACKAGES_DIR"
 ## Clone package repositories
 notify_me "Cloning package repositories"
-clone_list "$SOLUS_URL" "$SOLUS_REPO_LIST"
+list_clone "$SOLUS_URL" "$SOLUS_REPO_LIST"
 ## Link makefiles
 notify_me "Linking makefiles"
 ln -srfv "$COMMON_REPO_DIR/Makefile.common" "$PACKAGING_DIR/Makefile.common"
 ln -srfv "$COMMON_REPO_DIR/Makefile.toplevel" "$PACKAGING_DIR/Makefile"
 ln -srfv "$COMMON_REPO_DIR/Makefile.iso" "$PACKAGING_DIR/Makefile.iso"
 ## Return to home
-close_dir
+folder_close
 
 # Dotfiles
 ## Install the dotfiles
@@ -234,18 +244,39 @@ bash "$CONFIGS_DIR/install.sh"
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
 ## Enter into the Telegram directory
-enter_dir "$TELEGRAM_FOLDER"
+folder_enter "$TELEGRAM_FOLDER"
 ## Download the tarball
 curl -kLo "$TELEGRAM_URL"
 ## Unpack it
 tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
 rm -rfv "$TELEGRAM_TARBALL"
 ## Back to home
-close_dir
+folder_close
 
 # Go packages
 notify_me "Installing Go packages"
-go_get_list "$GO_PACKAGES_LIST"
+list_go_get "$GO_PACKAGES_LIST"
+
+# Blog
+## Setup it
+notify_me "Setting-up blog"
+## Install Hexo
+sudo npm install -g hexo-cli
+## Install needed libraries
+folder_npmi "$BLOG_DIR"
+## Back to home
+folder_close
+
+# Deezloader App
+## Setup it
+notify_me "Setting-up Deezloader"
+folder_enter "$GIT_DIR"
+## Clone repository
+repo_clone https://gitlab.com/ParadoxalManiak/deezloader-app
+## Install needed libraries
+folder_npmi "$GIT_DIR"/deezloader-app
+## Back to home
+folder_close
 
 # Personalization
 ## Make GSettings set things
