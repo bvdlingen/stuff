@@ -1,2 +1,5 @@
+feskyde/blog
 feskyde/deezloader
+feskyde/kydebot
 feskyde/stuff
+feskyde/ylint

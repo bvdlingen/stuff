@@ -116,7 +116,7 @@ function clone_repo() {
     done
 }
 
-function get_third_party_list() {
+function tparty_get_list() {
     # Usage: get_third_party_list [list]
     # Build and install third party packages
     # from the given [list]
@@ -180,13 +180,16 @@ sudo eopkg add-repo -y "$REPO_SHANNON_NAME" "$REPO_UNSTABLE_URL"
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-get_third_party_list "$FILES_DIR/third_party.txt"
+tparty_get_list "$FILES_DIR/third_party.txt"
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder kodi libreoffice-all lutris fish yadm git hub {python-,}neovim golang solbuild{,-config-unstable}
+sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape brasero cheese simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub {python-,}neovim golang hugo solbuild{,-config-unstable} glances neofetch
 ## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
+## Set up solbuild
+notify_me "Setting up solbuild"
+sudo solbuild init -u
 
 # Git repositories
 notify_me "Creating Git directory"
@@ -222,7 +225,11 @@ yadm clone "$DOTFILES_URL"
 yadm decrypt
 ## Set default shell
 notify_me "Setting default shell"
-sudo chsh -s "$(which fish)" "$(whoami)"
+sudo chsh -s "$(which zsh)" "$(whoami)"
+
+# Stateless configuration files
+notify_me "Installing stateless configuration files"
+bash "$CONFIGS_DIR/install.sh"
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
@@ -235,14 +242,6 @@ tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
 rm -rfv "$TELEGRAM_TARBALL"
 ## Back to home
 close_dir
-
-# Stateless configuration files
-notify_me "Installing stateless configuration files"
-bash "$CONFIGS_DIR/install.sh"
-
-# Solbuild
-notify_me "Setting up solbuild"
-sudo solbuild init -u
 
 # Go packages
 notify_me "Installing Go packages"
