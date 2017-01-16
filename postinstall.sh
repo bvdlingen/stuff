@@ -139,13 +139,7 @@ function repo_clone() {
     fi
 
     notify_me "Cloning repository: $url/$repo to $dest"
-    while true; do
-        if [ ! -d "$repo" ]; then
-            git clone --recursive "$url/$repo" "$dest"
-        else
-            break
-        fi
-    done
+    git clone --recursive "$url/$repo" "$dest"
 }
 
 function list_tparty_get() {
