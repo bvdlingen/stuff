@@ -18,7 +18,7 @@ THIRD_PARTY_URL="https://raw.githubusercontent.com/solus-project/3rd-party/maste
 THIRD_PARTY_BUILD_FOLDER="$HOME/build"
 
 ## Git
-### Repositories path
+### Repositories folder
 GIT_FOLDER="$HOME/Git"
 ### The main folder struct for this script
 STUFF_FOLDER="$GIT_FOLDER/stuff"
@@ -37,7 +37,7 @@ SOLUS_URL="https://git.solus-project.com"
 ### Repositories list
 SOLUS_REPO_LIST="$FILES_FOLDER/solus_repos.txt"
 ### Locations
-#### Packaging path
+#### Packaging folder
 PACKAGES_FOLDER="$GIT_FOLDER/packages"
 #### Common repository
 COMMON_REPO_FOLDER="$PACKAGING_FOLDER/common"
@@ -156,7 +156,6 @@ function list_tparty_get() {
 
     while ISC='' read -r package || [ -n "$package" ]; do
         tparty_get "$package"
-    done
     done < "$list"
 }
 
@@ -267,9 +266,7 @@ folder_enter "$TELEGRAM_FOLDER"
 curl -kLo "$TELEGRAM_URL"
 ## Unpack it
 tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
-rm -rfv "$TELEGRAM_TARBALL"
-## Back to home
-folder_close
+folder_wipe "$TELEGRAM_TARBALL"
 
 # Go packages
 notify_me "Installing Go packages"
