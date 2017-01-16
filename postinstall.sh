@@ -14,31 +14,33 @@ REPO_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.x
 ## Third Party
 ### Source
 THIRD_PARTY_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
+### Build folder
+THIRD_PARTY_BUILD_FOLDER="$HOME/build"
 
 ## Git
 ### Repositories path
-GIT_DIR="$HOME/Git"
-### The main directory struct for this script
-STUFF_DIR="$GIT_DIR/stuff"
-CONFIGS_DIR="$STUFF_DIR/config"
-FILES_DIR="$STUFF_DIR/files"
+GIT_FOLDER="$HOME/Git"
+### The main folder struct for this script
+STUFF_FOLDER="$GIT_FOLDER/stuff"
+CONFIGS_FOLDER="$STUFF_FOLDER/config"
+FILES_FOLDER="$STUFF_FOLDER/files"
 
 ## GitHub repositories
 ### GitHub main URL
 GITHUB_URL="https://github.com"
 ### Repositories list
-GITHUB_REPO_LIST="$FILES_DIR/github_repos.txt"
+GITHUB_REPO_LIST="$FILES_FOLDER/github_repos.txt"
 
 ## Solus repositories
 ### Solus Git main URL
 SOLUS_URL="https://git.solus-project.com"
 ### Repositories list
-SOLUS_REPO_LIST="$FILES_DIR/solus_repos.txt"
+SOLUS_REPO_LIST="$FILES_FOLDER/solus_repos.txt"
 ### Locations
 #### Packaging path
-PACKAGES_DIR="$GIT_DIR/packages"
+PACKAGES_FOLDER="$GIT_FOLDER/packages"
 #### Common repository
-COMMON_REPO_DIR="$PACKAGING_DIR/common"
+COMMON_REPO_FOLDER="$PACKAGING_FOLDER/common"
 
 ## Dotfiles
 ### Dotfiles URL
@@ -53,7 +55,7 @@ TELEGRAM_TARBALL="$TELEGRAM_FOLDER/telegram-desktop.tar.xz"
 
 ## Go packages
 ### Go packages list
-GO_PACKAGES_LIST="$FILES_DIR/go_packages.txt"
+GO_PACKAGES_LIST="$FILES_FOLDER/go_packages.txt"
 
 # Functions
 function notify_me() {
@@ -66,25 +68,25 @@ function notify_me() {
 }
 
 function folder_create() {
-    # Usage: folder_create [directory]
-    # Create a [directory]
-    directory="$1"
+    # Usage: folder_create [folder]
+    # Create a [folder]
+    folder="$1"
 
-    if [ ! -d "$directory" ]; then
-        notify_me "Creating directory: $directory"
-        mkdir -pv "$directory"
+    if [ ! -d "$folder" ]; then
+        notify_me "Creating folder: $folder"
+        mkdir -pv "$folder"
     fi
 }
 
 function folder_enter() {
-    # Usage: folder_enter [directory]
-    # Enter into a [directory], if it does not
+    # Usage: folder_enter [folder]
+    # Enter into a [folder], if it does not
     # exists, just create it
-    directory="$1"
+    folder="$1"
 
-    folder_create "$directory"
-    notify_me "Entering in directory: $directory"
-    cd "$directory" || exit
+    folder_create "$folder"
+    notify_me "Entering in folder: $folder"
+    cd "$folder" || exit
 }
 
 function folder_close() {
@@ -94,14 +96,34 @@ function folder_close() {
     cd || exit
 }
 
+function folder_wipe() {
+    # Usage: folder_wipe [folder]
+    # Close and wipe the given [folder]
+    folder="$1"
+
+    folder_close
+    rm -rfv "$folder"
+}
+
 function folder_npmi() {
     # Usage: folder_npmi [folder]
     # Execute npm install in the given [folder]
-    directory="$1"
+    folder="$1"
 
-    folder_enter "$directory"
-    notify_me "Installing NodeJS packages in directory: $directory"
+    folder_enter "$folder"
+    notify_me "Installing NodeJS packages in folder: $folder"
     npm install
+}
+
+function tparty_get() {
+    # Usage: tparty_get [package]
+    # Build and install [package] from third party
+    package="$1"
+
+    folder_enter "$THIRD_PARTY_BUILD_FOLDER"
+    sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
+    sudo eopkg install -y ./*.eopkg
+    folder_wipe "$THIRD_PARTY_BUILD_FOLDER"
 }
 
 function repo_clone() {
@@ -126,19 +148,15 @@ function repo_clone() {
     done
 }
 
-function list_get_tparty() {
-    # Usage: list_get_tparty [list]
+function list_tparty_get() {
+    # Usage: list_tparty_get [list]
     # Build and install third party packages
     # from the given [list]
     list="$1"
 
     while ISC='' read -r package || [ -n "$package" ]; do
-        folder_enter build
-        sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
-        sudo eopkg install -y ./*.eopkg
-        sudo rm -rfv ./*.eopkg
-        folder_close
-        rm -rfv build
+        tparty_get "$package"
+    done
     done < "$list"
 }
 
@@ -190,7 +208,7 @@ sudo eopkg add-repo -y "$REPO_SHANNON_NAME" "$REPO_UNSTABLE_URL"
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-list_get_tparty "$FILES_DIR/third_party.txt"
+list_tparty_get "$FILES_FOLDER/third_party.txt"
 ## Install more applications and stuff
 notify_me "Installing more packages"
 sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape brasero cheese simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub glances neofetch {python-,}neovim golang nodejs solbuild{,-config-unstable}
@@ -202,29 +220,29 @@ notify_me "Setting up solbuild"
 sudo solbuild init -u
 
 # Git repositories
-notify_me "Creating Git directory"
-folder_create "$GIT_DIR"
+notify_me "Creating Git folder"
+folder_create "$GIT_FOLDER"
 
 # GitHub repositories
 ## Clone repositories
 notify_me "Cloning GithUB repositories"
-folder_enter "$GIT_DIR"
+folder_enter "$GIT_FOLDER"
 list_clone "$GITHUB_URL" "$GITHUB_REPO_LIST"
 ## Return to home
 folder_close
 
 # Solus packaging repository
-## Create packages directory
-notify_me "Setting up Solus packages directory"
-folder_enter "$PACKAGES_DIR"
+## Create packages folder
+notify_me "Setting up Solus packages folder"
+folder_enter "$PACKAGES_FOLDER"
 ## Clone package repositories
 notify_me "Cloning package repositories"
 list_clone "$SOLUS_URL" "$SOLUS_REPO_LIST"
 ## Link makefiles
 notify_me "Linking makefiles"
-ln -srfv "$COMMON_REPO_DIR/Makefile.common" "$PACKAGING_DIR/Makefile.common"
-ln -srfv "$COMMON_REPO_DIR/Makefile.toplevel" "$PACKAGING_DIR/Makefile"
-ln -srfv "$COMMON_REPO_DIR/Makefile.iso" "$PACKAGING_DIR/Makefile.iso"
+ln -srfv "$COMMON_REPO_FOLDER/Makefile.common" "$PACKAGING_FOLDER/Makefile.common"
+ln -srfv "$COMMON_REPO_FOLDER/Makefile.iso" "$PACKAGING_FOLDER/Makefile.iso"
+ln -srfv "$COMMON_REPO_FOLDER/Makefile.toplevel" "$PACKAGING_FOLDER/Makefile"
 ## Return to home
 folder_close
 
@@ -239,11 +257,11 @@ sudo chsh -s "$(which zsh)" "$(whoami)"
 
 # Stateless configuration files
 notify_me "Installing stateless configuration files"
-bash "$CONFIGS_DIR/install.sh"
+bash "$CONFIGS_FOLDER/install.sh"
 
 # Telegram Desktop
 notify_me "Installing Telegram Desktop"
-## Enter into the Telegram directory
+## Enter into the Telegram folder
 folder_enter "$TELEGRAM_FOLDER"
 ## Download the tarball
 curl -kLo "$TELEGRAM_URL"
@@ -263,18 +281,18 @@ notify_me "Setting-up blog"
 ## Install Hexo
 sudo npm install -g hexo-cli
 ## Install needed libraries
-folder_npmi "$BLOG_DIR"
+folder_npmi "$BLOG_FOLDER"
 ## Back to home
 folder_close
 
 # Deezloader App
 ## Setup it
 notify_me "Setting-up Deezloader"
-folder_enter "$GIT_DIR"
+folder_enter "$GIT_FOLDER"
 ## Clone repository
 repo_clone https://gitlab.com/ParadoxalManiak/deezloader-app
 ## Install needed libraries
-folder_npmi "$GIT_DIR"/deezloader-app
+folder_npmi "$GIT_FOLDER"/deezloader-app
 ## Back to home
 folder_close
 
