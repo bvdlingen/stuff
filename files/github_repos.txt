@@ -1,5 +1,4 @@
-https://github.com/feskyde/blog
-https://github.com/feskyde/kydebot
-https://github.com/feskyde/solus-stuff
-https://github.com/feskyde/ylint
-https://gitlab.com/ParadoxalManiak/deezloader-app
+feskyde/blog
+feskyde/kydebot
+feskyde/solus-stuff
+feskyde/ylint
