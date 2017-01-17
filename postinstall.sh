@@ -5,9 +5,16 @@
 
 # Variables
 
+## Lists
+LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/files"
+THIRD_PARTY_LIST="$LISTS_RAW_URL/third_party.txt"
+GITHUB_REPO_LIST="$LISTS_RAW_URL/github_repos.txt"
+SOLUS_REPO_LIST="$LISTS_RAW_URL/solus_repos.txt"
+GO_PACKAGES_LIST="$LISTS_RAW_URL/go_packages.txt"
+
 ## Repositories
 ### Names
-REPO_SHANNON_NAME="Solus"
+REPO_DEFAULT_NAME="Solus"
 ### URLs
 REPO_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
 
@@ -23,19 +30,14 @@ GIT_FOLDER="$HOME/Git"
 ### The main folder struct for this script
 STUFF_FOLDER="$GIT_FOLDER/stuff"
 CONFIGS_FOLDER="$STUFF_FOLDER/config"
-FILES_FOLDER="$STUFF_FOLDER/files"
 
 ## GitHub repositories
 ### GitHub main URL
 GITHUB_URL="https://github.com"
-### Repositories list
-GITHUB_REPO_LIST="$FILES_FOLDER/github_repos.txt"
 
 ## Solus repositories
 ### Solus Git main URL
 SOLUS_URL="https://git.solus-project.com"
-### Repositories list
-SOLUS_REPO_LIST="$FILES_FOLDER/solus_repos.txt"
 ### Locations
 #### Packaging folder
 PACKAGES_FOLDER="$GIT_FOLDER/packages"
@@ -52,10 +54,6 @@ TELEGRAM_URL="https://tdesktop.com/linux/current?alpha=1"
 ### Destination
 TELEGRAM_FOLDER="$HOME/.TelegramDesktop"
 TELEGRAM_TARBALL="$TELEGRAM_FOLDER/telegram-desktop.tar.xz"
-
-## Go packages
-### Go packages list
-GO_PACKAGES_LIST="$FILES_FOLDER/go_packages.txt"
 
 # Functions
 function notify_me() {
@@ -121,6 +119,7 @@ function tparty_get() {
     package="$1"
 
     folder_enter "$THIRD_PARTY_BUILD_FOLDER"
+    notify_me "Installing third party package: $package"
     sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
     sudo eopkg install -y ./*.eopkg
     folder_wipe "$THIRD_PARTY_BUILD_FOLDER"
@@ -147,10 +146,17 @@ function list_tparty_get() {
     # Build and install third party packages
     # from the given [list]
     list="$1"
+    if [ -z "$3" ]; then
+        dest="$3"
+    else
+        dest="list.txt"
+    fi
 
+    curl -kLos "$list" -O "$dest"
     while ISC='' read -r package || [ -n "$package" ]; do
         tparty_get "$package"
-    done < "$list"
+    done < "$dest"
+    rm -rfv "$dest"
 }
 
 function list_clone() {
@@ -159,21 +165,35 @@ function list_clone() {
     # Git repositories from [url] as main URL
     url="$1"
     list="$2"
+    if [ -z "$3" ]; then
+        dest="$3"
+    else
+        dest="list.txt"
+    fi
 
+    curl -kLos "$list" -O "$dest"
     while ISC='' read -r repo || [ -n "$repo" ]; do
         repo_clone "$url/$repo" "$repo"
-    done < "$list"
+    done < "$dest"
+    rm -rfv "$dest"
 }
 
 function list_go_get() {
     # Usage: list_go_get [list]
     # Get every package listed in the file [list]
     list="$1"
+    if [ -z "$3" ]; then
+        dest="$3"
+    else
+        dest="list.txt"
+    fi
 
+    curl -kLos "$list" -O "$dest"
     while ISC='' read -r package || [ -n "$package" ]; do
         notify_me "Installing Go package: $package"
         go get -u "$package"
-    done < "$list"
+    done < "$dest"
+    rm -rfv "$dest"
 }
 
 # Welcome
@@ -190,21 +210,21 @@ sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
 # Manage repositories
 ## Remove Solus (Shannon)
-notify_me "Removing $REPO_SHANNON_NAME repository"
-sudo eopkg remove-repo -y "$REPO_SHANNON_NAME"
+notify_me "Removing $REPO_DEFAULT_NAME repository"
+sudo eopkg remove-repo -y "$REPO_DEFAULT_NAME"
 ## Add Unstable
 notify_me "Adding Unstable repository"
-sudo eopkg add-repo -y "$REPO_SHANNON_NAME" "$REPO_UNSTABLE_URL"
+sudo eopkg add-repo -y "$REPO_DEFAULT_NAME" "$REPO_UNSTABLE_URL"
 
 # Manage packages
 ## Upgrade the system
 notify_me "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-list_tparty_get "$FILES_FOLDER/third_party.txt"
+list_tparty_get "$THIRD_PARTY_LIST"
 ## Install more applications and stuff
 notify_me "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape brasero cheese simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub glances neofetch {python-,}neovim golang nodejs solbuild{,-config-unstable}
+sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub neofetch {python-,}neovim golang nodejs solbuild{,-config-unstable}
 ## Install development component
 notify_me "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -257,7 +277,7 @@ notify_me "Installing Telegram Desktop"
 ## Enter into the Telegram folder
 folder_enter "$TELEGRAM_FOLDER"
 ## Download the tarball
-curl -kLo "$TELEGRAM_URL"
+curl -kLos "$TELEGRAM_URL"
 ## Unpack it
 tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
 folder_wipe "$TELEGRAM_TARBALL"
