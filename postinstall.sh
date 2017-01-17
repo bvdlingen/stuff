@@ -143,17 +143,14 @@ function repo_clone() {
     # Clone a Git repository, if the clone fails,
     # start again, if {dest} is specified, clone into it
     repo_name="$1"
-    if [ -z "$2" ]; then
-        repo_url="$2"
-    else
-        repo_url=""
-    fi
+    repo_url="$2"
 
-    notify_me "Cloning repository: $repo_url/$repo_name"
-    if [ "$repo_url" != "" ]; then
-        git clone --recursive "$repo_url/$repo_name"
-    else
+    if [ "$repo_url" == "" ]; then
+        notify_me "Cloning repository: $repo_name"
         git clone --recursive "$repo_name"
+    else
+        notify_me "Cloning repository: $repo_url/$repo_name"
+        git clone --recursive "$repo_url/$repo_name"
     fi
 }
 
@@ -175,19 +172,11 @@ function list_clone() {
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
     list="$1"
-    if [ -z "$2" ]; then
-        main_url="$2"
-    else
-        main_url=""
-    fi
+    main_url="$2"
 
     file_get "$list" list.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
-        if [ "$main_url" != "" ]; then
-            repo_clone "$git_repo" "$main_url"
-        else
-            repo_clone "$git_repo"
-        fi
+        repo_clone "$git_repo" "$main_url"
     done < list.txt
     file_wipe list.txt
 }
