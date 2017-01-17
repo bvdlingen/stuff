@@ -6,10 +6,10 @@
 # Variables
 
 ## Lists
-LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/files"
+LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/lists"
 THIRD_PARTY_LIST="$LISTS_RAW_URL/third_party.txt"
 GITHUB_REPOS_LIST="$LISTS_RAW_URL/github_repos.txt"
-GITLAB_REPOS_LIST="$LISTS_RAW_URL/gitlab_repos.txt"
+EXTRA_REPOS_LIST="$LISTS_RAW_URL/extra_repos.txt"
 SOLUS_REPOS_LIST="$LISTS_RAW_URL/solus_repos.txt"
 GO_PACKAGES_LIST="$LISTS_RAW_URL/go_packages.txt"
 
@@ -35,10 +35,6 @@ BLOG_FOLDER="$GIT_FOLDER/blog"
 ## GitHub repositories
 ### Main URL
 GITHUB_URL="https://github.com"
-
-## GitLab repositories
-### Main URL
-GITLAB_URL="https://gitlab.com"
 
 ## Solus repositories
 ### Main URL
@@ -115,19 +111,19 @@ function folder_npmi() {
 function file_get() {
     # Usage: file_get [url] [dest]
     # Wrapper for CURL
-    url="$1"
-    dest="$2"
+    file_url="$1"
+    file_dest="$2"
 
-    curl -kL "$url" -o "$dest" --create-dirs
+    curl -kL "$file_url" -o "$file_dest" --create-dirs
 }
 
 function file_wipe() {
     # Usage: file_wipe [file]
     # Close and wipe the given [file] or folder
-    file="$1"
+    wipe_file="$1"
 
     folder_close
-    rm -rfv "$file"
+    rm -rfv "$wipe_file"
 }
 
 function tparty_get() {
@@ -146,11 +142,19 @@ function repo_clone() {
     # Usage: repo_clone [url] [repo] {dest}
     # Clone a Git repository, if the clone fails,
     # start again, if {dest} is specified, clone into it
-    url="$1"
-    repo="$2"
+    repo_name="$1"
+    if [ -z "$2" ]; then
+        repo_url="$2"
+    else
+        repo_url=""
+    fi
 
-    notify_me "Cloning repository: $url/$repo"
-    git clone --recursive "$url/$repo"
+    notify_me "Cloning repository: $repo_url/$repo_name"
+    if [ "$repo_url" != "" ]; then
+        git clone --recursive "$repo_url/$repo_name"
+    else
+        git clone --recursive "$repo_name"
+    fi
 }
 
 function list_tparty_get() {
@@ -160,8 +164,8 @@ function list_tparty_get() {
     list="$1"
 
     file_get "$list" list.txt
-    while ISC='' read -r package || [ -n "$package" ]; do
-        tparty_get "$package"
+    while ISC='' read -r tp_pkg || [ -n "$tp_pkg" ]; do
+        tparty_get "$tp_pkg"
     done < list.txt
     file_wipe list.txt
 }
@@ -171,11 +175,19 @@ function list_clone() {
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
     list="$1"
-    url="$2"
+    if [ -z "$2" ]; then
+        main_url="$2"
+    else
+        main_url=""
+    fi
 
     file_get "$list" list.txt
-    while ISC='' read -r repo || [ -n "$repo" ]; do
-        repo_clone "$url/$repo"
+    while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
+        if [ "$main_url" != "" ]; then
+            repo_clone "$git_repo" "$main_url"
+        else
+            repo_clone "$git_repo"
+        fi
     done < list.txt
     file_wipe list.txt
 }
@@ -186,9 +198,9 @@ function list_go_get() {
     list="$1"
 
     file_get "$list" list.txt
-    while ISC='' read -r package || [ -n "$package" ]; do
-        notify_me "Installing Go package: $package"
-        go get -u "$package"
+    while ISC='' read -r go_pkg || [ -n "$go_pkg" ]; do
+        notify_me "Installing Go package: $go_pkg"
+        go get -u "$go_pkg"
     done < list.txt
     file_wipe list.txt
 }
@@ -241,11 +253,11 @@ list_clone "$GITHUB_REPOS_LIST" "$GITHUB_URL"
 ## Return to home
 folder_close
 
-# GitLab repositories
+# Extra repositories
 ## Clone repositories
-notify_me "Cloning GitLab repositories"
+notify_me "Cloning extra repositories"
 folder_enter "$GIT_FOLDER"
-list_clone "$GITLAB_REPOS_LIST" "$GITLAB_URL"
+list_clone "$EXTRA_REPOS_LIST"
 ## Return to home
 folder_close
 
