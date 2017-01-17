@@ -9,7 +9,7 @@
 LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/files"
 THIRD_PARTY_LIST="$LISTS_RAW_URL/third_party.txt"
 GITHUB_REPOS_LIST="$LISTS_RAW_URL/github_repos.txt"
-EXTRA_REPOS_LIST="$LISTS_RAW_URL/extra_repos.txt"
+GITLAB_REPOS_LIST="$LISTS_RAW_URL/gitlab_repos.txt"
 SOLUS_REPOS_LIST="$LISTS_RAW_URL/solus_repos.txt"
 GO_PACKAGES_LIST="$LISTS_RAW_URL/go_packages.txt"
 
@@ -36,8 +36,12 @@ BLOG_FOLDER="$GIT_FOLDER/blog"
 ### Main URL
 GITHUB_URL="https://github.com"
 
+## GitLab repositories
+### Main URL
+GITLAB_URL="https://gitlab.com"
+
 ## Solus repositories
-### Solus Git main URL
+### Main URL
 SOLUS_URL="https://git.solus-project.com"
 ### Locations
 #### Packaging folder
@@ -167,19 +171,11 @@ function list_clone() {
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
     list="$1"
-    if [ -z "$2" ]; then
-        url="$2"
-    else
-        url=""
-    fi
+    url="$2"
 
     file_get "$list" list.txt
     while ISC='' read -r repo || [ -n "$repo" ]; do
-        if [ "$url" != "" ]; then
-            repo_clone "$url/$repo"
-        else
-            repo_clone "$repo"
-        fi
+        repo_clone "$url/$repo"
     done < list.txt
     file_wipe list.txt
 }
@@ -245,11 +241,13 @@ list_clone "$GITHUB_REPOS_LIST" "$GITHUB_URL"
 ## Return to home
 folder_close
 
-# Extra repositories
+# GitLab repositories
 ## Clone repositories
-notify_me "Cloning extra repositories"
+notify_me "Cloning GitLab repositories"
 folder_enter "$GIT_FOLDER"
-list_clone "$EXTRA_REPOS_LIST"
+list_clone "$GITLAB_REPOS_LIST" "$GITLAB_URL"
+## Return to home
+folder_close
 
 # Solus packaging repository
 ## Create packages folder
@@ -289,10 +287,6 @@ file_get "$TELEGRAM_URL" "$TELEGRAM_TARBALL"
 tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
 file_wipe "$TELEGRAM_TARBALL"
 
-# Go packages
-notify_me "Installing Go packages"
-list_go_get "$GO_PACKAGES_LIST"
-
 # Blog
 ## Setup it
 notify_me "Setting-up blog"
@@ -305,10 +299,14 @@ folder_close
 
 # Deezloader App
 ## Setup it
-notify_me "Setting-up Deezloader"
+notify_me "Setting-up Deezloader App"
 folder_npmi "$GIT_FOLDER/deezloader-app"
 ## Back to home
 folder_close
+
+# Go packages
+notify_me "Installing Go packages"
+list_go_get "$GO_PACKAGES_LIST"
 
 # Personalization
 ## Make GSettings set things
