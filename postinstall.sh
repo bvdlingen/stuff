@@ -8,8 +8,9 @@
 ## Lists
 LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/files"
 THIRD_PARTY_LIST="$LISTS_RAW_URL/third_party.txt"
-GITHUB_REPO_LIST="$LISTS_RAW_URL/github_repos.txt"
-SOLUS_REPO_LIST="$LISTS_RAW_URL/solus_repos.txt"
+GITHUB_REPOS_LIST="$LISTS_RAW_URL/github_repos.txt"
+EXTRA_REPOS_LIST="$LISTS_RAW_URL/extra_repos.txt"
+SOLUS_REPOS_LIST="$LISTS_RAW_URL/solus_repos.txt"
 GO_PACKAGES_LIST="$LISTS_RAW_URL/go_packages.txt"
 
 ## Repositories
@@ -27,12 +28,12 @@ THIRD_PARTY_BUILD_FOLDER="$HOME/build"
 ## Git
 ### Repositories folder
 GIT_FOLDER="$HOME/Git"
-### The main folder struct for this script
+### Repository locations
 STUFF_FOLDER="$GIT_FOLDER/stuff"
-CONFIGS_FOLDER="$STUFF_FOLDER/config"
+BLOG_FOLDER="$GIT_FOLDER/blog"
 
 ## GitHub repositories
-### GitHub main URL
+### Main URL
 GITHUB_URL="https://github.com"
 
 ## Solus repositories
@@ -47,6 +48,9 @@ COMMON_REPO_FOLDER="$PACKAGING_FOLDER/common"
 ## Dotfiles
 ### Dotfiles URL
 DOTFILES_URL="$PERSONAL_URL/dotfiles"
+
+## Stateless configurations
+CONFIGS_FOLDER="$STUFF_FOLDER/config"
 
 ## Telegram Desktop
 ### Download URL
@@ -94,15 +98,6 @@ function folder_close() {
     cd || exit
 }
 
-function folder_wipe() {
-    # Usage: folder_wipe [folder]
-    # Close and wipe the given [folder]
-    folder="$1"
-
-    folder_close
-    rm -rfv "$folder"
-}
-
 function folder_npmi() {
     # Usage: folder_npmi [folder]
     # Execute npm install in the given [folder]
@@ -111,6 +106,24 @@ function folder_npmi() {
     folder_enter "$folder"
     notify_me "Installing NodeJS packages in folder: $folder"
     npm install
+}
+
+function file_get() {
+    # Usage: file_get [url] [dest]
+    # Wrapper for CURL
+    url="$1"
+    dest="$2"
+
+    curl -kL "$url" -o "$dest" --create-dirs
+}
+
+function file_wipe() {
+    # Usage: file_wipe [file]
+    # Close and wipe the given [file] or folder
+    file="$1"
+
+    folder_close
+    rm -rfv "$file"
 }
 
 function tparty_get() {
@@ -122,7 +135,7 @@ function tparty_get() {
     notify_me "Installing third party package: $package"
     sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
     sudo eopkg install -y ./*.eopkg
-    folder_wipe "$THIRD_PARTY_BUILD_FOLDER"
+    file_wipe "$THIRD_PARTY_BUILD_FOLDER"
 }
 
 function repo_clone() {
@@ -131,14 +144,9 @@ function repo_clone() {
     # start again, if {dest} is specified, clone into it
     url="$1"
     repo="$2"
-    if [ -z "$3" ]; then
-        dest="$3"
-    else
-        dest="$2"
-    fi
 
-    notify_me "Cloning repository: $url/$repo to $dest"
-    git clone --recursive "$url/$repo" "$dest"
+    notify_me "Cloning repository: $url/$repo"
+    git clone --recursive "$url/$repo"
 }
 
 function list_tparty_get() {
@@ -146,54 +154,47 @@ function list_tparty_get() {
     # Build and install third party packages
     # from the given [list]
     list="$1"
-    if [ -z "$3" ]; then
-        dest="$3"
-    else
-        dest="list.txt"
-    fi
 
-    curl -kLos "$list" -O "$dest"
+    file_get "$list" list.txt
     while ISC='' read -r package || [ -n "$package" ]; do
         tparty_get "$package"
-    done < "$dest"
-    rm -rfv "$dest"
+    done < list.txt
+    file_wipe list.txt
 }
 
 function list_clone() {
     # Usage: list_clone [url] [list]
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
-    url="$1"
-    list="$2"
-    if [ -z "$3" ]; then
-        dest="$3"
+    list="$1"
+    if [ -z "$2" ]; then
+        url="$2"
     else
-        dest="list.txt"
+        url=""
     fi
 
-    curl -kLos "$list" -O "$dest"
+    file_get "$list" list.txt
     while ISC='' read -r repo || [ -n "$repo" ]; do
-        repo_clone "$url/$repo" "$repo"
-    done < "$dest"
-    rm -rfv "$dest"
+        if [ "$url" != "" ]; then
+            repo_clone "$url/$repo"
+        else
+            repo_clone "$repo"
+        fi
+    done < list.txt
+    file_wipe list.txt
 }
 
 function list_go_get() {
     # Usage: list_go_get [list]
     # Get every package listed in the file [list]
     list="$1"
-    if [ -z "$3" ]; then
-        dest="$3"
-    else
-        dest="list.txt"
-    fi
 
-    curl -kLos "$list" -O "$dest"
+    file_get "$list" list.txt
     while ISC='' read -r package || [ -n "$package" ]; do
         notify_me "Installing Go package: $package"
         go get -u "$package"
-    done < "$dest"
-    rm -rfv "$dest"
+    done < list.txt
+    file_wipe list.txt
 }
 
 # Welcome
@@ -238,11 +239,17 @@ folder_create "$GIT_FOLDER"
 
 # GitHub repositories
 ## Clone repositories
-notify_me "Cloning GithUB repositories"
+notify_me "Cloning GitHub repositories"
 folder_enter "$GIT_FOLDER"
-list_clone "$GITHUB_URL" "$GITHUB_REPO_LIST"
+list_clone "$GITHUB_REPOS_LIST" "$GITHUB_URL"
 ## Return to home
 folder_close
+
+# Extra repositories
+## Clone repositories
+notify_me "Cloning extra repositories"
+folder_enter "$GIT_FOLDER"
+list_clone "$EXTRA_REPOS_LIST"
 
 # Solus packaging repository
 ## Create packages folder
@@ -250,7 +257,7 @@ notify_me "Setting up Solus packages folder"
 folder_enter "$PACKAGES_FOLDER"
 ## Clone package repositories
 notify_me "Cloning package repositories"
-list_clone "$SOLUS_URL" "$SOLUS_REPO_LIST"
+list_clone "$SOLUS_REPOS_LIST" "$SOLUS_URL"
 ## Link makefiles
 notify_me "Linking makefiles"
 ln -srfv "$COMMON_REPO_FOLDER/Makefile.common" "$PACKAGING_FOLDER/Makefile.common"
@@ -277,10 +284,10 @@ notify_me "Installing Telegram Desktop"
 ## Enter into the Telegram folder
 folder_enter "$TELEGRAM_FOLDER"
 ## Download the tarball
-curl -kLos "$TELEGRAM_URL"
+file_get "$TELEGRAM_URL" "$TELEGRAM_TARBALL"
 ## Unpack it
 tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
-folder_wipe "$TELEGRAM_TARBALL"
+file_wipe "$TELEGRAM_TARBALL"
 
 # Go packages
 notify_me "Installing Go packages"
@@ -299,11 +306,7 @@ folder_close
 # Deezloader App
 ## Setup it
 notify_me "Setting-up Deezloader"
-folder_enter "$GIT_FOLDER"
-## Clone repository
-repo_clone https://gitlab.com/ParadoxalManiak/deezloader-app
-## Install needed libraries
-folder_npmi "$GIT_FOLDER"/deezloader-app
+folder_npmi "$GIT_FOLDER/deezloader-app"
 ## Back to home
 folder_close
 
