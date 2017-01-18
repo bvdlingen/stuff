@@ -29,7 +29,7 @@ THIRD_PARTY_BUILD_FOLDER="$HOME/build"
 ### Repositories folder
 GIT_FOLDER="$HOME/Git"
 ### Repository locations
-STUFF_FOLDER="$GIT_FOLDER/stuff"
+STUFF_FOLDER="$GIT_FOLDER/solus-stuff"
 BLOG_FOLDER="$GIT_FOLDER/blog"
 
 ## GitHub repositories
@@ -43,11 +43,11 @@ SOLUS_URL="https://git.solus-project.com"
 #### Packaging folder
 PACKAGES_FOLDER="$GIT_FOLDER/packages"
 #### Common repository
-COMMON_REPO_FOLDER="$PACKAGING_FOLDER/common"
+COMMON_REPO_FOLDER="$PACKAGES_FOLDER/common"
 
 ## Dotfiles
 ### Dotfiles URL
-DOTFILES_URL="$PERSONAL_URL/dotfiles"
+DOTFILES_URL="$GITHUB_URL/dotfiles"
 
 ## Stateless configurations
 CONFIGS_FOLDER="$STUFF_FOLDER/config"
@@ -58,6 +58,10 @@ TELEGRAM_URL="https://tdesktop.com/linux/current?alpha=1"
 ### Destination
 TELEGRAM_FOLDER="$HOME/.TelegramDesktop"
 TELEGRAM_TARBALL="$TELEGRAM_FOLDER/telegram-desktop.tar.xz"
+
+## Go packages
+### Set GOPATH so it doesn't explodes
+GOPATH="$HOME/.golang"
 
 # Functions
 function notify_me() {
