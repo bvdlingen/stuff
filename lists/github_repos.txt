@@ -1,6 +1,6 @@
 feskyde/blog
-feskyde/cardinal
 feskyde/ciumsumn
+feskyde/hexofy
 feskyde/kydebot
 feskyde/nish
 feskyde/shikon
