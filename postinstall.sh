@@ -3,85 +3,20 @@
 # Solus Post Install Script
 #
 
-# Variables
-
-## Lists
+## Lists (bad design is bad)
 LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/lists"
-THIRD_PARTY_LIST="$LISTS_RAW_URL/third_party.txt"
-GITHUB_REPOS_LIST="$LISTS_RAW_URL/github_repos.txt"
-EXTRA_REPOS_LIST="$LISTS_RAW_URL/extra_repos.txt"
-SOLUS_REPOS_LIST="$LISTS_RAW_URL/solus_repos.txt"
-GO_PACKAGES_LIST="$LISTS_RAW_URL/go_packages.txt"
 
-## Repositories
-### Names
-REPO_DEFAULT_NAME="Solus"
-### URLs
-REPO_UNSTABLE_URL="https://packages.solus-project.com/unstable/eopkg-index.xml.xz"
-
-## Third Party
-### Source
-THIRD_PARTY_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
-### Build folder
-THIRD_PARTY_BUILD_FOLDER="$HOME/build"
-
-## Git
-### Repositories folder
-GIT_FOLDER="$HOME/Git"
-### Repository locations
-STUFF_FOLDER="$GIT_FOLDER/solus-stuff"
-BLOG_FOLDER="$GIT_FOLDER/blog"
-
-## GitHub repositories
-### Main URL
-GITHUB_URL="https://github.com"
-
-## Solus repositories
-### Main URL
-SOLUS_URL="https://git.solus-project.com"
-### Locations
-#### Packaging folder
-PACKAGES_FOLDER="$GIT_FOLDER/packages"
-#### Common repository
-COMMON_REPO_FOLDER="$PACKAGES_FOLDER/common"
-
-## Dotfiles
-### Dotfiles URL
-DOTFILES_URL="$GITHUB_URL/dotfiles"
-
-## Stateless configurations
-CONFIGS_FOLDER="$STUFF_FOLDER/config"
-
-## Telegram Desktop
-### Download URL
-TELEGRAM_URL="https://tdesktop.com/linux/current?alpha=1"
-### Destination
-TELEGRAM_FOLDER="$HOME/.TelegramDesktop"
-TELEGRAM_TARBALL="$TELEGRAM_FOLDER/telegram-desktop.tar.xz"
-
-## Go packages
-### Set GOPATH so it doesn't explodes
-GOPATH="$HOME/.golang"
+## Fixes
+### Export GOPATH so the Go packages installation will not explode
+export GOPATH="$HOME/.golang"
 
 # Functions
-function notify_me() {
-    # Usage: notify_me [message]
-    # Print the [message] and send a notification
+function print_step() {
+    # Usage: print_step [message]
+    # Print a styled [message]
     message="$1"
 
-    echo -e "\e[1m>> $message\e[0m"
-    notify-send "Solus Post Install" "$message" -i distributor-logo-solus
-}
-
-function folder_create() {
-    # Usage: folder_create [folder]
-    # Create a [folder]
-    folder="$1"
-
-    if [ ! -d "$folder" ]; then
-        notify_me "Creating folder: $folder"
-        mkdir -pv "$folder"
-    fi
+    echo -e "\e[1m- $message\e[0m"
 }
 
 function folder_enter() {
@@ -90,232 +25,181 @@ function folder_enter() {
     # exists, just create it
     folder="$1"
 
-    folder_create "$folder"
-    notify_me "Entering in folder: $folder"
+    if [ ! -d "$folder" ]; then
+        mkdir -pv "$folder"
+    fi
     cd "$folder" || exit
-}
-
-function folder_close() {
-    # Usage: folder_close
-    # Return to $HOME
-
-    cd || exit
-}
-
-function folder_npmi() {
-    # Usage: folder_npmi [folder]
-    # Execute npm install in the given [folder]
-    folder="$1"
-
-    folder_enter "$folder"
-    notify_me "Installing NodeJS packages in folder: $folder"
-    npm install
-}
-
-function file_get() {
-    # Usage: file_get [url] [dest]
-    # Wrapper for CURL
-    file_url="$1"
-    file_dest="$2"
-
-    curl -kL "$file_url" -o "$file_dest" --create-dirs
-}
-
-function file_wipe() {
-    # Usage: file_wipe [file]
-    # Close and wipe the given [file] or folder
-    wipe_file="$1"
-
-    folder_close
-    rm -rfv "$wipe_file"
-}
-
-function tparty_get() {
-    # Usage: tparty_get [package]
-    # Build and install [package] from third party
-    package="$1"
-
-    folder_enter "$THIRD_PARTY_BUILD_FOLDER"
-    notify_me "Installing third party package: $package"
-    sudo eopkg build -y --ignore-safety "$THIRD_PARTY_URL"/"$package"/pspec.xml
-    sudo eopkg install -y ./*.eopkg
-    file_wipe "$THIRD_PARTY_BUILD_FOLDER"
 }
 
 function repo_clone() {
     # Usage: repo_clone [url] [repo] {dest}
     # Clone a Git repository, if the clone fails,
     # start again, if {dest} is specified, clone into it
-    repo_name="$1"
-    repo_url="$2"
-
-    if [ "$repo_url" == "" ]; then
-        notify_me "Cloning repository: $repo_name"
-        git clone --recursive "$repo_name"
+    if [ "$2" == "" ]; then
+        repo_clone="$1"
     else
-        notify_me "Cloning repository: $repo_url/$repo_name"
-        git clone --recursive "$repo_url/$repo_name"
+        repo_clone="$1/$2"
     fi
+
+    git clone --recursive "$repo_clone"
 }
 
-function list_tparty_get() {
-    # Usage: list_tparty_get [list]
+function tpkg_from_list() {
+    # Usage: tpkg_from_list [list]
     # Build and install third party packages
     # from the given [list]
     list="$1"
 
-    file_get "$list" list.txt
-    while ISC='' read -r tp_pkg || [ -n "$tp_pkg" ]; do
-        tparty_get "$tp_pkg"
+    wget "$list" -O list.txt
+    while ISC='' read -r tpkg_dir || [ -n "$tpkg_dir" ]; do
+        sudo eopkg build -y --ignore-safety https://raw.githubusercontent.com/solus-project/3rd-party/master/"$tpkg_dir"/pspec.xml
+        sudo eopkg install -y ./*.eopkg
+        rm -rfv ./*.eopkg
     done < list.txt
-    file_wipe list.txt
+    rm -rfv list.txt
 }
 
-function list_clone() {
-    # Usage: list_clone [url] [list]
+function clone_from_list() {
+    # Usage: clone_from_list [url] [list]
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
-    list="$1"
-    main_url="$2"
+    if [ "$2" != "" ]; then
+        main_url="$1"
+        list="$2"
+    else
+        list="$1"
+    fi
 
-    file_get "$list" list.txt
+    wget "$list" -O list.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
         repo_clone "$git_repo" "$main_url"
     done < list.txt
-    file_wipe list.txt
+    rm -rfv list.txt
 }
 
-function list_go_get() {
-    # Usage: list_go_get [list]
+function go_get_from_list() {
+    # Usage: go_get_from_list [list]
     # Get every package listed in the file [list]
     list="$1"
 
-    file_get "$list" list.txt
-    while ISC='' read -r go_pkg || [ -n "$go_pkg" ]; do
-        notify_me "Installing Go package: $go_pkg"
-        go get -u "$go_pkg"
+    wget "$list" -O list.txt
+    while ISC='' read -r gpkg_path || [ -n "$gpkg_path" ]; do
+        go get -u "$gpkg_path"
     done < list.txt
-    file_wipe list.txt
+    rm -rfv list.txt
 }
 
 # Welcome
-notify_me "Script is now running, do not touch anything until it finishes :)"
+print_step "Script is now running, do not touch anything until it finishes :)"
 
 # Password-less user
 ## Remove password for Casa
-notify_me "Setting password-less user"
+print_step "Setting password-less user"
 sudo passwd -du "$(whoami)"
 ## Add nullok option to PAM files
-notify_me "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
+print_step "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
 sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/g" -i /etc/pam.d/system-password
 sudo sed -e "s/pam_unix.so/pam_unix.so nullok/g" -i /etc/pam.d/*
 
 # Manage repositories
 ## Remove Solus (Shannon)
-notify_me "Removing $REPO_DEFAULT_NAME repository"
-sudo eopkg remove-repo -y "$REPO_DEFAULT_NAME"
+print_step "Removing repository Solus"
+sudo eopkg remove-repo -y Solus
 ## Add Unstable
-notify_me "Adding Unstable repository"
-sudo eopkg add-repo -y "$REPO_DEFAULT_NAME" "$REPO_UNSTABLE_URL"
+print_step "Adding Unstable repository"
+sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
 ## Upgrade the system
-notify_me "Getting system up to date"
+print_step "Getting system up to date"
 sudo eopkg upgrade -y
+## Install extra applications and stuff
+print_step "Installing more packages"
+sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all git{,-extras} hub yadm golang nodejs neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
-list_tparty_get "$THIRD_PARTY_LIST"
-## Install more applications and stuff
-notify_me "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder kodi libreoffice-all zsh yadm git{,-extras} hub neofetch {python-,}neovim golang nodejs solbuild{,-config-unstable}
+print_step "Installing third party packages"
+tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
+
+# Development packages and Solbuild
 ## Install development component
-notify_me "Installing development component"
+print_step "Installing development component"
 sudo eopkg install -y -c system.devel
 ## Set up solbuild
-notify_me "Setting up solbuild"
+print_step "Setting up solbuild"
 sudo solbuild init -u
 
-# Git repositories
-notify_me "Creating Git folder"
-folder_create "$GIT_FOLDER"
-
 # GitHub repositories
-## Clone repositories
-notify_me "Cloning GitHub repositories"
-folder_enter "$GIT_FOLDER"
-list_clone "$GITHUB_REPOS_LIST" "$GITHUB_URL"
+print_step "Cloning GitHub repositories"
+folder_enter ~/Git
+clone_from_list https://github.com "$LISTS_RAW_URL/github_repos.txt"
 ## Return to home
-folder_close
+cd ~ || exit
 
 # Extra repositories
-## Clone repositories
-notify_me "Cloning extra repositories"
-folder_enter "$GIT_FOLDER"
-list_clone "$EXTRA_REPOS_LIST"
+print_step "Cloning extra repositories"
+folder_enter ~/Git
+clone_from_list "$LISTS_RAW_URL/extra_repos.txt"
 ## Return to home
-folder_close
+cd ~ || exit
 
 # Solus packaging repository
 ## Create packages folder
-notify_me "Setting up Solus packages folder"
-folder_enter "$PACKAGES_FOLDER"
-## Clone package repositories
-notify_me "Cloning package repositories"
-list_clone "$SOLUS_REPOS_LIST" "$SOLUS_URL"
+print_step "Setting up Solus packages folder"
+folder_enter ~/Git/packages
+## Clone common repository
+repo_clone https://git.solus-project.com/common
 ## Link makefiles
-notify_me "Linking makefiles"
-ln -srfv "$COMMON_REPO_FOLDER/Makefile.common" "$PACKAGING_FOLDER/Makefile.common"
-ln -srfv "$COMMON_REPO_FOLDER/Makefile.iso" "$PACKAGING_FOLDER/Makefile.iso"
-ln -srfv "$COMMON_REPO_FOLDER/Makefile.toplevel" "$PACKAGING_FOLDER/Makefile"
+print_step "Linking makefiles"
+ln -srfv common/Makefile.common Makefile.common
+ln -srfv common/Makefile.iso Makefile.iso
+ln -srfv common/Makefile.toplevel Makefile
+## Clone package repositories
+print_step "Cloning package repositories"
+make clone
 ## Return to home
-folder_close
+cd ~ || exit
 
 # Dotfiles
-## Install the dotfiles
-notify_me "Setting-up dotfiles"
-yadm clone "$DOTFILES_URL"
+print_step "Setting-up dotfiles"
+yadm clone https://github.com/feskyde/dotfiles
 yadm decrypt
-## Set default shell
-notify_me "Setting default shell"
-sudo chsh -s "$(which zsh)" "$(whoami)"
-
-# Stateless configuration files
-notify_me "Installing stateless configuration files"
-bash "$CONFIGS_FOLDER/install.sh"
 
 # Telegram Desktop
-notify_me "Installing Telegram Desktop"
+print_step "Installing Telegram Desktop"
 ## Enter into the Telegram folder
-folder_enter "$TELEGRAM_FOLDER"
+folder_enter ~/.TelegramDesktop
 ## Download the tarball
-file_get "$TELEGRAM_URL" "$TELEGRAM_TARBALL"
+wget https://tdesktop.com/linux/current?alpha=1 -O telegram-desktop.tar.xz
 ## Unpack it
-tar xfv "$TELEGRAM_TARBALL" --strip-components=1 --show-transformed-names
-file_wipe "$TELEGRAM_TARBALL"
+tar xfv telegram-desktop.tar.xz --strip-components=1 --show-transformed-names
+rm -rfv telegram-desktop.tar.xz
+## Back to home
+cd ~ || exit
 
 # Blog
-## Setup it
-notify_me "Setting-up blog"
+print_step "Setting-up blog"
 ## Install Hexo
 sudo npm install -g hexo-cli
 ## Install needed libraries
-folder_npmi "$BLOG_FOLDER"
+folder_enter ~/Git/blog
+npm install
 ## Back to home
-folder_close
+cd ~ || exit
 
 # Deezloader App
-## Setup it
-notify_me "Setting-up Deezloader App"
-folder_npmi "$GIT_FOLDER/deezloader-app"
+print_step "Setting-up Deezloader App"
+folder_enter ~/Git/deezloader-app
+npm install
 ## Back to home
-folder_close
+cd ~ || exit
 
 # Go packages
-notify_me "Installing Go packages"
-list_go_get "$GO_PACKAGES_LIST"
+print_step "Installing Go packages"
+go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
 
 # Personalization
 ## Make GSettings set things
-notify_me "Setting stuff with GSettings"
+print_step "Setting stuff with GSettings"
 ### Privacy
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 gsettings set org.gnome.desktop.privacy remove-old-trash-files true
@@ -329,4 +213,4 @@ gsettings set org.gnome.desktop.sound theme-name "freedesktop"
 gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # FINISHED!
-notify_me "Script has finished! You should reboot as soon as possible"
+print_step "Script has finished! You should reboot as soon as possible"

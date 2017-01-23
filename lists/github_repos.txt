@@ -1,4 +1,9 @@
 feskyde/blog
+feskyde/cardinal
+feskyde/ciumsumn
 feskyde/kydebot
+feskyde/nish
+feskyde/shikon
 feskyde/solus-stuff
 feskyde/ylint
+feskyde/ypkg-tools
