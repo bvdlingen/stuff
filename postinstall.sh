@@ -3,12 +3,8 @@
 # Solus Post Install Script
 #
 
-## Lists (bad design is bad)
+# Lists (bad design is bad)
 LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/lists"
-
-## Fixes
-### Export GOPATH so the Go packages installation will not explode
-export GOPATH="$HOME/.golang"
 
 # Functions
 function print_step() {
@@ -31,18 +27,8 @@ function folder_enter() {
     cd "$folder" || exit
 }
 
-function repo_clone() {
-    # Usage: repo_clone [url] [repo] {dest}
-    # Clone a Git repository, if the clone fails,
-    # start again, if {dest} is specified, clone into it
-    if [ "$2" == "" ]; then
-        repo_clone="$1"
-    else
-        repo_clone="$1/$2"
-    fi
-
-    git clone --recursive "$repo_clone"
-}
+# Usage: repo_clone [url]
+alias repo_clone="hub clone --recursive"
 
 function tpkg_from_list() {
     # Usage: tpkg_from_list [list]
@@ -63,16 +49,11 @@ function clone_from_list() {
     # Usage: clone_from_list [url] [list]
     # Clone every item on [list] file using the
     # Git repositories from [url] as main URL
-    if [ "$2" != "" ]; then
-        main_url="$1"
-        list="$2"
-    else
-        list="$1"
-    fi
+    list="$1"
 
     wget "$list" -O list.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
-        repo_clone "$git_repo" "$main_url"
+        repo_clone "$git_repo"
     done < list.txt
     rm -rfv list.txt
 }
@@ -115,7 +96,7 @@ print_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all git{,-extras} hub yadm golang nodejs neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all lutris git{,-extras} hub yadm hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
@@ -128,10 +109,15 @@ sudo eopkg install -y -c system.devel
 print_step "Setting up solbuild"
 sudo solbuild init -u
 
+# Dotfiles
+print_step "Setting-up dotfiles"
+yadm clone https://github.com/feskyde/dotfiles
+yadm decrypt
+
 # GitHub repositories
 print_step "Cloning GitHub repositories"
 folder_enter ~/Git
-clone_from_list https://github.com "$LISTS_RAW_URL/github_repos.txt"
+clone_from_list "$LISTS_RAW_URL/github_repos.txt"
 ## Return to home
 cd ~ || exit
 
@@ -159,11 +145,6 @@ make clone
 ## Return to home
 cd ~ || exit
 
-# Dotfiles
-print_step "Setting-up dotfiles"
-yadm clone https://github.com/feskyde/dotfiles
-yadm decrypt
-
 # Telegram Desktop
 print_step "Installing Telegram Desktop"
 ## Enter into the Telegram folder
@@ -176,24 +157,18 @@ rm -rfv telegram-desktop.tar.xz
 ## Back to home
 cd ~ || exit
 
-# Blog
-print_step "Setting-up blog"
-## Install Hexo
-sudo npm install -g hexo-cli
-## Install needed libraries
-folder_enter ~/Git/blog
-npm install
-## Back to home
-cd ~ || exit
-
 # Deezloader App
 print_step "Setting-up Deezloader App"
 folder_enter ~/Git/deezloader-app
-npm install
+yarn install
 ## Back to home
 cd ~ || exit
 
 # Go packages
+## Fixes
+### Export GOPATH so the Go packages installation will not explode
+export GOPATH="$HOME/.golang"
+## Install packages
 print_step "Installing Go packages"
 go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
 
