@@ -65,7 +65,7 @@ function go_get_from_list() {
 
     wget "$list" -O list.txt
     while ISC='' read -r gpkg_path || [ -n "$gpkg_path" ]; do
-        go get -u "$gpkg_path"
+        go get -v -u "$gpkg_path"
     done < list.txt
     rm -rfv list.txt
 }
@@ -91,12 +91,15 @@ print_step "Adding Unstable repository"
 sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
+## Remove unneded stuff
+print_step "Removing unneded stuff"
+sudo eopkg remove -y firefox thunderbird
 ## Upgrade the system
 print_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all lutris git{,-extras} hub yadm hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all geary lutris git{,-extras} hub yadm hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
