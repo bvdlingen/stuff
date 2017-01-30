@@ -12,7 +12,8 @@ function print_step() {
     # Print a styled [message]
     message="$1"
 
-    echo -e "\e[1m- $message\e[0m"
+    printf "\e[1m>> %s\e[0m\n" "$message"
+    notify-send "Solus Post Install" "$message" -i distributor-logo-solus
 }
 
 function folder_enter() {
@@ -91,15 +92,12 @@ print_step "Adding Unstable repository"
 sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
-## Remove unneded stuff
-print_step "Removing unneded stuff"
-sudo eopkg remove -y firefox thunderbird
 ## Upgrade the system
 print_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet gimp inkscape obs-studio kodi libreoffice-all geary lutris git{,-extras} hub yadm hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all telegram lutris git{,-extras} hub yadm hugo {python-,}neovim golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
@@ -148,16 +146,11 @@ make clone
 ## Return to home
 cd ~ || exit
 
-# Telegram Desktop
-print_step "Installing Telegram Desktop"
-## Enter into the Telegram folder
-folder_enter ~/.TelegramDesktop
-## Download the tarball
-wget https://tdesktop.com/linux/current?alpha=1 -O telegram-desktop.tar.xz
-## Unpack it
-tar xfv telegram-desktop.tar.xz --strip-components=1 --show-transformed-names
-rm -rfv telegram-desktop.tar.xz
-## Back to home
+# System configuration
+print_step "Installing system configuration files"
+folder_enter ~/Git/solus-stuff/config
+bash bootstrap.sh
+## Return to home
 cd ~ || exit
 
 # Deezloader App
@@ -170,25 +163,10 @@ cd ~ || exit
 # Go packages
 ## Fixes
 ### Export GOPATH so the Go packages installation will not explode
-export GOPATH="$HOME/.golang"
+export GOPATH=$(realpath ~/.golang)
 ## Install packages
 print_step "Installing Go packages"
 go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
-
-# Personalization
-## Make GSettings set things
-print_step "Setting stuff with GSettings"
-### Privacy
-gsettings set org.gnome.desktop.privacy remove-old-temp-files true
-gsettings set org.gnome.desktop.privacy remove-old-trash-files true
-### Location
-gsettings set org.gnome.system.location enabled true
-### Sounds
-gsettings set org.gnome.desktop.sound event-sounds true
-gsettings set org.gnome.desktop.sound input-feedback-sounds true
-gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-### Window manager
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # FINISHED!
 print_step "Script has finished! You should reboot as soon as possible"
