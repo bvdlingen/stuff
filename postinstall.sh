@@ -92,15 +92,18 @@ print_step "Adding Unstable repository"
 sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
+## Remove unneded stuff
+print_step "Removing unneded stuff"
+sudo eopkg remove -y --purge firefox thunderbird arc-firefox-theme
 ## Upgrade the system
 print_step "Getting system up to date"
 sudo eopkg upgrade -y
-## Install extra applications and stuff
-print_step "Installing more packages"
-sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
+## Install extra applications and stuff
+print_step "Installing more packages"
+sudo eopkg install -y galculator gimp inkscape simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 
 # Development packages and Solbuild
 ## Install development component
@@ -112,7 +115,10 @@ sudo solbuild init -u
 
 # Dotfiles
 print_step "Setting-up dotfiles"
-yadm clone https://github.com/feskyde/dotfiles
+## Cleanup
+rm -rfv ~/.config/gtk-3.0/bookmarks
+## Clone the repository and decrypt the binary
+yadm clone -f https://github.com/feskyde/dotfiles
 yadm decrypt
 ## Default to ZSH
 print_step "Setting default shell"
@@ -134,7 +140,13 @@ cd ~ || exit
 print_step "Setting up Solus packages folder"
 folder_enter ~/Git/packages
 ## Clone common repository
-repo_clone https://git.solus-project.com/common
+while true; do
+    if [ ! -d common ]; then
+        repo_clone https://git.solus-project.com/common
+    else
+        break
+    fi
+done
 ## Link makefiles
 print_step "Linking makefiles"
 ln -srfv common/Makefile.common Makefile.common
