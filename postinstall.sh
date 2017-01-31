@@ -97,7 +97,7 @@ print_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all telegram lutris git{,-extras} hub yadm hugo {python-,}neovim golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all telegram lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
@@ -114,17 +114,17 @@ sudo solbuild init -u
 print_step "Setting-up dotfiles"
 yadm clone https://github.com/feskyde/dotfiles
 yadm decrypt
+## Default to ZSH
+print_step "Setting default shell"
+chsh -s /bin/zsh "$(whoami)"
 
-# GitHub repositories
+# Git repositories
+folder_enter ~/Git
+## GitHub repositories
 print_step "Cloning GitHub repositories"
-folder_enter ~/Git
 clone_from_list "$LISTS_RAW_URL/github_repos.txt"
-## Return to home
-cd ~ || exit
-
-# Extra repositories
+## Extra repositories
 print_step "Cloning extra repositories"
-folder_enter ~/Git
 clone_from_list "$LISTS_RAW_URL/extra_repos.txt"
 ## Return to home
 cd ~ || exit
