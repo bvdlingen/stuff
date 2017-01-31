@@ -103,12 +103,13 @@ print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y galculator gimp inkscape simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y caja-extensions galculator gimp inkscape simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 
 # Development packages and Solbuild
 ## Install development component
-print_step "Installing development component"
+print_step "Installing development component and extra development packages"
 sudo eopkg install -y -c system.devel
+sudo eopkg install -y python3-devel
 ## Set up solbuild
 print_step "Setting up solbuild"
 sudo solbuild init -u
