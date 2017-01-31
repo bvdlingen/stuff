@@ -77,7 +77,7 @@ print_step "Script is now running, do not touch anything until it finishes :)"
 # Password-less user
 ## Remove password for Casa
 print_step "Setting password-less user"
-sudo passwd -du "$(whoami)"
+sudo passwd -du casa
 ## Add nullok option to PAM files
 print_step "Adding nullok option to PAM files (EXTREMELY INSANE STUFF)"
 sudo sed -e "s/sha512 shadow try_first_pass nullok/sha512 shadow try_first_pass/g" -i /etc/pam.d/system-password
@@ -123,7 +123,7 @@ yadm clone -f https://github.com/feskyde/dotfiles
 yadm decrypt
 ## Default to ZSH
 print_step "Setting default shell"
-chsh -s /bin/zsh "$(whoami)"
+sudo chsh -s /bin/zsh casa
 
 # Git repositories
 folder_enter ~/Git
@@ -188,7 +188,7 @@ cd ~ || exit
 # Go packages
 ## Fixes
 ### Export GOPATH so the Go packages installation will not explode
-export GOPATH=$(realpath ~/.golang)
+export GOPATH=$HOME/.golang
 ## Install packages
 print_step "Installing Go packages"
 go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
