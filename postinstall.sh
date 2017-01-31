@@ -97,7 +97,7 @@ print_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all telegram lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y galculator gimp inkscape obs-studio kodi libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 ## Install third party stuff
 print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
@@ -151,6 +151,18 @@ print_step "Installing system configuration files"
 folder_enter ~/Git/solus-stuff/config
 bash bootstrap.sh
 ## Return to home
+cd ~ || exit
+
+# Telegram Desktop
+print_step "Installing Telegram Desktop"
+## Enter into the Telegram folder
+folder_enter ~/.TelegramDesktop
+## Download the tarball
+wget https://tdesktop.com/linux/current?alpha=1 -O telegram-desktop.tar.xz
+## Unpack it
+tar xfv telegram-desktop.tar.xz --strip-components=1 --show-transformed-names
+rm -rfv telegram-desktop.tar.xz
+## Back to home
 cd ~ || exit
 
 # Deezloader App
