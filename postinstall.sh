@@ -30,9 +30,9 @@ function clone_repo() {
 }
 
 function tpkg_from_list() {
-    list="$1"
+    third_list="$1"
 
-    wget "$list" -O list.txt
+    wget "$third_list" -O list.txt
     while ISC='' read -r tpkg_dir || [ -n "$tpkg_dir" ]; do
         sudo eopkg build -y --ignore-safety https://raw.githubusercontent.com/solus-project/3rd-party/master/"$tpkg_dir"/pspec.xml
         sudo eopkg install -y ./*.eopkg
@@ -42,19 +42,29 @@ function tpkg_from_list() {
 }
 
 function clone_from_list() {
-    list="$1"
+    repo_list="$1"
 
-    wget "$list" -O list.txt
+    wget "$repo_list" -O list.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
         clone_repo "$git_repo"
     done < list.txt
     rm -rfv list.txt
 }
 
-function go_get_from_list() {
-    list="$1"
+function sources_from_list() {
+    source_list="$1"
 
-    wget "$list" -O list.txt
+    wget "$source_list" -O list.txt
+    while ISC='' read -r source_repo || [ -n "$source_repo" ]; do
+        clone_repo https://git.solus-project.com/packages/"$source_repo"
+    done < list.txt
+    rm -rfv list.txt
+}
+
+function go_get_from_list() {
+    pkgs_list="$1"
+
+    wget "$pkgs_list" -O list.txt
     while ISC='' read -r gpkg_path || [ -n "$gpkg_path" ]; do
         go get -v -u "$gpkg_path"
     done < list.txt
@@ -93,7 +103,7 @@ print_step "Installing third party packages"
 tpkg_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y caja-extensions galculator gimp inkscape simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
+sudo eopkg install -y caja-extensions galculator simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang yarn neofetch solbuild{,-config-unstable} cve-check-tool
 
 # Development packages and Solbuild
 ## Install development component
@@ -138,14 +148,13 @@ while true; do
         break
     fi
 done
+## Clone source repositories
+sources_from_list "$LISTS_RAW_URL"/solus_repos.txt
 ## Link makefiles
 print_step "Linking makefiles"
 ln -srfv common/Makefile.common Makefile.common
 ln -srfv common/Makefile.iso Makefile.iso
 ln -srfv common/Makefile.toplevel Makefile
-## Clone package repositories
-print_step "Cloning package repositories"
-make clone
 ## Return to home
 cd ~ || exit
 
