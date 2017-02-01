@@ -8,8 +8,6 @@ LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/list
 
 # Functions
 function print_step() {
-    # Usage: print_step [message]
-    # Print a styled [message]
     message="$1"
 
     printf "\e[1m>> %s\e[0m\n" "$message"
@@ -17,9 +15,6 @@ function print_step() {
 }
 
 function folder_enter() {
-    # Usage: folder_enter [folder]
-    # Enter into a [folder], if it does not
-    # exists, just create it
     folder="$1"
 
     if [ ! -d "$folder" ]; then
@@ -28,13 +23,13 @@ function folder_enter() {
     cd "$folder" || exit
 }
 
-# Usage: repo_clone [url]
-alias repo_clone="hub clone --recursive"
+function repo_clone() {
+    repo="$1"
+
+    hub clone --recursive "$repo"
+}
 
 function tpkg_from_list() {
-    # Usage: tpkg_from_list [list]
-    # Build and install third party packages
-    # from the given [list]
     list="$1"
 
     wget "$list" -O list.txt
@@ -47,9 +42,6 @@ function tpkg_from_list() {
 }
 
 function clone_from_list() {
-    # Usage: clone_from_list [url] [list]
-    # Clone every item on [list] file using the
-    # Git repositories from [url] as main URL
     list="$1"
 
     wget "$list" -O list.txt
@@ -60,8 +52,6 @@ function clone_from_list() {
 }
 
 function go_get_from_list() {
-    # Usage: go_get_from_list [list]
-    # Get every package listed in the file [list]
     list="$1"
 
     wget "$list" -O list.txt
