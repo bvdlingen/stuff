@@ -23,7 +23,7 @@ function folder_enter() {
     cd "$folder" || exit
 }
 
-function repo_clone() {
+function clone_repo() {
     repo="$1"
 
     hub clone --recursive "$repo"
@@ -46,7 +46,7 @@ function clone_from_list() {
 
     wget "$list" -O list.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
-        repo_clone "$git_repo"
+        clone_repo "$git_repo"
     done < list.txt
     rm -rfv list.txt
 }
@@ -133,7 +133,7 @@ folder_enter ~/Git/packages
 ## Clone common repository
 while true; do
     if [ ! -d common ]; then
-        repo_clone https://git.solus-project.com/common
+        clone_repo https://git.solus-project.com/common
     else
         break
     fi
