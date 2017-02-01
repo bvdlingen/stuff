@@ -109,7 +109,7 @@ print_step "Installing third party packages"
 tpkg_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 print_step "Installing more packages"
-sudo eopkg install -y caja-extensions galculator simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} yadm {python-,}neovim hugo golang nodejs python3-devel neofetch solbuild{,-config-unstable}
+sudo eopkg install -y caja-extensions galculator simplescreenrecorder kodi geary libreoffice-all lutris zsh git{,-extras} hub yadm {python-,}neovim hugo golang nodejs python3-devel neofetch solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
