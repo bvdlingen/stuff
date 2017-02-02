@@ -2,10 +2,12 @@ arandr
 asciinema
 bibtool
 borg
+breeze-gtk-theme
 brewtarget
 caja-extensions
 dos2unix
 doxygen
+exercism-cli
 frei0r
 gavl
 gnome-games
@@ -17,6 +19,7 @@ hub
 jq
 kanagram
 libkeduvocdocument
+lightdm-gtk-greeter-settings
 mutagen
 pymarkups
 python-evdev
@@ -32,6 +35,7 @@ python-sqlalchemy
 python-trollius
 quakespasm
 quodlibet
+razer-drivers
 retext
 sc-controller
 uncrustify
