@@ -51,9 +51,9 @@ function clone_list() {
 }
 
 function github_list() {
-    github_list="$1"
+    hub_list="$1"
 
-    wget "$github_list" -O list.txt
+    wget "$hub_list" -O list.txt
     while ISC='' read -r github_repo || [ -n "$github_repo" ]; do
         repo_clone https://github.com/"$github_repo"
     done < list.txt
@@ -160,7 +160,7 @@ while true; do
     fi
 done
 ## Clone source repositories
-sources_list "$LISTS_RAW_URL"/solus_repos.txt
+sources_list "$LISTS_RAW_URL/solus_sources.txt"
 ## Link makefiles
 print_step "Linking makefiles"
 ln -srfv common/Makefile.common Makefile.common

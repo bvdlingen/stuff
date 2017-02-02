@@ -1,9 +1,14 @@
+arandr
 asciinema
 bibtool
+borg
+brewtarget
 caja-extensions
+dos2unix
 doxygen
 frei0r
 gavl
+gnome-games
 gnome-pomodoro
 gnome-sound-recorder
 gnome-twitch
@@ -14,6 +19,7 @@ kanagram
 libkeduvocdocument
 mutagen
 pymarkups
+python-evdev
 python-greenlet
 python-markdown
 python-msgpack
@@ -21,6 +27,7 @@ python-musicbrainzngs
 python-neovim
 python-notify2
 python-setproctitle
+python-setuptools-scm
 python-sqlalchemy
 python-trollius
 quakespasm
@@ -30,4 +37,5 @@ sc-controller
 uncrustify
 xaut
 xdotool
+yad
 zuki-themes
