@@ -1,1 +1,1 @@
-https://gitlab.com/ParadoxalManiak/deezloader-app
+https://gitlab.com/ParadoxalManiak/deezloader-server
