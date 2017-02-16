@@ -1,2 +1,3 @@
 desktop/font/mscorefonts
-network/web/browser/google-chrome-stable
+multimedia/video/flash-player-npapi
+programming/sublime-text-3

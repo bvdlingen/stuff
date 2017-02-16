@@ -1,3 +1,5 @@
-feskyde/blog
+feskyde/feskyde.github.io
 feskyde/kydebot
-feskyde/solus-stuff
+feskyde/libkyde
+feskyde/linty
+feskyde/solus

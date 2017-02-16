@@ -1,1 +1,3 @@
-github.com/client9/misspell/cmd/misspell
+github.com/alecthomas/gometalinter
+github.com/constabulary/gb/...
+golang.org/x/tools/cmd/godoc
