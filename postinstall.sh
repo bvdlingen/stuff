@@ -88,7 +88,7 @@ new_step_notify "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 new_step_notify "Installing more packages"
-sudo eopkg install -y caja-extensions simplescreenrecorder libreoffice-all zsh git{,-extras} yadm golang solbuild{,-config-unstable}
+sudo eopkg install -y caja-extensions simplescreenrecorder libreoffice-all zsh git{,-extras} yadm golang most solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
