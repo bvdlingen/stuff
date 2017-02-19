@@ -92,7 +92,7 @@ sudo eopkg install -y caja-extensions simplescreenrecorder libreoffice-all zsh g
 
 # Development packages and Solbuild
 ## Install development component
-new_step_notify "Installing development component and extra development packages"
+new_step_notify "Installing development component"
 sudo eopkg install -y -c system.devel
 ## Set up solbuild
 new_step_notify "Setting up solbuild"
@@ -111,8 +111,6 @@ new_step_notify "Cloning repositories"
 checkout_folder ~/Git
 ## GitHub repositories
 clone_repositories_from_list "$LISTS_RAW_URL/github_repos.txt"
-## Extra repositories
-clone_repositories_from_list "$LISTS_RAW_URL/extra_repos.txt"
 ## Return to home
 cd ~ || exit
 
