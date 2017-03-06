@@ -9,7 +9,7 @@ LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/list
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
 # Functions
-function new_step_notify() {
+function notify_step() {
     message="$1"
 
     printf "\e[1m>> %s\e[0m\n" "$message"
@@ -50,7 +50,7 @@ function clone_repositories_from_list() {
     rm -rfv list_clone.txt
 }
 
-function go_get_packages_from_list() {
+function go_get_from_list() {
     pkgs_list="$1"
 
     wget "$pkgs_list" -O list_go_get.txt
@@ -62,10 +62,10 @@ function go_get_packages_from_list() {
 }
 
 # Welcome
-new_step_notify "Script is now running, do not touch anything until it finishes :)"
+notify_step "Script is now running, do not touch anything until it finishes :)"
 
 # Password-less user
-new_step_notify "Setting password-less user (EXTREMELY INSANE STUFF)"
+notify_step "Setting password-less user (EXTREMELY INSANE STUFF)"
 ## Remove password for Casa
 sudo passwd -du casa
 ## Add nullok option to PAM files
@@ -73,7 +73,7 @@ sudo find /etc/pam.d -name "*" -exec sed -i {} -e "s:try_first_pass nullok:try_f
                                                -e "s:pam_unix.so:pam_unix.so nullok:g" \;
 
 # Manage repositories
-new_step_notify "Switching to Unstable repository"
+notify_step "Switching to Unstable repository"
 ## Remove Solus (Shannon)
 sudo eopkg remove-repo -y Solus
 ## Add Unstable
@@ -81,25 +81,25 @@ sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-i
 
 # Manage packages
 ## Upgrade the system
-new_step_notify "Getting system up to date"
+notify_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
-new_step_notify "Installing third party packages"
+notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
-new_step_notify "Installing more packages"
-sudo eopkg install -y caja-extensions simplescreenrecorder libreoffice-all zsh git{,-extras} yadm golang most solbuild{,-config-unstable}
+notify_step "Installing more packages"
+sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder libreoffice-all zsh git{,-extras} yadm golang yarn most solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
-new_step_notify "Installing development component"
+notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
 ## Set up solbuild
-new_step_notify "Setting up solbuild"
+notify_step "Setting up solbuild"
 sudo solbuild init -u
 
 # Dotfiles
-new_step_notify "Setting-up dotfiles"
+notify_step "Setting-up dotfiles"
 ## Clone the repository and decrypt the binary
 yadm clone -f https://github.com/feskyde/dotfiles
 yadm decrypt
@@ -107,7 +107,7 @@ yadm decrypt
 sudo chsh -s /bin/zsh casa
 
 # Git repositories
-new_step_notify "Cloning repositories"
+notify_step "Cloning repositories"
 checkout_folder ~/Git
 ## GitHub repositories
 clone_repositories_from_list "$LISTS_RAW_URL/github_repos.txt"
@@ -116,10 +116,10 @@ cd ~ || exit
 
 # Solus packaging repository
 ## Create packages folder
-new_step_notify "Setting up Solus packages folder"
+notify_step "Setting up Solus packages folder"
 checkout_folder ~/Git/packages
 ## Clone common repository
-new_step_notify "Clonning common repository"
+notify_step "Clonning common repository"
 while true; do
     if [ ! -d common ]; then
         git clone --recursive https://git.solus-project.com/common
@@ -128,25 +128,25 @@ while true; do
     fi
 done
 ## Link makefiles
-new_step_notify "Linking makefiles"
+notify_step "Linking makefiles"
 ln -srfv common/Makefile.common Makefile.common
 ln -srfv common/Makefile.iso Makefile.iso
 ln -srfv common/Makefile.toplevel Makefile
 ## Clone all source repositories
-new_step_notify "Clonning all source repositories"
+notify_step "Clonning all source repositories"
 make clone
 ## Return to home
 cd ~ || exit
 
 # System configuration
-new_step_notify "Installing system configuration files"
+notify_step "Installing system configuration files"
 checkout_folder ~/Git/solus-stuff/config
 bash ./bootstrap.sh
 ## Return to home
 cd ~ || exit
 
 # Telegram Desktop
-new_step_notify "Installing Telegram Desktop"
+notify_step "Installing Telegram Desktop"
 ## Enter into the Telegram folder
 checkout_folder ~/.TelegramDesktop
 ## Download the tarball
@@ -158,7 +158,7 @@ rm -rfv telegram-desktop.tar.xz
 cd ~ || exit
 
 # Package Control
-new_step_notify "Installing package control"
+notify_step "Installing package control"
 ## Enter to Sublime packages folder
 checkout_folder ~/.config/sublime-text-3/Installed\ Packages
 ## Download the package
@@ -167,12 +167,34 @@ wget https://packagecontrol.io/Package%20Control.sublime-package -O Package\ Con
 cd ~ || exit
 
 # Go packages
-new_step_notify "Installing Go packages"
+notify_step "Installing Go packages"
 ## Fixes
 ### Export GOPATH so the Go packages installation will not go KABOOM!
-export GOPATH=$HOME/.golang
+export GOPATH="$(realpath ~)/.golang"
 ## Install packages
-go_get_packages_from_list "$LISTS_RAW_URL/go_packages.txt"
+go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
+
+# Deezloader
+notify_step "Setting-up Deezloader App"
+## Enter into the repo folder and yarn-ize
+checkout_folder ~/Git/deezloader-app
+yarn install
+## Back to home
+cd ~ || exit
+
+# Personalization
+print_step "Setting stuff with GSettings"
+## Privacy
+gsettings set org.gnome.desktop.privacy remove-old-temp-files true
+gsettings set org.gnome.desktop.privacy remove-old-trash-files true
+## Location
+gsettings set org.gnome.system.location enabled true
+## Sound
+gsettings set org.gnome.desktop.sound event-sounds true
+gsettings set org.gnome.desktop.sound input-feedback-sounds true
+gsettings set org.gnome.desktop.sound theme-name "freedesktop"
+## Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # FINISHED!
-new_step_notify "Script has finished! You should reboot as soon as possible"
+notify_step "Script has finished! You should reboot as soon as possible"

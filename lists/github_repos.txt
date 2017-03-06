@@ -1,8 +1,4 @@
-https://github.com/feskyde/botutils
 https://github.com/feskyde/feskyde.github.io
-https://github.com/feskyde/giornale
-https://github.com/feskyde/kydebot
 https://github.com/feskyde/libkyde
-https://github.com/feskyde/linty
-https://github.com/feskyde/solusbot
 https://github.com/feskyde/things
+https://gitlab.com/ParadoxalManiak/deezloader-app
