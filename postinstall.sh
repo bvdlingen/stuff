@@ -12,7 +12,7 @@ SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 function notify_step() {
     message="$1"
 
-    printf "\e[1m>> %s\e[0m\n" "$message"
+    printf "\n>> %s\n" "$message"
     notify-send "Solus Post Install" "$message" -i distributor-logo-solus
 }
 
