@@ -80,6 +80,8 @@ sudo eopkg remove-repo -y Solus
 sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
+## Remove unneded stuff
+sudo eopkg remove --purge firefox thunderbird arc-firefox-theme
 ## Upgrade the system
 notify_step "Getting system up to date"
 sudo eopkg upgrade -y
@@ -88,12 +90,15 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y budgie-{screenshot,haste}-applet simplescreenrecorder libreoffice-all zsh git{,-extras} yadm golang yarn most solbuild{,-config-unstable}
+sudo eopkg install -y galculator caja-extensions geary simplescreenrecorder libreoffice-all zsh git{,-extras} yadm {{python,ruby}-,}neovim golang yarn solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
+## Install Python devel packages for Neovim stuff
+notify_step "Installing Python devel packages"
+sudo eopkg install -y python-devel python3-devel
 ## Set up solbuild
 notify_step "Setting up solbuild"
 sudo solbuild init -u
@@ -108,16 +113,16 @@ sudo chsh -s /bin/zsh casa
 
 # Git repositories
 notify_step "Cloning repositories"
-checkout_folder ~/Git
+checkout_folder ~/Projectos
 ## GitHub repositories
-clone_repositories_from_list "$LISTS_RAW_URL/github_repos.txt"
+clone_repositories_from_list "$LISTS_RAW_URL/git_repos.txt"
 ## Return to home
 cd ~ || exit
 
 # Solus packaging repository
 ## Create packages folder
 notify_step "Setting up Solus packages folder"
-checkout_folder ~/Git/packages
+checkout_folder ~/Projectos/packages
 ## Clone common repository
 notify_step "Clonning common repository"
 while true; do
@@ -134,14 +139,14 @@ ln -srfv common/Makefile.iso Makefile.iso
 ln -srfv common/Makefile.toplevel Makefile
 ## Clone all source repositories
 notify_step "Clonning all source repositories"
-make clone
+make clone -j50
 ## Return to home
 cd ~ || exit
 
 # System configuration
 notify_step "Installing system configuration files"
-checkout_folder ~/Git/solus-stuff/config
-bash ./bootstrap.sh
+checkout_folder ~/Projectos/solus-stuff/config
+bash setup.sh
 ## Return to home
 cd ~ || exit
 
@@ -157,44 +162,23 @@ rm -rfv telegram-desktop.tar.xz
 ## Back to home
 cd ~ || exit
 
-# Package Control
-notify_step "Installing package control"
-## Enter to Sublime packages folder
-checkout_folder ~/.config/sublime-text-3/Installed\ Packages
-## Download the package
-wget https://packagecontrol.io/Package%20Control.sublime-package -O Package\ Control.sublime-package
-## Back to home
-cd ~ || exit
-
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
-### Export GOPATH so the Go packages installation will not go KABOOM!
+### Create GOPATH so the Go packages installation will not go KABOOM!
 export GOPATH="$(realpath ~)/.golang"
+checkout_folder "$GOPATH"
+cd ~ || exit
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
 
 # Deezloader
 notify_step "Setting-up Deezloader App"
 ## Enter into the repo folder and yarn-ize
-checkout_folder ~/Git/deezloader-app
+checkout_folder ~/Projectos/deezloader-app
 yarn install
 ## Back to home
 cd ~ || exit
-
-# Personalization
-print_step "Setting stuff with GSettings"
-## Privacy
-gsettings set org.gnome.desktop.privacy remove-old-temp-files true
-gsettings set org.gnome.desktop.privacy remove-old-trash-files true
-## Location
-gsettings set org.gnome.system.location enabled true
-## Sound
-gsettings set org.gnome.desktop.sound event-sounds true
-gsettings set org.gnome.desktop.sound input-feedback-sounds true
-gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-## Window manager
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # FINISHED!
 notify_step "Script has finished! You should reboot as soon as possible"

@@ -1,5 +1,7 @@
-github.com/alecthomas/gometalinter
-github.com/feskyde/kydebot/...
-github.com/feskyde/libkyde/...
-github.com/patrickdappollonio/find-project
 golang.org/x/tools/cmd/godoc
+github.com/patrickdappollonio/find-project
+github.com/alecthomas/gometalinter
+github.com/feskyde/libkyde/...
+github.com/feskyde/kydebot
+github.com/feskyde/solusbot
+github.com/feskyde/aalcbbot

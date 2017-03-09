@@ -1,4 +1,5 @@
 https://github.com/feskyde/feskyde.github.io
-https://github.com/feskyde/libkyde
 https://github.com/feskyde/things
+https://github.com/osstore/osstore.github.io
+https://github.com/osstore/blog
 https://gitlab.com/ParadoxalManiak/deezloader-app
