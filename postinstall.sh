@@ -77,7 +77,7 @@ notify_step "Switching to Unstable repository"
 ## Remove Solus (Shannon)
 sudo eopkg remove-repo -y Solus
 ## Add Unstable
-sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
+sudo eopkg add-repo -y Unstable https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
 ## Remove unneded stuff
@@ -90,18 +90,12 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y galculator caja-extensions geary simplescreenrecorder libreoffice-all zsh git{,-extras} yadm {{python,ruby}-,}neovim golang yarn solbuild{,-config-unstable}
+sudo eopkg install -y geary simplescreenrecorder libreoffice-all zsh git{,-extras} yadm {{python,ruby}-,}neovim golang yarn solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
-## Install Python devel packages for Neovim stuff
-notify_step "Installing Python devel packages"
-sudo eopkg install -y python-devel python3-devel
-## Set up solbuild
-notify_step "Setting up solbuild"
-sudo solbuild init -u
 
 # Dotfiles
 notify_step "Setting-up dotfiles"
@@ -179,6 +173,10 @@ checkout_folder ~/Projectos/deezloader-app
 yarn install
 ## Back to home
 cd ~ || exit
+
+# Solbuild
+notify_step "Setting up solbuild"
+sudo solbuild init -u
 
 # FINISHED!
 notify_step "Script has finished! You should reboot as soon as possible"
