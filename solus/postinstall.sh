@@ -87,10 +87,10 @@ notify_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
 notify_step "Installing third party packages"
-third_party_install_from_list "$LISTS_RAW_URL/third_party.txt"
+third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y geary simplescreenrecorder libreoffice-all zsh git{,-extras} yadm {{python,ruby}-,}neovim golang yarn solbuild{,-config-unstable}
+sudo eopkg install -y geary simplescreenrecorder libreoffice-all vscode zsh git{,-extras} yadm golang yarn solbuild{,-config-unstable}
 
 # Development packages and Solbuild
 ## Install development component
@@ -109,7 +109,7 @@ sudo chsh -s /bin/zsh casa
 notify_step "Cloning repositories"
 checkout_folder ~/Projectos
 ## GitHub repositories
-clone_repositories_from_list "$LISTS_RAW_URL/git_repos.txt"
+clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
 cd ~ || exit
 
@@ -156,6 +156,14 @@ rm -rfv telegram-desktop.tar.xz
 ## Back to home
 cd ~ || exit
 
+# Deezloader
+notify_step "Setting-up Deezloader App"
+## Enter into the repo folder and yarn-ize
+checkout_folder ~/Projectos/deezloader-app
+yarn install
+## Back to home
+cd ~ || exit
+
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
@@ -164,15 +172,9 @@ export GOPATH="$(realpath ~)/.golang"
 checkout_folder "$GOPATH"
 cd ~ || exit
 ## Install packages
-go_get_from_list "$LISTS_RAW_URL/go_packages.txt"
-
-# Deezloader
-notify_step "Setting-up Deezloader App"
-## Enter into the repo folder and yarn-ize
-checkout_folder ~/Projectos/deezloader-app
-yarn install
-## Back to home
-cd ~ || exit
+go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
+## Install linters
+~/.golang/bin/gometalinter --install
 
 # Solbuild
 notify_step "Setting up solbuild"
