@@ -90,7 +90,7 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y geary simplescreenrecorder libreoffice-all vscode zsh git{,-extras} yadm golang yarn solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y geary simplescreenrecorder libreoffice-all vscode zsh git{,-extras} yadm golang yarn heroku-cli solbuild{,-config{,-local}-unstable}
 
 # Development packages and Solbuild
 ## Install development component

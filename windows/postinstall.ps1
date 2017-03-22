@@ -1,20 +1,22 @@
-# Allow current user to execute scripts
-Write-Output "Setting execution policy to Unrestricted"
 Set-ExecutionPolicy -Force Unrestricted
+
+function Remove-MetroApp {
+    param([string]$Name)
+    Get-AppXPackage -User -Name $Name | Remove-AppXPackage
+    Get-AppXPackage -AllUsers -Name $Name | Remove-AppXPackage
+}
 
 # Software
 ## Metro apps
-### Remove unused apps
 Write-Output "Removing unused Metro apps"
-Get-AppXPackage -AllUsers -Name *zune* | Remove-AppXPackage
-Get-AppXPackage -AllUsers -Name *bing* | Remove-AppXPackage
-Get-AppXPackage -AllUsers -Name *xbox* | Remove-AppXPackage
-Get-AppXPackage -AllUsers -Name *office* | Remove-AppXPackage
-Get-AppXPackage -AllUsers -Name *skype* | Remove-AppXPackage
+Remove-MetroApp -Name *3dbuilder*
+Remove-MetroApp -Name *bing*
+Remove-MetroApp -Name *office*
+Remove-MetroApp -Name *skype*
+Remove-MetroApp -Name *xbox*
+Remove-MetroApp -Name *zune*
 ## Packages
-### Enable the Chocolatey provider
-Write-Output "Enabling Chocolatey provider"
+Write-Output "Checking if the Chocolatey provider is enabled"
 Get-PackageProvider -Name Chocolatey
-### Install packages from Chocolatey
 Write-Output "Installing packages"
-Install-Package -Name "googlechrome","libreoffice","visualstudiocode","git","github","golang","nodejs","7zip" -ProviderName Chocolatey
+Find-Package -Name googlechrome,libreoffice,visualstudiocode,git,github,golang,nodejs,heroku-cli,7zip -ProviderName Chocolatey | Install-Package -Force
