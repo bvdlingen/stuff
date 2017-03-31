@@ -1,10 +1,9 @@
-#!/usr/bin/env bash
 #
 # Solus Post Install Script
 #
 
 # Lists (bad design is bad)
-LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/solus-stuff/master/lists"
+LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/things/master/lists"
 # Third Party specs
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
@@ -90,7 +89,7 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y geary simplescreenrecorder libreoffice-all vscode zsh git{,-extras} yadm golang yarn heroku-cli solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y libreoffice-all vscode zsh git yadm golang nodejs solbuild{,-config{,-local}-unstable}
 
 # Development packages and Solbuild
 ## Install development component
@@ -174,7 +173,7 @@ cd ~ || exit
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
 ## Install linters
-~/.golang/bin/gometalinter --install
+"$GOPATH"/bin/gometalinter --install
 
 # Solbuild
 notify_step "Setting up solbuild"
