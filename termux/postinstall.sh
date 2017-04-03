@@ -3,7 +3,7 @@
 #
 
 # Lists (bad design is bad)
-LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/things/master/lists"
+LISTS_RAW_URL="https://raw.githubusercontent.com/feddasch/things/master/lists"
 
 # Functions
 function notify_step() {
@@ -68,7 +68,7 @@ git clone https://github.com/TheLocehiliosan/yadm
 ## Fix shebang
 termux-fix-shebang yadm/yadm
 ## Clone the repository and decrypt the binary
-yadm/yadm clone -f https://github.com/feskyde/dotfiles
+yadm/yadm clone -f https://github.com/feddasch/dotfiles
 yadm/yadm decrypt
 
 # Git repositories

@@ -3,7 +3,7 @@
 #
 
 # Lists (bad design is bad)
-LISTS_RAW_URL="https://raw.githubusercontent.com/feskyde/things/master/lists"
+LISTS_RAW_URL="https://raw.githubusercontent.com/feddasch/things/master/lists"
 # Third Party specs
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
@@ -99,7 +99,7 @@ sudo eopkg install -y -c system.devel
 # Dotfiles
 notify_step "Setting-up dotfiles"
 ## Clone the repository and decrypt the binary
-yadm clone -f https://github.com/feskyde/dotfiles
+yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
 ## Default to ZSH
 sudo chsh -s /bin/zsh casa
