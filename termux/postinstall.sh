@@ -73,19 +73,19 @@ yadm/yadm decrypt
 
 # Git repositories
 notify_step "Cloning repositories"
-checkout_folder ~/Projectos
+checkout_folder "$HOME/Projectos"
 ## GitHub repositories
 clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
 ### Create GOPATH so the Go packages installation will not go KABOOM!
-export GOPATH="$(realpath ~)/.golang"
+export GOPATH="$HOME/.golang"
 checkout_folder "$GOPATH"
-cd ~ || exit
+cd "$HOME" || exit
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
 ## Install linters

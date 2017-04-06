@@ -1,3 +1,3 @@
-### Solus Stuff
+### My things
 
-Repository for Solus-related things. Very personal, do not use.
+My things, do not touch.

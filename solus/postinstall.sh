@@ -21,7 +21,7 @@ function checkout_folder() {
     if [ ! -d "$folder" ]; then
         mkdir -pv "$folder"
     fi
-    printf "\e[1m  - Now in folder: %s\e[0m\n" "$folder"
+    printf "- Now in folder: %s\n" "$folder"
     cd "$folder" || exit
 }
 
@@ -30,7 +30,7 @@ function third_party_install_from_list() {
 
     wget "$third_list" -O list_tpkg.txt
     while ISC='' read -r tpkg_dir || [ -n "$tpkg_dir" ]; do
-        printf "\e[1m  - Installing third-party package: %s\e[0m\n" "$tpkg_dir"
+        printf "- Installing third-party package: %s\n" "$tpkg_dir"
         sudo eopkg build -y --ignore-safety "$SPECS_RAW_URL"/"$tpkg_dir"/pspec.xml
         sudo eopkg install -y ./*.eopkg
         rm -rfv ./*.eopkg
@@ -43,7 +43,7 @@ function clone_repositories_from_list() {
 
     wget "$repo_list" -O list_clone.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
-        printf "\e[1m  - Clonning repository: %s\e[0m\n" "$git_repo"
+        printf "- Clonning repository: %s\n" "$git_repo"
         git clone --recursive "$git_repo"
     done < list_clone.txt
     rm -rfv list_clone.txt
@@ -54,7 +54,7 @@ function go_get_from_list() {
 
     wget "$pkgs_list" -O list_go_get.txt
     while ISC='' read -r gpkg_path || [ -n "$gpkg_path" ]; do
-        printf "\e[1m  - Installing Go package: %s\e[0m\n" "$gpkg_path"
+        printf "- Installing Go package: %s\n" "$gpkg_path"
         go get -v -u "$gpkg_path"
     done < list_go_get.txt
     rm -rfv list_go_get.txt
@@ -89,7 +89,7 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y libreoffice-all vscode zsh git yadm golang nodejs solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y libreoffice-all vscode zsh git yadm golang yarn solbuild{,-config{,-local}-unstable}
 
 # Development packages and Solbuild
 ## Install development component
@@ -106,16 +106,16 @@ sudo chsh -s /bin/zsh casa
 
 # Git repositories
 notify_step "Cloning repositories"
-checkout_folder ~/Projectos
+checkout_folder "$HOME/Projectos"
 ## GitHub repositories
 clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Solus packaging repository
 ## Create packages folder
 notify_step "Setting up Solus packages folder"
-checkout_folder ~/Projectos/packages
+checkout_folder "$HOME/Projectos/packages"
 ## Clone common repository
 notify_step "Clonning common repository"
 while true; do
@@ -134,42 +134,42 @@ ln -srfv common/Makefile.toplevel Makefile
 notify_step "Clonning all source repositories"
 make clone -j50
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # System configuration
 notify_step "Installing system configuration files"
-checkout_folder ~/Projectos/solus-stuff/config
+checkout_folder "$HOME"/Projectos/solus-stuff/config
 bash setup.sh
 ## Return to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Telegram Desktop
 notify_step "Installing Telegram Desktop"
 ## Enter into the Telegram folder
-checkout_folder ~/.TelegramDesktop
+checkout_folder "$HOME/.TelegramDesktop"
 ## Download the tarball
 wget https://tdesktop.com/linux/current?alpha=1 -O telegram-desktop.tar.xz
 ## Unpack it
 tar xfv telegram-desktop.tar.xz --strip-components=1 --show-transformed-names
 rm -rfv telegram-desktop.tar.xz
 ## Back to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Deezloader
 notify_step "Setting-up Deezloader App"
 ## Enter into the repo folder and yarn-ize
-checkout_folder ~/Projectos/deezloader-app
+checkout_folder "$HOME"/Projectos/deezloader-app
 yarn install
 ## Back to home
-cd ~ || exit
+cd "$HOME" || exit
 
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
 ### Create GOPATH so the Go packages installation will not go KABOOM!
-export GOPATH="$(realpath ~)/.golang"
+export GOPATH="$HOME/.golang"
 checkout_folder "$GOPATH"
-cd ~ || exit
+cd "$HOME" || exit
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
 ## Install linters

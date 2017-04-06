@@ -1,8 +1,4 @@
-github.com/alecthomas/gometalinter
-github.com/derekparker/delve/cmd/dlv
-github.com/feddasch/bots
-github.com/feddasch/extlib/...
-github.com/feddasch/mcdot
+github.com/feddasch/bots/cmd/runbot
 github.com/kardianos/govendor
 github.com/patrickdappollonio/find-project
 golang.org/x/tools/cmd/...
