@@ -3,10 +3,13 @@
 # Solus MATE Post Install Script
 #
 
-# Lists (bad design is bad)
+# Variables
+## Lists (bad design is bad)
 LISTS_RAW_URL="https://raw.githubusercontent.com/feddasch/things/master/lists"
-# Third Party specs
+## Third Party specs
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
+## Project directory
+PROJECT_DIR="$HOME/Proyectos"
 
 # Functions
 function notify_step() {
@@ -114,14 +117,15 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch git yadm golang yarn solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch \
+                      git yadm golang yarn solbuild{,-config{,-local}-unstable}
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
 
 # Git repositories
 notify_step "Cloning repositories"
-enter_folder "$HOME/Projectos"
+enter_folder "$PROJECT_DIR"
 ## GitHub repositories
 clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
@@ -133,14 +137,14 @@ notify_step "Setting-up dotfiles"
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
 ## Link the VS Code directory to VS Code OSS directory
-ln -sfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
+ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
 ## Default to Fish
 sudo chsh -s /usr/bin/fish casa
 
 # System configuration
 notify_step "Setting up configuration files"
 ## Set up the files
-enter_folder "$HOME"/Projectos/solus-stuff/config
+enter_folder "$PROJECT_DIR/things/solus/config"
 conf_install lightdm/lightdm.conf /etc/lightdm/lightdm.conf
 ## Return to home
 cd || exit
@@ -148,10 +152,10 @@ cd || exit
 # Solus packaging repository
 ## Create packages folder
 notify_step "Setting up Solus packages folder"
-enter_folder "$HOME/Projectos/packages"
+enter_folder "$PROJECT_DIR/Solus/repository"
 ## Clone common repository
 notify_step "Clonning common repository"
-while true; do
+while true; do # FUCKING CLONE IT
     if [ ! -d common ]; then
         git clone --recursive https://git.solus-project.com/common
     else
@@ -160,9 +164,9 @@ while true; do
 done
 ## Link makefiles
 notify_step "Linking makefiles"
-ln -srfv common/Makefile.common Makefile.common
-ln -srfv common/Makefile.iso Makefile.iso
-ln -srfv common/Makefile.toplevel Makefile
+ln -rsfv common/Makefile.toplevel Makefile
+ln -rsfv common/Makefile.common   Makefile.common
+ln -rsfv common/Makefile.iso      Makefile.iso
 ## Clone all source repositories
 notify_step "Clonning all source repositories"
 make clone -j100
@@ -184,7 +188,7 @@ cd || exit
 # Deezloader
 notify_step "Setting-up Deezloader App"
 ## Enter into the repo folder and yarn-ize
-enter_folder "$HOME"/Projectos/deezloader-app
+enter_folder "$PROJECT_DIR/deezloader-app"
 yarn install
 ## Back to home
 cd || exit
@@ -197,6 +201,8 @@ export GOPATH="$HOME/.golang"
 enter_folder "$GOPATH"
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
+## Link my repository to the projects directory
+ln -rsfv "$GOPATH/src/github.com/feddasch/"* "$PROJECT_DIR"
 ## Back to home
 cd || exit
 

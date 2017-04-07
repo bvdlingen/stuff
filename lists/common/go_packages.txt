@@ -1,4 +1,2 @@
 github.com/feddasch/bots/cmd/runbot
 github.com/kardianos/govendor
-github.com/patrickdappollonio/find-project
-golang.org/x/tools/cmd/...
