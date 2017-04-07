@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 #
-# Solus Post Install Script
+# Solus MATE Post Install Script
 #
 
 # Lists (bad design is bad)
@@ -11,18 +12,34 @@ SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 function notify_step() {
     message="$1"
 
-    printf "\n>> %s\n" "$message"
-    notify-send "Solus Post Install" "$message" -i distributor-logo-solus
+    echo -e ">> $message"
+    notify-send "Solus MATE Post Install Script" "$message" -i distributor-logo-solus
 }
 
-function checkout_folder() {
+function check_folder() {
     folder="$1"
 
     if [ ! -d "$folder" ]; then
+        echo -e "- Creating folder: $folder"
         mkdir -pv "$folder"
     fi
-    printf "- Now in folder: %s\n" "$folder"
-    cd "$folder" || exit
+}
+
+function check_root_folder() {
+    root_folder="$1"
+
+    if [ ! -d "$root_folder" ]; then
+        echo -e "- Creating folder: $root_folder"
+        sudo mkdir -pv "$root_folder"
+    fi
+}
+
+function enter_folder() {
+    enter="$1"
+
+    check_folder "$enter"
+    cd "$enter" || exit
+    echo -e "- Now in folder: $enter"
 }
 
 function third_party_install_from_list() {
@@ -30,7 +47,7 @@ function third_party_install_from_list() {
 
     wget "$third_list" -O list_tpkg.txt
     while ISC='' read -r tpkg_dir || [ -n "$tpkg_dir" ]; do
-        printf "- Installing third-party package: %s\n" "$tpkg_dir"
+        echo -e "- Installing third-party package: $tpkg_dir"
         sudo eopkg build -y --ignore-safety "$SPECS_RAW_URL"/"$tpkg_dir"/pspec.xml
         sudo eopkg install -y ./*.eopkg
         rm -rfv ./*.eopkg
@@ -43,7 +60,7 @@ function clone_repositories_from_list() {
 
     wget "$repo_list" -O list_clone.txt
     while ISC='' read -r git_repo || [ -n "$git_repo" ]; do
-        printf "- Clonning repository: %s\n" "$git_repo"
+        echo -e "- Clonning repository: $git_repo"
         git clone --recursive "$git_repo"
     done < list_clone.txt
     rm -rfv list_clone.txt
@@ -54,10 +71,18 @@ function go_get_from_list() {
 
     wget "$pkgs_list" -O list_go_get.txt
     while ISC='' read -r gpkg_path || [ -n "$gpkg_path" ]; do
-        printf "- Installing Go package: %s\n" "$gpkg_path"
+        echo -e "- Installing Go package: $gpkg_path"
         go get -v -u "$gpkg_path"
     done < list_go_get.txt
     rm -rfv list_go_get.txt
+}
+
+function conf_install() {
+    src="$1"
+    dst="$2"
+
+    check_root_folder "$(dirname "$dst")"
+    sudo cp -rfv "$src" "$dst"
 }
 
 # Welcome
@@ -89,33 +114,41 @@ notify_step "Installing third party packages"
 third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y libreoffice-all vscode zsh git yadm golang yarn solbuild{,-config{,-local}-unstable}
-
-# Development packages and Solbuild
+sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch git yadm golang yarn solbuild{,-config{,-local}-unstable}
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
+
+# Git repositories
+notify_step "Cloning repositories"
+enter_folder "$HOME/Projectos"
+## GitHub repositories
+clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
+## Return to home
+cd || exit
 
 # Dotfiles
 notify_step "Setting-up dotfiles"
 ## Clone the repository and decrypt the binary
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
-## Default to ZSH
-sudo chsh -s /bin/zsh casa
+## Link the VS Code directory to VS Code OSS directory
+ln -sfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
+## Default to Fish
+sudo chsh -s /usr/bin/fish casa
 
-# Git repositories
-notify_step "Cloning repositories"
-checkout_folder "$HOME/Projectos"
-## GitHub repositories
-clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
+# System configuration
+notify_step "Setting up configuration files"
+## Set up the files
+enter_folder "$HOME"/Projectos/solus-stuff/config
+conf_install lightdm/lightdm.conf /etc/lightdm/lightdm.conf
 ## Return to home
-cd "$HOME" || exit
+cd || exit
 
 # Solus packaging repository
 ## Create packages folder
 notify_step "Setting up Solus packages folder"
-checkout_folder "$HOME/Projectos/packages"
+enter_folder "$HOME/Projectos/packages"
 ## Clone common repository
 notify_step "Clonning common repository"
 while true; do
@@ -132,48 +165,40 @@ ln -srfv common/Makefile.iso Makefile.iso
 ln -srfv common/Makefile.toplevel Makefile
 ## Clone all source repositories
 notify_step "Clonning all source repositories"
-make clone -j50
+make clone -j100
 ## Return to home
-cd "$HOME" || exit
-
-# System configuration
-notify_step "Installing system configuration files"
-checkout_folder "$HOME"/Projectos/solus-stuff/config
-bash setup.sh
-## Return to home
-cd "$HOME" || exit
+cd || exit
 
 # Telegram Desktop
 notify_step "Installing Telegram Desktop"
 ## Enter into the Telegram folder
-checkout_folder "$HOME/.TelegramDesktop"
+enter_folder "$HOME/.TelegramDesktop"
 ## Download the tarball
 wget https://tdesktop.com/linux/current?alpha=1 -O telegram-desktop.tar.xz
 ## Unpack it
 tar xfv telegram-desktop.tar.xz --strip-components=1 --show-transformed-names
 rm -rfv telegram-desktop.tar.xz
 ## Back to home
-cd "$HOME" || exit
+cd || exit
 
 # Deezloader
 notify_step "Setting-up Deezloader App"
 ## Enter into the repo folder and yarn-ize
-checkout_folder "$HOME"/Projectos/deezloader-app
+enter_folder "$HOME"/Projectos/deezloader-app
 yarn install
 ## Back to home
-cd "$HOME" || exit
+cd || exit
 
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
 ### Create GOPATH so the Go packages installation will not go KABOOM!
 export GOPATH="$HOME/.golang"
-checkout_folder "$GOPATH"
-cd "$HOME" || exit
+enter_folder "$GOPATH"
 ## Install packages
 go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
-## Install linters
-"$GOPATH"/bin/gometalinter --install
+## Back to home
+cd || exit
 
 # Solbuild
 notify_step "Setting up solbuild"
