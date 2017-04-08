@@ -110,14 +110,14 @@ sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-i
 ## Remove unneded stuff
 sudo eopkg remove --purge firefox thunderbird arc-firefox-theme
 ## Upgrade the system
-notify_step "Getting system up to date"
+notify_step "Getting the system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
 notify_step "Installing third party packages"
 list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch git yadm golang solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y caja-extensions geary libreoffice-all kodi vscode fish neofetch git{,-extras} yadm golang solbuild{,-config{,-local}-unstable}
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -126,9 +126,10 @@ notify_step "Setting up solbuild"
 sudo solbuild init -u
 
 # Git repositories
-notify_step "Cloning repositories"
+## Switch to the projects directory
 enter_folder "$PROJECT_DIR"
-## GitHub repositories
+## Clone the repositories
+notify_step "Cloning Git repositories"
 list_git_clone "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
 cd || exit
