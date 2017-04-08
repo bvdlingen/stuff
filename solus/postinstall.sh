@@ -45,7 +45,7 @@ function enter_folder() {
     echo -e "- Now in folder: $enter"
 }
 
-function third_party_install_from_list() {
+function list_tp_install() {
     third_list="$1"
 
     wget "$third_list" -O list_tpkg.txt
@@ -58,7 +58,7 @@ function third_party_install_from_list() {
     rm -rfv list_tpkg.txt
 }
 
-function clone_repositories_from_list() {
+function list_git_clone() {
     repo_list="$1"
 
     wget "$repo_list" -O list_clone.txt
@@ -69,7 +69,7 @@ function clone_repositories_from_list() {
     rm -rfv list_clone.txt
 }
 
-function go_get_from_list() {
+function list_go_get() {
     pkgs_list="$1"
 
     wget "$pkgs_list" -O list_go_get.txt
@@ -91,8 +91,8 @@ function conf_install() {
 # Welcome
 notify_step "Script is now running, do not touch anything until it finishes :)"
 
-# Password-less user
-notify_step "Setting password-less user (EXTREMELY INSANE STUFF)"
+# Password-less user (EXTREMELY INSANE STUFF)
+notify_step "Setting password-less user"
 ## Remove password for Casa
 sudo passwd -du casa
 ## Add nullok option to PAM files
@@ -104,7 +104,7 @@ notify_step "Switching to Unstable repository"
 ## Remove Solus (Shannon)
 sudo eopkg remove-repo -y Solus
 ## Add Unstable
-sudo eopkg add-repo -y Unstable https://packages.solus-project.com/unstable/eopkg-index.xml.xz
+sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
 ## Remove unneded stuff
@@ -114,20 +114,22 @@ notify_step "Getting system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
 notify_step "Installing third party packages"
-third_party_install_from_list "$LISTS_RAW_URL/solus/third_party.txt"
+list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch \
-                      git yadm golang yarn solbuild{,-config{,-local}-unstable}
+sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish neofetch git yadm golang solbuild{,-config{,-local}-unstable}
 ## Install development component
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
+## Set up Solbuild
+notify_step "Setting up solbuild"
+sudo solbuild init -u
 
 # Git repositories
 notify_step "Cloning repositories"
 enter_folder "$PROJECT_DIR"
 ## GitHub repositories
-clone_repositories_from_list "$LISTS_RAW_URL/common/git_repos.txt"
+list_git_clone "$LISTS_RAW_URL/common/git_repos.txt"
 ## Return to home
 cd || exit
 
@@ -185,14 +187,6 @@ rm -rfv telegram-desktop.tar.xz
 ## Back to home
 cd || exit
 
-# Deezloader
-notify_step "Setting-up Deezloader App"
-## Enter into the repo folder and yarn-ize
-enter_folder "$PROJECT_DIR/deezloader-app"
-yarn install
-## Back to home
-cd || exit
-
 # Go packages
 notify_step "Installing Go packages"
 ## Fixes
@@ -200,15 +194,11 @@ notify_step "Installing Go packages"
 export GOPATH="$HOME/.golang"
 enter_folder "$GOPATH"
 ## Install packages
-go_get_from_list "$LISTS_RAW_URL/common/go_packages.txt"
+list_go_get "$LISTS_RAW_URL/common/go_packages.txt"
 ## Link my repository to the projects directory
 ln -rsfv "$GOPATH/src/github.com/feddasch/"* "$PROJECT_DIR"
 ## Back to home
 cd || exit
-
-# Solbuild
-notify_step "Setting up solbuild"
-sudo solbuild init -u
 
 # FINISHED!
 notify_step "Script has finished! You should reboot as soon as possible"
