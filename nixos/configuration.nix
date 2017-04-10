@@ -65,19 +65,32 @@
         defaultUserShell = pkgs.zsh;
 
         # Extra users
-        extraUsers.casa = {
-            # Username
-            name = "casa";
-            # Realname
-            description = "Casa";
-             # We're not a system user (daemons and that stuff)
-            isNormalUser = true;
-            # Add to wheel group for sudo-ing
-            extraGroups = [
-                "wheel"
-            ];
-            # Create the home directory for the user (very important)
-            createHome = true;
+        extraUsers = {
+            casa = {
+                # Realname
+                description = "Casa";
+                # We're not a system user (daemons and that stuff)
+                isNormalUser = true;
+                # Add to wheel group for sudo-ing
+                extraGroups = [
+                    "wheel"
+                ];
+                # Create the home directory for the user (very important)
+                createHome = true;
+            };
+
+            feddasch = {
+                # Realname
+                description = "Federico Damián";
+                # We're not a system user (daemons and that stuff)
+                isNormalUser = true;
+                # Add to wheel group for sudo-ing
+                extraGroups = [
+                    "wheel"
+                ];
+                # Create the home directory for the user (very important)
+                createHome = true;
+            };
         };
     };
 
@@ -210,11 +223,6 @@
             qbittorrent = pkgs.qbittorrent.override {
                 # I dont need this
                 webuiSupport = false;
-            };
-
-            libreoffice-fresh = pkgs.libreoffice-fresh.override {
-                # Use my language only :)
-                langs = ["es"];
             };
         };
     };
