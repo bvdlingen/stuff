@@ -107,13 +107,10 @@ cd || exit
 notify_step "Installing Go packages"
 ## Fixes
 ### Create GOPATH so the Go packages installation will not go KABOOM!
-GOPATH="$HOME/.golang"
-enter_folder "$GOPATH"
+export GOPATH="$HOME/.golang"
 ## Install packages
 list_go_get "$LISTS_RAW_URL/common/go_packages.txt"
 ## Link my repositories to the projects directory
 for dir in "$GOPATH/src/github.com/feddasch/"*; do
     ln -rsfv "$dir" "$PROJECT_DIR/$dir"
 done
-## Back to home
-cd || exit
