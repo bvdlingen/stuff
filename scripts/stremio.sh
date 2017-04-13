@@ -5,13 +5,15 @@
 #
 
 # Variables (do not change!)
-STREMIO_SRC="http://strem.io/download"
-STREMIO_FILE="stremio.tar.gz"
-STREMIO_SCRIPT="Stremio.sh"
+STREMIO_TARBALL_SOURCE="http://strem.io/download"
+STREMIO_DESKTOP_SOURCE="https://raw.githubusercontent.com/feddasch/things/master/scripts/files/stremio.desktop"
+STREMIO_TARBALL="stremio.tar.gz"
+STREMIO_BINARY="Stremio.sh"
 
 # Options
-STREMIO_DEST="/opt/stremio"
-STREMIO_BINDEST="/usr/bin/stremio"
+STREMIO_FILES_DEST="/opt/stremio"
+STREMIO_BINARY_DEST="/usr/bin/stremio"
+STREMIO_DESKTOP_DEST="/usr/share/applications/stremio.desktop"
 
 # Check if we meet all requeriments
 echo -e ">> Checking requeriments"
@@ -32,41 +34,51 @@ fi
 echo -e "
 >> Here we go!
 
-Tarball source : $STREMIO_SRC
+Tarball source : $STREMIO_TARBALL_SOURCE
 Tarball dest   : $STREMIO_FILE
-Script         : $STREMIO_SCRIPT
-Destination    : $STREMIO_DEST
-Binary link    : $STREMIO_BINDEST
+Script         : $STREMIO_BINARY
+Destination    : $STREMIO_FILES_DEST
+Binary link    : $STREMIO_BINARY_DEST
 "
 
 # Enter into the Stremio folder
-if ! test -d "$STREMIO_DEST"; then
-    mkdir -pv "$STREMIO_DEST"
+if ! test -d "$STREMIO_FILES_DEST"; then
+    mkdir -pv "$STREMIO_FILES_DEST"
 fi
-cd "$STREMIO_DEST" || exit 1
+cd "$STREMIO_FILES_DEST" || exit 1
 
 # Download the tarball (if not exists) and extract
-if ! test -f "$STREMIO_FILE"; then
+if ! test -f "$STREMIO_TARBALL"; then
     echo -e ">> Downloading the tarball"
-    if ! wget "$STREMIO_SRC" -O "$STREMIO_FILE"; then
+    if ! wget "$STREMIO_TARBALL_SOURCE" -O "$STREMIO_TARBALL"; then
         echo -e "ERROR: Unable to download Stremio tarball"
         exit 1
     fi
 fi
 echo -e ">> Extracting the Stremio tarball"
-if ! tar xfv "$STREMIO_FILE"; then
+if ! tar xfv "$STREMIO_TARBALL"; then
     echo -e "ERROR: Unable to extract Stremio file"
     exit 1
 fi
 
 # Link the script to $bindir (don't do this if DO_LINK=no was specified)
 echo -e ">> Fixing the script"
-if ! sed -e "s:\$(dirname \$0):$STREMIO_DEST:g" -i "$STREMIO_SCRIPT"; then
+if ! sed -e "s:\$(dirname \$0):$STREMIO_FILES_DEST:g" -i "$STREMIO_BINARY"; then
     echo -e "ERROR: Unable to fix the script, aren't you using GNU sed?"
     exit 1
 fi
-echo -e ">> Linking the script to $STREMIO_BINDEST"
-if ! ln -rsfv "$STREMIO_SCRIPT" "$STREMIO_BINDEST"; then
-    echo -e "ERROR: Unable to link the script to $STREMIO_BINDEST"
+echo -e ">> Linking the script to $STREMIO_BINARY_DEST"
+if ! ln -rsfv "$STREMIO_BINARY" "$STREMIO_BINARY_DEST"; then
+    echo -e "ERROR: Unable to link the script to $STREMIO_BINARY_DEST"
     exit 1
+fi
+
+# Add a .desktop file
+echo -e ">> Adding a .desktop file"
+if ! curl -sL "$STREMIO_DESKTOP_SOURCE" -o "$STREMIO_DESKTOP_DEST"; then
+    echo -e "ERROR: Unable to add a .desktop file"
+    exit 1
+fi
+if type update-desktop-database; then
+    update-desktop-database
 fi
