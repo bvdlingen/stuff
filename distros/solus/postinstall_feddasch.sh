@@ -95,10 +95,7 @@ cd || exit
 # Telegram Desktop
 ## Install it
 notify_step "Installing Telegram Desktop"
-enter_folder "$HOME/.TelegramDesktop"
-tar xJv --strip-components=1 --show-transformed-names < <(curl -sL "https://tdesktop.com/linux/current?alpha=1")
-## Back to home
-cd || exit
+bash < <(curl -sL "$SCRIPTS_RAW_URL/tdesktop-alpha.sh")
 
 # Docker
 ## Add my user to docker group

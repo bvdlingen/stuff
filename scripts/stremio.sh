@@ -4,16 +4,17 @@
 # Run this script as root!
 #
 
+# Options
+STREMIO_FILES_DEST="/opt/stremio"
+STREMIO_BINARY_DEST="/usr/bin/stremio"
+STREMIO_SHARED_DEST="/usr/share"
+
 # Variables (do not change!)
 STREMIO_TARBALL_SOURCE="http://strem.io/download"
 STREMIO_DESKTOP_SOURCE="https://raw.githubusercontent.com/feddasch/things/master/scripts/files/stremio.desktop"
 STREMIO_TARBALL="stremio.tar.gz"
 STREMIO_BINARY="Stremio.sh"
-
-# Options
-STREMIO_FILES_DEST="/opt/stremio"
-STREMIO_BINARY_DEST="/usr/bin/stremio"
-STREMIO_DESKTOP_DEST="/usr/share/applications/stremio.desktop"
+STREMIO_DESKTOP_DEST="$STREMIO_SHARED_DEST/applications/stremio.desktop"
 
 # Check if we meet all requeriments
 echo -e ">> Checking requeriments"
@@ -35,10 +36,11 @@ echo -e "
 >> Here we go!
 
 Tarball source : $STREMIO_TARBALL_SOURCE
-Tarball dest   : $STREMIO_FILE
+Tarball name   : $STREMIO_TARBALL
 Script         : $STREMIO_BINARY
 Destination    : $STREMIO_FILES_DEST
 Binary link    : $STREMIO_BINARY_DEST
+.desktop dest  : $STREMIO_DESKTOP_DEST
 "
 
 # Enter into the Stremio folder
@@ -50,13 +52,14 @@ cd "$STREMIO_FILES_DEST" || exit 1
 # Download the tarball (if not exists) and extract
 if ! test -f "$STREMIO_TARBALL"; then
     echo -e ">> Downloading the tarball"
-    if ! wget "$STREMIO_TARBALL_SOURCE" -O "$STREMIO_TARBALL"; then
+    if ! wget -nv --show-progress "$STREMIO_TARBALL_SOURCE" -O "$STREMIO_TARBALL"; then
         echo -e "ERROR: Unable to download Stremio tarball"
+        rm -rfv "$STREMIO_TARBALL"
         exit 1
     fi
 fi
 echo -e ">> Extracting the Stremio tarball"
-if ! tar xfv "$STREMIO_TARBALL"; then
+if ! tar xf "$STREMIO_TARBALL"; then
     echo -e "ERROR: Unable to extract Stremio file"
     exit 1
 fi
@@ -81,4 +84,11 @@ if ! curl -sL "$STREMIO_DESKTOP_SOURCE" -o "$STREMIO_DESKTOP_DEST"; then
 fi
 if type update-desktop-database; then
     update-desktop-database
+fi
+
+# Remove the downloaded file
+echo -e ">> Removing the downloaded file"
+if ! rm -rfv "$STREMIO_TARBALL"; then
+    echo -e "ERROR: Unable to remove the downloaded file"
+    exit 1
 fi
