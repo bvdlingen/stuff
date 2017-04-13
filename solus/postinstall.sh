@@ -4,8 +4,12 @@
 #
 
 # Variables
-## Lists (bad design is bad)
-LISTS_RAW_URL="https://raw.githubusercontent.com/feddasch/things/master/lists"
+## GitHub raw files URL
+RAW_URL="https://raw.githubusercontent.com/feddasch/things/master"
+## Lists
+LISTS_RAW_URL="$RAW_URL/lists"
+## Scripts
+SCRIPTS_RAW_URL="$RAW_URL/scripts"
 ## Third Party specs
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
@@ -68,6 +72,10 @@ sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neo
 # User shell
 ## Default to Fish
 sudo chsh -s $(which fish) $(whoami)
+
+# Stremio
+## Run my installation script
+sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/install_stremio.sh")
 
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"
