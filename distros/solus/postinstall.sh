@@ -75,7 +75,7 @@ sudo chsh -s $(which fish) $(whoami)
 
 # Stremio
 ## Run my installation script
-sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/install_stremio.sh")
+sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/stremio.sh")
 
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"
