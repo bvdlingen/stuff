@@ -37,7 +37,7 @@ list_tp_install() {
         notify_substep "Installing third-party package: $package"
         sudo eopkg build -y --ignore-safety "$SPECS_RAW_URL/$package/pspec.xml"
         sudo eopkg install -y ./*.eopkg && rm -rfv ./*.eopkg
-    done < <(curl "$1")
+    done < <(curl -sL "$1")
 }
 
 # Welcome
@@ -62,8 +62,12 @@ notify_step "Installing third party packages"
 list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neofetch golang \
-                      hugo git{,-extras} solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neofetch golang hugo \
+                      git{,-extras} docker solbuild{,-config{,-local}-unstable} font-firacode-otf
+
+# User shell
+## Default to Fish
+sudo chsh -s $(which fish) $(whoami)
 
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"

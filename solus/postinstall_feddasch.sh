@@ -36,14 +36,14 @@ list_git_clone() {
     while read -r repository; do
         notify_substep "Clonning repository: $repository"
         git clone --recursive "$repository"
-    done < <(curl "$1")
+    done < <(curl -sL "$1")
 }
 
 list_go_get() {
     while read -r package; do
         notify_substep "Installing Go package: $package"
         go get -v -u "$package"
-    done < <(curl "$1")
+    done < <(curl -sL "$1")
 }
 
 # Welcome
@@ -57,7 +57,7 @@ yadm decrypt
 ## Link the VS Code directory to VS Code OSS directory
 ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
 ## Default to Fish
-sudo chsh -s /usr/bin/fish feddasch
+sudo chsh -s $(which fish) $(whoami)
 
 # Git repositories
 ## Switch to the projects directory
@@ -93,24 +93,22 @@ make clone -j100
 cd || exit
 
 # Telegram Desktop
+## Install it
 notify_step "Installing Telegram Desktop"
-## Enter into the Telegram folder
 enter_folder "$HOME/.TelegramDesktop"
-## Download the tarball
-wget https://tdesktop.com/linux/current?alpha=1 -O current.tar.xz
-## Unpack it
-tar xfv current.tar.xz --strip-components=1 --show-transformed-names && rm -rfv current.tar.xz
+tar xJv --strip-components=1 --show-transformed-names < <(curl -sL "https://tdesktop.com/linux/current?alpha=1")
 ## Back to home
 cd || exit
 
+# Docker
+## Add my user to docker group
+notify_step "Adding this user to docker group"
+sudo usermod -aG docker $(whoami)
+
 # Go packages
-notify_step "Installing Go packages"
 ## Fixes
 ### Create GOPATH so the Go packages installation will not go KABOOM!
 export GOPATH="$HOME/.golang"
 ## Install packages
+notify_step "Installing Go packages"
 list_go_get "$LISTS_RAW_URL/common/go_packages.txt"
-## Link my repositories to the projects directory
-for dir in "$GOPATH/src/github.com/feddasch/"*; do
-    ln -rsfv "$dir" "$PROJECT_DIR/$dir"
-done
