@@ -66,8 +66,9 @@ notify_step "Installing third party packages"
 list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neofetch golang hugo \
-                      git{,-extras} docker solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neofetch golang \
+                      hugo git{,-extras} heroku-cli docker solbuild{,-config{,-local}-unstable} \
+                      font-firacode-otf
 
 # User shell
 ## Default to Fish
