@@ -87,6 +87,3 @@ if ! wget -nv --show-progress "$STREMIO_DESKTOP_SOURCE" -O "$STREMIO_DESKTOP_DES
     echo -e "ERROR: Unable to add a .desktop file"
     exit 1
 fi
-if type update-desktop-database; then
-    sudo update-desktop-database
-fi

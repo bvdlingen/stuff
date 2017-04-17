@@ -66,6 +66,7 @@ if ! wget -nv --show-progress "$TDESKTOP_DESKTOP_SOURCE" -O "$TDESKTOP_DESKTOP_D
     echo -e "ERROR: Unable to add a .desktop file"
     exit 1
 fi
-if type update-desktop-database; then
-    sudo update-desktop-database
+if ! sed -e "s:Exec=EXECUTABLE_PATH:Exec=$TDESKTOP_FILES_DEST/Telegram:g" -i "$TDESKTOP_DESKTOP_DEST"; then
+    echo -e "ERROR: Unable to fix .desktop file"
+    exit 1
 fi
