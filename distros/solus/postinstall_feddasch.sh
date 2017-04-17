@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Solus MATE Post Install Script (feddasch)
+# Solus Post Install Script (feddasch)
 #
 
 # Variables
@@ -12,7 +12,7 @@ PROJECT_DIR="$HOME/Proyectos"
 # Functions
 notify_step() {
     echo -e ">> $1"
-    notify-send "Solus MATE Post Install Script (feddasch)" "$1" -i distributor-logo-solus
+    notify-send "Solus Post Install Script (feddasch)" "$1" -i distributor-logo-solus
 }
 
 notify_substep() {
@@ -35,7 +35,14 @@ enter_folder() {
 list_git_clone() {
     while read -r repository; do
         notify_substep "Clonning repository: $repository"
-        git clone --recursive "$repository"
+        git clone "$repository"
+    done < <(curl -sL "$1")
+}
+
+list_get_source() {
+    while read -r source; do
+        notify_substep "Getting source: $repository"
+        git clone "https://git.solus-project.com/packages/$source"
     done < <(curl -sL "$1")
 }
 
@@ -54,10 +61,10 @@ notify_step "Setting-up dotfiles"
 ## Clone the repository and decrypt the binary
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
-## Link the VS Code directory to VS Code OSS directory
+## Link the VS Code stuff to VS Code OSS's
 ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
-## Default to Fish
-sudo chsh -s $(which fish) $(whoami)
+## Set fish as the default shell
+sudo chsh -s "$(which fish)" "$(whoami)"
 
 # Git repositories
 ## Switch to the projects directory
@@ -69,43 +76,42 @@ list_git_clone "$LISTS_RAW_URL/common/git_repos.txt"
 cd || exit
 
 # Packaging
-## Install development packages
-notify_step "Installing development component"
-sudo eopkg install -y -c system.devel
-## Set up Solbuild
-notify_step "Setting up solbuild"
-sudo solbuild init -u
 ## Create packages folder
 notify_step "Setting up Solus packages folder"
 enter_folder "$PROJECT_DIR/Solus"
 ## Clone common repository
 notify_step "Clonning common repository"
-git clone https://git.solus-project.com/common
+while true; do
+    if ! test -d common; then
+        git clone https://git.solus-project.com/common
+    fi
+done
 ## Link makefiles
 notify_step "Linking makefiles"
 ln -rsfv common/Makefile.toplevel Makefile
 ln -rsfv common/Makefile.common   Makefile.common
 ln -rsfv common/Makefile.iso      Makefile.iso
-## Clone all source repositories
-notify_step "Clonning all source repositories"
-make clone -j100
+## Get source repositories
+notify_step "Getting source repositories"
+list_get_source "$LISTS_RAW_URL/solus/package_sources.txt"
 ## Return to home
 cd || exit
 
-# Telegram Desktop
-## Install it
-notify_step "Installing Telegram Desktop"
-bash < <(curl -sL "$SCRIPTS_RAW_URL/tdesktop-alpha.sh")
+# Development packages
+notify_step "Installing development component"
+sudo eopkg install -y -c system.devel
 
-# Docker
-## Add my user to docker group
-notify_step "Adding this user to docker group"
-sudo usermod -aG docker $(whoami)
+# Solbuild
+notify_step "Setting up solbuild"
+sudo solbuild init -u
 
 # Go packages
-## Fixes
-### Create GOPATH so the Go packages installation will not go KABOOM!
-export GOPATH="$HOME/.golang"
-## Install packages
 notify_step "Installing Go packages"
+## Create GOPATH so the Go packages installation will not do KABOOM!
+export GOPATH="$PROJECT_DIR/Go"
+## Install the Go package list
 list_go_get "$LISTS_RAW_URL/common/go_packages.txt"
+
+# Telegram Desktop
+notify_step "Installing Telegram Desktop"
+bash < <(curl -sL "$SCRIPTS_RAW_URL/tdesktop-alpha.sh")

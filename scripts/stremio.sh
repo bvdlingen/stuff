@@ -11,9 +11,9 @@ STREMIO_SHARED_DEST="/usr/share"
 
 # Variables (do not change!)
 STREMIO_TARBALL_SOURCE="http://strem.io/download"
-STREMIO_DESKTOP_SOURCE="https://raw.githubusercontent.com/feddasch/things/master/scripts/files/stremio.desktop"
 STREMIO_TARBALL="stremio.tar.gz"
 STREMIO_BINARY="Stremio.sh"
+STREMIO_DESKTOP_SOURCE="https://raw.githubusercontent.com/feddasch/things/master/scripts/files/stremio.desktop"
 STREMIO_DESKTOP_DEST="$STREMIO_SHARED_DEST/applications/stremio.desktop"
 
 # Check if we meet all requeriments
@@ -78,7 +78,7 @@ fi
 
 # Add a .desktop file
 echo -e ">> Adding a .desktop file"
-if ! curl -sL "$STREMIO_DESKTOP_SOURCE" -o "$STREMIO_DESKTOP_DEST"; then
+if ! wget -nv --show-progress "$STREMIO_DESKTOP_SOURCE" -O "$STREMIO_DESKTOP_DEST"; then
     echo -e "ERROR: Unable to add a .desktop file"
     exit 1
 fi

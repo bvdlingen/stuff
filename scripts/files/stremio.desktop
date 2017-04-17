@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Stremio
-Comment=Watch instantly all the video content you enjoy in one place
-Icon=stremio
+Comment=Mira instantaneamente todo el contenido en vídeo que quieras en un solo lugar
+Icon=multimedia-video-player
 Exec=stremio
 Categories=AudioVideo;Player;Video;TV;

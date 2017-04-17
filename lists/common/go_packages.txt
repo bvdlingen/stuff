@@ -1,2 +1,2 @@
-github.com/feddasch/bots/cmd/runbot
 github.com/kardianos/govendor
+github.com/spf13/hugo

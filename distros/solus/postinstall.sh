@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Solus MATE Post Install Script (casa)
+# Solus Post Install Script (casa)
 #
 
 # Variables
@@ -16,7 +16,7 @@ SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 # Functions
 notify_step() {
     echo -e ">> $1"
-    notify-send "Solus MATE Post Install Script (casa)" "$1" -i distributor-logo-solus
+    notify-send "Solus Post Install Script (casa)" "$1" -i distributor-logo-solus
 }
 
 notify_substep() {
@@ -57,7 +57,7 @@ sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-i
 # Manage packages
 ## Remove unneded stuff
 notify_step "Removing unneded stuff"
-sudo eopkg remove -y --purge firefox thunderbird arc-firefox-theme
+sudo eopkg remove -y --purge firefox thunderbird arc-firefox-theme orca
 ## Upgrade the system
 notify_step "Getting the system up to date"
 sudo eopkg upgrade -y
@@ -66,22 +66,22 @@ notify_step "Installing third party packages"
 list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions geary libreoffice-all vscode fish yadm neofetch golang \
-                      hugo git{,-extras} heroku-cli docker solbuild{,-config{,-local}-unstable} \
-                      font-firacode-otf
+sudo eopkg install -y geary libreoffice-all vscode yadm fish neofetch git{,-extras} yarn golang heroku-cli \
+                      solbuild{,-config{,-local}-unstable} font-firacode-otf budgie-{screenshot,haste}-applet
 
 # User shell
-## Default to Fish
-sudo chsh -s $(which fish) $(whoami)
+notify_step "Setting $(which fish) as default user shell"
+sudo chsh -s "$(which fish)" "$(whoami)"
 
 # Stremio
-## Run my installation script
+notify_step "Installing Stremio"
+# shellcheck disable=SC2024
 sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/stremio.sh")
 
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"
-## Remove password for Casa
-sudo passwd -du casa
+## Remove user password
+sudo passwd -du "$(whoami)"
 ## Add nullok option to PAM files
 sudo find /etc/pam.d -name "*" -exec sed -i {} -e "s:try_first_pass nullok:try_first_pass:g" \
                                                -e "s:pam_unix.so:pam_unix.so nullok:g" \;
