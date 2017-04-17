@@ -49,7 +49,7 @@ if ! test -d "$STREMIO_FILES_DEST"; then
 fi
 cd "$STREMIO_FILES_DEST" || exit 1
 
-# Download the tarball (if not exists) and extract
+# Download the tarball (if not exists), extract and remove
 if ! test -f "$STREMIO_TARBALL"; then
     echo -e ">> Downloading the tarball"
     if ! wget -nv --show-progress "$STREMIO_TARBALL_SOURCE" -O "$STREMIO_TARBALL"; then
@@ -61,6 +61,11 @@ fi
 echo -e ">> Extracting the Stremio tarball"
 if ! tar xf "$STREMIO_TARBALL"; then
     echo -e "ERROR: Unable to extract Stremio file"
+    exit 1
+fi
+echo -e ">> Removing the downloaded file"
+if ! rm -rfv "$STREMIO_TARBALL"; then
+    echo -e "ERROR: Unable to remove the downloaded file"
     exit 1
 fi
 
@@ -83,12 +88,5 @@ if ! wget -nv --show-progress "$STREMIO_DESKTOP_SOURCE" -O "$STREMIO_DESKTOP_DES
     exit 1
 fi
 if type update-desktop-database; then
-    update-desktop-database
-fi
-
-# Remove the downloaded file
-echo -e ">> Removing the downloaded file"
-if ! rm -rfv "$STREMIO_TARBALL"; then
-    echo -e "ERROR: Unable to remove the downloaded file"
-    exit 1
+    sudo update-desktop-database
 fi

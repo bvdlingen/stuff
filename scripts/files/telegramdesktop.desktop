@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Telegram Desktop
+Comment=Version oficial para escritorio de la aplicación de mensajería Telegram
+Icon=telegram
+Exec=EXECUTABLE_PATH
+Categories=Network;InstantMessaging;
+MimeType=x-scheme-handler/tg;
+StartupWMClass=TelegramDesktop

@@ -78,6 +78,20 @@ notify_step "Installing Stremio"
 # shellcheck disable=SC2024
 sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/stremio.sh")
 
+# Personalization
+notify_step "Setting stuff with GSettings"
+### Privacy
+gsettings set org.gnome.desktop.privacy remove-old-temp-files true
+gsettings set org.gnome.desktop.privacy remove-old-trash-files true
+### Location
+gsettings set org.gnome.system.location enabled true
+### Sounds
+gsettings set org.gnome.desktop.sound event-sounds true
+gsettings set org.gnome.desktop.sound input-feedback-sounds true
+gsettings set org.gnome.desktop.sound theme-name "freedesktop"
+### Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
+
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"
 ## Remove user password
