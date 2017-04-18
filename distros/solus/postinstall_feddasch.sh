@@ -127,5 +127,3 @@ gsettings set org.gnome.system.location enabled true
 gsettings set org.gnome.desktop.sound event-sounds true
 gsettings set org.gnome.desktop.sound input-feedback-sounds true
 gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-### Window manager
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 1

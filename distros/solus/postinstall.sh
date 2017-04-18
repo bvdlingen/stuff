@@ -66,8 +66,8 @@ notify_step "Installing third party packages"
 list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y geary libreoffice-all vscode yadm fish neofetch git{,-extras} yarn golang heroku-cli \
-                      solbuild{,-config{,-local}-unstable} font-firacode-otf budgie-{screenshot,haste}-applet
+sudo eopkg install -y geary libreoffice-all vscode yadm fish neofetch git{,-extras} yarn golang \
+                      heroku-cli solbuild{,-config{,-local}-unstable} font-firacode-otf
 
 # User shell
 notify_step "Setting $(which fish) as default user shell"
@@ -89,8 +89,6 @@ gsettings set org.gnome.system.location enabled true
 gsettings set org.gnome.desktop.sound event-sounds true
 gsettings set org.gnome.desktop.sound input-feedback-sounds true
 gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-### Window manager
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # Password-less user (EXTREMELY INSANE STUFF)
 notify_step "Setting password-less user"
