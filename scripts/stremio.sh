@@ -30,6 +30,13 @@ if ! type wget; then
     echo -e "ERROR: You need wget to be installed before using this script"
     exit 1
 fi
+## If we're in Solus, install the libidn dependency
+if type eopkg; then
+    if ! sudo eopkg install -y libidn; then
+        echo -e "ERROR: Unable to install libidn dependency"
+        exit 1
+    fi
+fi
 
 # Print a autotools-like big wall of text with all the options
 echo -e "

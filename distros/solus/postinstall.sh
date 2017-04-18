@@ -14,34 +14,23 @@ SCRIPTS_RAW_URL="$RAW_URL/scripts"
 SPECS_RAW_URL="https://raw.githubusercontent.com/solus-project/3rd-party/master"
 
 # Functions
-notify_step() {
+function notify_step() {
     echo -e ">> $1"
     notify-send "Solus Post Install Script (casa)" "$1" -i distributor-logo-solus
 }
 
-notify_substep() {
+function notify_substep() {
     echo -e " - $1"
 }
 
-check_folder() {
+function enter_folder() {
     if ! test -d "$1"; then
         notify_substep "Creating folder: $1"
         mkdir -pv "$1"
     fi
-}
 
-enter_folder() {
-    check_folder "$1"
     notify_substep "Entering to folder: $1"
     cd "$1" || exit
-}
-
-list_tp_install() {
-    while read -r package; do
-        notify_substep "Installing third-party package: $package"
-        sudo eopkg build -y --ignore-safety "$SPECS_RAW_URL/$package/pspec.xml"
-        sudo eopkg install -y ./*.eopkg && rm -rfv ./*.eopkg
-    done < <(curl -sL "$1")
 }
 
 # Welcome
@@ -57,17 +46,30 @@ sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-i
 # Manage packages
 ## Remove unneded stuff
 notify_step "Removing unneded stuff"
-sudo eopkg remove -y --purge firefox thunderbird arc-firefox-theme orca
+sudo eopkg remove -y --purge firefox thunderbird arc-firefox-theme rhythmbox{,-alternative-toolbar} orca
 ## Upgrade the system
 notify_step "Getting the system up to date"
 sudo eopkg upgrade -y
 ## Install third party stuff
 notify_step "Installing third party packages"
-list_tp_install "$LISTS_RAW_URL/solus/third_party.txt"
+while read -r package; do
+    notify_substep "Installing third-party package: $package"
+    sudo eopkg build -y --ignore-safety "$SPECS_RAW_URL/$package/pspec.xml"
+    sudo eopkg install -y ./*.eopkg && rm -rfv ./*.eopkg
+done < <(curl -sL "$LISTS_RAW_URL/solus/third_party.txt")
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y geary libreoffice-all vscode yadm fish neofetch git{,-extras} yarn golang \
-                      heroku-cli solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg install -y geary libreoffice-all vscode yadm fish neofetch git{,-extras} yarn golang heroku-cli \
+                      solbuild{,-config{,-local}-unstable} font-firacode-otf budgie-{screenshot,haste}-applet \
+                      sayonara-player
+
+# Password-less user (EXTREMELY INSANE STUFF)
+notify_step "Setting password-less user"
+## Remove user password
+sudo passwd -du "$(whoami)"
+## Add nullok option to PAM files
+sudo find /etc/pam.d/* -exec sed -i {} -e "s:shadow nullok:shadow:g" \
+                                       -e "s:pam_unix.so:pam_unix.so nullok:g" \;
 
 # User shell
 notify_step "Setting $(which fish) as default user shell"
@@ -89,11 +91,5 @@ gsettings set org.gnome.system.location enabled true
 gsettings set org.gnome.desktop.sound event-sounds true
 gsettings set org.gnome.desktop.sound input-feedback-sounds true
 gsettings set org.gnome.desktop.sound theme-name "freedesktop"
-
-# Password-less user (EXTREMELY INSANE STUFF)
-notify_step "Setting password-less user"
-## Remove user password
-sudo passwd -du "$(whoami)"
-## Add nullok option to PAM files
-sudo find /etc/pam.d -name "*" -exec sed -i {} -e "s:try_first_pass nullok:try_first_pass:g" \
-                                               -e "s:pam_unix.so:pam_unix.so nullok:g" \;
+### Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1

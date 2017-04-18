@@ -10,47 +10,23 @@ LISTS_RAW_URL="https://raw.githubusercontent.com/feddasch/things/master/lists"
 PROJECT_DIR="$HOME/Proyectos"
 
 # Functions
-notify_step() {
+function notify_step() {
     echo -e ">> $1"
-    notify-send "Solus Post Install Script (feddasch)" "$1" -i distributor-logo-solus
+    notify-send "Solus Post Install Script (casa)" "$1" -i distributor-logo-solus
 }
 
-notify_substep() {
+function notify_substep() {
     echo -e " - $1"
 }
 
-check_folder() {
+function enter_folder() {
     if ! test -d "$1"; then
         notify_substep "Creating folder: $1"
         mkdir -pv "$1"
     fi
-}
 
-enter_folder() {
-    check_folder "$1"
     notify_substep "Entering to folder: $1"
     cd "$1" || exit
-}
-
-list_git_clone() {
-    while read -r repository; do
-        notify_substep "Clonning repository: $repository"
-        git clone "$repository"
-    done < <(curl -sL "$1")
-}
-
-list_get_source() {
-    while read -r source; do
-        notify_substep "Getting source: $repository"
-        git clone "https://git.solus-project.com/packages/$source"
-    done < <(curl -sL "$1")
-}
-
-list_go_get() {
-    while read -r package; do
-        notify_substep "Installing Go package: $package"
-        go get -v -u "$package"
-    done < <(curl -sL "$1")
 }
 
 # Welcome
@@ -71,7 +47,10 @@ sudo chsh -s "$(which fish)" "$(whoami)"
 enter_folder "$PROJECT_DIR"
 ## Clone the repositories
 notify_step "Cloning Git repositories"
-list_git_clone "$LISTS_RAW_URL/common/git_repos.txt"
+while read -r repository; do
+    notify_substep "Clonning repository: $repository"
+    git clone "$repository"
+done < <(curl -sL "$LISTS_RAW_URL/common/git_repos.txt")
 ## Return to home
 cd || exit
 
@@ -93,7 +72,10 @@ ln -rsfv common/Makefile.common   Makefile.common
 ln -rsfv common/Makefile.iso      Makefile.iso
 ## Get source repositories
 notify_step "Getting source repositories"
-list_get_source "$LISTS_RAW_URL/solus/package_sources.txt"
+while read -r source; do
+    notify_substep "Getting source: $repository"
+    git clone "https://git.solus-project.com/packages/$source"
+done < <(curl -sL "$LISTS_RAW_URL/solus/package_sources.txt")
 ## Return to home
 cd || exit
 
@@ -110,7 +92,10 @@ notify_step "Installing Go packages"
 ## Create GOPATH so the Go packages installation will not do KABOOM!
 export GOPATH="$PROJECT_DIR/Go"
 ## Install the Go package list
-list_go_get "$LISTS_RAW_URL/common/go_packages.txt"
+while read -r package; do
+    notify_substep "Installing Go package: $package"
+    go get -v -u "$package"
+done < <(curl -sL "$LISTS_RAW_URL/common/go_packages.txt")
 
 # Telegram Desktop
 notify_step "Installing Telegram Desktop"
@@ -127,3 +112,5 @@ gsettings set org.gnome.system.location enabled true
 gsettings set org.gnome.desktop.sound event-sounds true
 gsettings set org.gnome.desktop.sound input-feedback-sounds true
 gsettings set org.gnome.desktop.sound theme-name "freedesktop"
+### Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
