@@ -63,6 +63,8 @@ notify_step "Clonning common repository"
 while true; do
     if ! test -d common; then
         git clone https://git.solus-project.com/common
+    else
+        break
     fi
 done
 ## Link makefiles
