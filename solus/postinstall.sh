@@ -61,7 +61,7 @@ while read -r package; do
 done < <(curl -sL "$LISTS_RAW_URL/solus/third_party.txt")
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode yadm fish hub git{,-extras} neofetch yarn golang heroku-cli solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode hugo yadm fish hub git{,-extras} neofetch yarn golang solbuild{,-config{,-local}-unstable} font-firacode-otf
 ## Install development packages
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel

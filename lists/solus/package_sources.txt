@@ -60,4 +60,5 @@ vnstat
 xaut
 xdotool
 yad
+zsh-syntax-highlighting
 zuki-themes

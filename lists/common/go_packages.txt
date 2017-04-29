@@ -1,2 +1,2 @@
+github.com/goreleaser/goreleaser
 github.com/kardianos/govendor
-github.com/spf13/hugo
