@@ -170,23 +170,7 @@
         gc.automatic = true;
     };
 
-    nixpkgs.config = {
-        # Allow unfree packages (for Chrome and VSCode)
-        allowUnfree = true;
-
-        # Override package settings
-        packageOverrides = pkgs: {
-            ark = pkgs.ark.override {
-                # Enable unrar
-                unfreeEnableUnrar = true;
-            };
-
-            qbittorrent = pkgs.qbittorrent.override {
-                # I dont need this
-                webuiSupport = false;
-            };
-        };
-    };
+    nixpkgs.config.allowUnfree = true;
 
     system = {
         # Live in the rollin'

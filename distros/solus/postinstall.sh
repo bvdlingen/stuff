@@ -61,9 +61,7 @@ while read -r package; do
 done < <(curl -sL "$LISTS_RAW_URL/solus/third_party.txt")
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode yadm fish neofetch \
-                      git{,-extras} yarn golang heroku-cli solbuild{,-config{,-local}-unstable} \
-                      font-firacode-otf
+sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode yadm fish hub git{,-extras} neofetch yarn golang heroku-cli solbuild{,-config{,-local}-unstable} font-firacode-otf
 ## Install development packages
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -88,7 +86,7 @@ enter_folder "$PROJECT_DIR"
 notify_step "Cloning Git repositories"
 while read -r repository; do
     notify_substep "Clonning repository: $repository"
-    git clone "$repository"
+    hub clone "$repository"
 done < <(curl -sL "$LISTS_RAW_URL/common/git_repos.txt")
 ## Return to home
 cd || exit
@@ -99,7 +97,7 @@ notify_step "Setting up Solus packages folder"
 enter_folder "$PROJECT_DIR/Solus"
 ## Clone common repository
 notify_step "Clonning common repository"
-git clone https://git.solus-project.com/common
+hub clone https://git.solus-project.com/common
 ## Link makefiles
 notify_step "Linking makefiles"
 ln -rsfv common/Makefile.toplevel Makefile
@@ -109,7 +107,7 @@ ln -rsfv common/Makefile.iso      Makefile.iso
 notify_step "Getting source repositories"
 while read -r source; do
     notify_substep "Getting source: $repository"
-    git clone "https://git.solus-project.com/packages/$source"
+    hub clone "https://git.solus-project.com/packages/$source"
 done < <(curl -sL "$LISTS_RAW_URL/solus/package_sources.txt")
 ## Return to home
 cd || exit
