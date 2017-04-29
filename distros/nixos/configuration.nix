@@ -11,30 +11,23 @@
         cleanTmpDir = true;
         # Latest kernel
         kernelPackages = pkgs.linuxPackages_latest;
-        loader = {
-            # I don't wanna see you
-            timeout = 0;
 
-            # BIOS = GRUB2
-            grub = {
-                # Enable it
-                enable = true;
-                # Use version 2
-                version = 2;
-                # Device where it installs
-                device = "/dev/sda";
-            };
-        };
-
-        # Pretty logo at boot
-        plymouth.enable = true;
+        # Set up GRUB
+        loader.grub.device = "/dev/sda";
     };
 
     security = {
+        # Disable password for wheel users using sudo
         sudo.wheelNeedsPassword = false;
 
+        # Disable password for SDDM
         pam.services.sddm.allowNullPassword = true;
     };
+
+    # The hostname
+    networking.hostName = "pandora";
+    # The timezone
+    time.timeZone = "America/Argentina/Buenos_Aires";
 
     i18n = {
         # Set the default language, boludo
@@ -44,8 +37,6 @@
     };
 
     fonts = {
-        # Store all the fonts in one place
-        enableFontDir = true;
         # Enable default fonts
         enableDefaultFonts = true;
         # Enable Microsoft Core Fonts
@@ -62,44 +53,23 @@
 
     users = {
         # Set the default shell
-        defaultUserShell = pkgs.zsh;
+        defaultUserShell = pkgs.fish;
 
         # Extra users
-        extraUsers = {
-            casa = {
+        extraUsers.casa = {
                 # Realname
                 description = "Casa";
                 # We're not a system user (daemons and that stuff)
                 isNormalUser = true;
                 # Add to wheel group for sudo-ing
-                extraGroups = [
-                    "wheel"
-                ];
+                extraGroups = ["wheel"];
                 # Create the home directory for the user (very important)
                 createHome = true;
-            };
-
-            feddasch = {
-                # Realname
-                description = "Federico Damián";
-                # We're not a system user (daemons and that stuff)
-                isNormalUser = true;
-                # Add to wheel group for sudo-ing
-                extraGroups = [
-                    "wheel"
-                ];
-                # Create the home directory for the user (very important)
-                createHome = true;
-            };
         };
     };
 
-    # The hostname
-    networking.hostName = "pandora";
-    # The time zone
-    time.timeZone = "America/Argentina/Buenos_Aires";
-    # Enable the Z Shell
-    programs.zsh.enable = true;
+    # Enable the Fish
+    programs.fish.enable = true;
     # Enable NetworkManager
     networking.networkmanager.enable = true;
     # Enable PulseAudio
@@ -109,10 +79,6 @@
         xserver = {
             # It's useful for using the desktop, I guess
             enable = true;
-            # AMD drivers
-            videoDrivers = ["ati"];
-            # Forcibly kill X
-            enableCtrlAltBackspace = true;
             # Keyboard layout
             layout = "latam";
 
@@ -132,9 +98,6 @@
             desktopManager.plasma5 = {
                 enable = true;
             };
-
-            # Default to libinput
-            libinput.enable = true;
         };
 
         # Time force, time force!
@@ -198,19 +161,17 @@
     nix = {
         # Automatically optimize the Nix store
         autoOptimiseStore = true;
-        # Cores used for building (0 means all available cores)
-        buildCores = 0;
         # Number of jobs to use
-        maxJobs = 5;
-        # Use a sandbox for building packages
-        useSandbox = true;
+        maxJobs = 3;
+        # Cores used for building
+        buildCores = 3;
 
         # Automatically garbage collect unused stuff
         gc.automatic = true;
     };
 
     nixpkgs.config = {
-        # Allow unfree packages (for Chrome)
+        # Allow unfree packages (for Chrome and VSCode)
         allowUnfree = true;
 
         # Override package settings
@@ -229,12 +190,12 @@
 
     system = {
         # Live in the rollin'
-        defaultChannel = "https://nixos.org/channels/nixos-unstable";
+        defaultChannel = https://nixos.org/channels/nixos-unstable;
 
         # Unnattended upgrades
         autoUpgrade = {
             enable = true;
-            channel = "https://nixos.org/channels/nixos-unstable";
+            channel = https://nixos.org/channels/nixos-unstable;
         };
     };
 }
