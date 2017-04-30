@@ -1,4 +1,3 @@
 blog
-journal
-sassy
 things
+top-secret

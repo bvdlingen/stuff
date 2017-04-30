@@ -38,11 +38,9 @@ function enter_folder() {
 # Start
 notify_step "Script is now running, do not touch anything until it finishes :)"
 
-# Manage repositories
+# Switch to unstable repository
 notify_step "Switching to Unstable repository"
-## Remove Solus (Shannon)
 sudo eopkg remove-repo -y Solus
-## Add Unstable
 sudo eopkg add-repo -y Solus https://packages.solus-project.com/unstable/eopkg-index.xml.xz
 
 # Manage packages
@@ -61,7 +59,7 @@ while read -r package; do
 done < <(curl -sL "$LISTS_RAW_URL/solus/third_party.txt")
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode hugo yadm fish hub git{,-extras} neofetch yarn golang solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg install -y caja-extensions sayonara-player libreoffice-all vscode yadm fish hub git{,-extras} neofetch yarn golang solbuild{,-config{,-local}-unstable} font-firacode-otf
 ## Install development packages
 notify_step "Installing development component"
 sudo eopkg install -y -c system.devel
@@ -71,7 +69,6 @@ sudo solbuild init -u
 
 # Dotfiles
 notify_step "Setting-up dotfiles"
-## Clone the repository and decrypt the binary
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
 ## Link the VS Code stuff to VS Code OSS's
@@ -80,10 +77,9 @@ ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
 sudo chsh -s "$(which fish)" "$(whoami)"
 
 # Git repositories
-## Switch to the projects directory
+notify_step "Cloning Git repositories"
 enter_folder "$PROJECT_DIR"
 ## Clone the repositories
-notify_step "Cloning Git repositories"
 while read -r repository; do
     notify_substep "Clonning repository: $repository"
     hub clone "$repository"
@@ -92,7 +88,6 @@ done < <(curl -sL "$LISTS_RAW_URL/common/git_repos.txt")
 cd || exit
 
 # Packaging
-## Create packages folder
 notify_step "Setting up Solus packages folder"
 enter_folder "$PROJECT_DIR/Solus"
 ## Clone common repository
@@ -120,6 +115,14 @@ sudo bash < <(curl -sL "$SCRIPTS_RAW_URL/stremio.sh")
 # Telegram Desktop
 notify_step "Installing Telegram Desktop"
 bash < <(curl -sL "$SCRIPTS_RAW_URL/tdesktop-alpha.sh")
+
+# Blog setup
+notify_step "Setting up blog repository"
+# Install Hexo
+sudo npm install --global hexo-cli
+# Install blog dependencies
+enter_folder "$PROJECT_DIR/blog"
+yarn install
 
 # Go packages
 notify_step "Installing Go packages"
