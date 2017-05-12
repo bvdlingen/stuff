@@ -1,2 +1,2 @@
 desktop/font/mscorefonts
-multimedia/video/flash-player-npapi
+multimedia/video/flash-player-ppapi

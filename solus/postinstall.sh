@@ -49,7 +49,7 @@ sudo eopkg -y add-repo Solus https://packages.solus-project.com/unstable/eopkg-i
 # Manage packages
 ## Remove unneded stuff
 notify_step "Removing unneded stuff"
-sudo eopkg -y remove --purge rhythmbox orca onboard
+sudo eopkg -y remove --purge arc-{gtk,firefox}-theme moka-icon-theme faba-icon-theme{,-mono} firefox thunderbird rhythmbox{,-alternative-toolbar} orca
 ## Upgrade the system
 notify_step "Getting the system up to date"
 sudo eopkg -y upgrade
@@ -62,7 +62,7 @@ while read -r package; do
 done < <(curl -sL "$LISTS_FOLDER_URL/solus/third_party.txt")
 ## Install extra applications and stuff
 notify_step "Installing more packages"
-sudo eopkg -y install caja-extensions sayonara-player libreoffice-all vscode yadm fish hub git{,-extras} neofetch golang yarn docker solbuild{,-config{,-local}-unstable} font-firacode-otf
+sudo eopkg -y install budgie-{haste,screenshot}-applet {vertex-gtk,papirus-icon}-theme geary sayonara-player libreoffice-all opera-stable vscode yadm fish hub git{,-extras} neofetch golang yarn docker solbuild{,-config{,-local}-unstable} font-firacode-otf
 ## Install development packages
 notify_step "Installing development component"
 sudo eopkg -y install -c system.devel
@@ -74,8 +74,8 @@ sudo solbuild init -u
 notify_step "Setting-up dotfiles"
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
-## Link the VS Code stuff to VS Code OSS's
-ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
+## Link the vscode config folder to VS Code OSS' folder
+ln -rsfv "$HOME/.config/vscode" "$HOME/.config/Code - OSS"
 ## Set fish as the default shell
 sudo chsh -s "$(which fish)" "$THIS_USER"
 
@@ -85,7 +85,7 @@ enter_folder "$PROJECTS_DIR"
 ## Clone the repositories
 while read -r repository; do
     notify_substep "Clonning repository: $repository"
-    hub clone "$repository"
+    hub clone --recursive "$repository"
 done < <(curl -sL "$LISTS_FOLDER_URL/common/git_repos.txt")
 ## Return to home
 cd || exit
@@ -95,7 +95,7 @@ notify_step "Setting up Solus packages folder"
 enter_folder "$PROJECTS_DIR/Solus"
 ## Clone common repository
 notify_step "Clonning common repository"
-hub clone https://git.solus-project.com/common
+hub clone --recursive --depth=1 https://dev.solus-project.com/source/common.git
 ## Link makefiles
 notify_step "Linking makefiles"
 ln -rsfv common/Makefile.common Makefile.common
