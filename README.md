@@ -1,3 +1,3 @@
-### My things
+### Stuff
 
-My things, do not touch.
+Personal stuff, do not touch, thanks.
