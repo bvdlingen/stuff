@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Telegram Desktop user installation script
+# Telegram Desktop installation script
 #
 
 # Functions
@@ -23,9 +23,9 @@ function bintype() {
 TDESKTOP_FILES_DEST="$HOME/.TelegramDesktop"
 
 # Constants (do not change!)
-TDESKTOP_TARBALL_SOURCE="https://tdesktop.com/linux/current"
+TDESKTOP_TARBALL_SOURCE="https://tdesktop.com/linux/current?alpha=1"
 TDESKTOP_TARBALL="tdesktop.tar.gz"
-TDESKTOP_DESKTOP_SOURCE="https://rawgit.com/feddasch/stuff/master/installer/telegramdesktop/files/telegramdesktop.desktop"
+TDESKTOP_DESKTOP_SOURCE="https://rawgit.com/feddasch/stuff/master/install/tdesktop/files/telegramdesktop.desktop"
 TDESKTOP_DESKTOP_DEST_FOLDER="$HOME/.local/share/applications"
 TDESKTOP_DESKTOP_DEST="$TDESKTOP_DESKTOP_DEST_FOLDER/telegramdesktop.desktop"
 

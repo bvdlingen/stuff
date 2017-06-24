@@ -1,2 +1,0 @@
-desktop/font/mscorefonts
-network/web/browser/google-chrome-stable

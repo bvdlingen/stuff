@@ -1,6 +1,0 @@
-github.com/feddasch/dotmc
-github.com/feddasch/kydebot
-github.com/feddasch/solusesbot
-github.com/feddasch/telego
-github.com/goreleaser/goreleaser
-github.com/kardianos/govendor

@@ -1,0 +1,4 @@
+github.com/feddasch/dotmc
+github.com/feddasch/telego
+github.com/goreleaser/goreleaser
+github.com/Masterminds/glide
