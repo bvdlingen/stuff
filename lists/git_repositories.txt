@@ -1,3 +1,3 @@
-osstore
+osstore/osstore
 packages
 stuff

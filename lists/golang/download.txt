@@ -1,3 +1,1 @@
-github.com/feddasch/dotmc-webui
-github.com/feddasch/kydebot
-github.com/feddasch/solusbot
+github.com/feddasch-store/kydebot
