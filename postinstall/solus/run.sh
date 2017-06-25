@@ -3,10 +3,6 @@
 # Solus Post Install Script
 #
 
-# Options
-## Exit on error
-set -e
-
 # Constants
 ## Third Party package files
 THIRD_PARTY_URL="https://rawgit.com/solus-project/3rd-party/master"
