@@ -3,6 +3,10 @@
 # Solus Post Install Script
 #
 
+# Options
+## Exit on error
+set -e
+
 # Constants
 ## Third Party package files
 THIRD_PARTY_URL="https://rawgit.com/solus-project/3rd-party/master"
@@ -13,7 +17,6 @@ STUFF_REPO_DIR="$PROJECT_DIR/stuff"
 ## Telegram Desktop
 TDESKTOP_URL="https://tdesktop.com/linux/current?alpha=1"
 TDESKTOP_TARBALL="tdesktop.tar.gz"
-DESKTOP_FILE_DEST="$HOME/.local/share/applications"
 
 # Functions
 function pushdir() {
@@ -54,7 +57,7 @@ sudo solbuild init -u
 yadm clone -f https://github.com/feddasch/dotfiles
 yadm decrypt
 ## Link the VS Code config to the OSS' folder
-ln -rsfv "$HOME/.config/vscode" "$HOME/.config/Code - OSS"
+ln -rsfv "$HOME/.config/Code" "$HOME/.config/Code - OSS"
 ## Set fish as the default shell
 sudo chsh -s "$(which fish)" "$(whoami)"
 
@@ -83,14 +86,18 @@ make clone -j100
 popd || exit
 
 # Telegram Desktop
-pushdir "$HOME/.TelegramDesktop"
 ## Install it
+pushdir "$HOME/.TelegramDesktop"
 wget "$TDESKTOP_URL" -O "$TDESKTOP_TARBALL"
 tar vxf "$TDESKTOP_TARBALL" --strip-components=1
 rm -rf "$TDESKTOP_TARBALL"
+### Return to the home directory
+popd || exit
 ## Put the .desktop file where it belongs
-mkdir -p "$DESKTOP_FILE_DEST"
-cp -rf "$STUFF_REPO_DIR/files/tdesktop/tdesktop.desktop" "$DESKTOP_FILE_DEST/telegramdesktop.desktop"
+pushdir "$HOME/.local/share/applications"
+cp -rf "$STUFF_REPO_DIR/files/tdesktop/tdesktop.desktop" telegramdesktop.desktop
+### Return to the home directory
+popd || exit
 
 # Docker
 ## Enable the service
