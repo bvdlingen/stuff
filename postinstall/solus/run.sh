@@ -41,9 +41,8 @@ for package in "desktop/font/mscorefonts" "network/web/browser/google-chrome-sta
     sudo eopkg -y install ./*.eopkg && rm -rf ./*.eopkg
 done
 ## Install extra packages
-sudo eopkg -y install budgie-{haste,screenshot}-applet geary simplescreenrecorder brasero sayonara-player \
-                      libreoffice-all vscode retroarch yadm fish git{,-extras} hub golang yarn heroku-cli \
-                      docker neofetch
+sudo eopkg -y install budgie-{haste,screenshot}-applet sayonara-player libreoffice-all retroarch \
+                      vscode yadm fish git{,-extras} hub golang yarn heroku-cli docker neofetch
 ## Install development component and solbuild configs
 sudo eopkg -y install -c system.devel cve-check-tool solbuild-config{,-local}-unstable
 ## Setup solbuild build image
