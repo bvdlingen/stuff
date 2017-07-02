@@ -41,8 +41,9 @@ for package in "desktop/font/mscorefonts" "network/web/browser/google-chrome-sta
     sudo eopkg -y install ./*.eopkg && rm -rf ./*.eopkg
 done
 ## Install extra packages
-sudo eopkg -y install geary sayonara-player libreoffice-all vscode retroarch yadm fish \
-                      git{,-extras} hub golang yarn heroku-cli docker neofetch
+sudo eopkg -y install budgie-{haste,screenshot}-applet geary simplescreenrecorder brasero sayonara-player \
+                      libreoffice-all vscode retroarch yadm fish git{,-extras} hub golang yarn heroku-cli \
+                      docker neofetch
 ## Install development component and solbuild configs
 sudo eopkg -y install -c system.devel cve-check-tool solbuild-config{,-local}-unstable
 ## Setup solbuild build image
@@ -112,9 +113,25 @@ while ISC="" read -r package || [[ -n "$package" ]]; do
 done < "$STUFF_REPO_DIR/lists/golang/download.txt"
 
 # Additional system configuration files
+## Enable autologin for this user
+sudo mkdir -p /etc/lightdm
+echo -e "[Seat:*]\nautologin-user=$(whoami)" | sudo tee /etc/lightdm/lightdm.conf
 ## solbuild eats my CPUs, avoid that
 sudo mkdir -p /etc/eopkg
 echo -e "[build]\njobs = -j3" | sudo tee /etc/eopkg/eopkg.conf
+
+# Personalization
+## Privacy
+gsettings set org.gnome.desktop.privacy remove-old-temp-files true
+gsettings set org.gnome.desktop.privacy remove-old-trash-files true
+## Location
+gsettings set org.gnome.system.location enabled true
+## Sounds
+gsettings set org.gnome.desktop.sound event-sounds true
+gsettings set org.gnome.desktop.sound input-feedback-sounds true
+gsettings set org.gnome.desktop.sound theme-name "freedesktop"
+## Window manager
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
 
 # Reboot
 systemctl reboot
