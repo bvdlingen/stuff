@@ -1,0 +1,85 @@
+
+apt update && apt upgrade -y
+apt install net-tools apache2
+cd /var/www/html/
+wget https://i005.lamiral.info/X/imapsync_form.html
+wget https://i005.lamiral.info/X/imapsync_form.css
+wget https://i005.lamiral.info/X/imapsync_form.js
+wget https://i005.lamiral.info/X/logo_imapsync_Xn.png
+rm index.html 
+cp imapsync_form.html index.html
+
+apt install 
+ifconfi
+ifconfig
+perl -v
+apt-cache search cgi
+apt-cache search cgi.pm
+clear
+apt-cache search cgi.pm
+apt install make
+apt install libtemplate-perl
+apt install spanm
+apt install cpanm
+apt-cache search cpanm
+apt install cpanminus
+apt install libtemplate-perl
+apt install cpanminus
+cpanm 
+cpanm File::Tail Authen::NTLM CGI Crypt::OpenSSL::RSA Data::Uniqid Digest::HMAC Digest::HMAC_MD5 Dist::CheckConflicts File::Copy::Recursive IO::Socket::INET6 IO::Socket::SSL IO::Tee JSON JSON::WebToken JSON::WebToken::Crypt::RSA LWP::UserAgent Mail::IMAPClient Module::ScanDeps Net::SSLeay PAR::Packer Parse::RecDescent Regexp::Common Sys::MemInfo Term::ReadKey Test::Fatal Test::Mock::Guard Test::MockObject Test::Pod Test::Requires Test::Deep Unicode::String
+cpanm Crypt::OpenSSL::RSA IO::Socket::INET6 IO::Socket::SSL JSON::WebToken::Crypt::RSA Net::SSLeay PAR::Packer Sys::MemInfo Term::ReadKey Unicode::String
+cpanm Crypt::OpenSSL::RSA IO::Socket::INET6 IO::Socket::SSL JSON::WebToken::Crypt::RSA Net::SSLeay PAR::Packer Sys::MemInfo Term::ReadKey Unicode::String --force
+cpanm  Unicode::String --force
+cat ~/.cpanm/work/1560364334.20216/build.log 
+nano  ~/.cpanm/work/1560364334.20216/build.log 
+apt install gcc
+cpanm  Unicode::String --force
+ls
+sh prerequisites_imapsync
+cpanm Crypt::OpenSSL::RSA IO::Socket::INET6 IO::Socket::SSL JSON::WebToken::Crypt::RSA Net::SSLeay Sys::MemInfo Term::ReadKey
+ls
+cd ..
+ls
+cd ..
+ls
+cd www/
+ls
+cd html/
+ls
+wget https://imapsync.lamiral.info/imapsync
+sh imapsync
+perl imapsync
+rm imapsync
+cd  /usr/lib/cgi-bin/
+
+wget https://imapsync.lamiral.info/imapsync
+
+su -s /bin/sh -c 'SERVER_SOFTWARE=foo /usr/lib/cgi-bin/imapsync' apache2
+reboot
+
+nano /etc/apache2/sites-available/000-default.conf 
+
+nano /etc/apache2/sites-available/000-default.conf 
+systemctl restart apache2
+egrep "^User|^Group|^SuexecUserGroup" /etc/apache2/apache2.conf /etc/apache2/sites-available/*.conf
+nano /etc/apache2/sites-available/000-default.conf 
+sudo chown $USER:www-data /var/www/cgi-bin/
+
+cd /etc/apache2/mods-enabled/
+
+nano /etc/apache2/mods-available/perl.conf
+<IfModule mod_perl.c>
+  PerlModule ModPerl::PerlRun
+  Alias /perl-run/ /usr/lib/cgi-bin/
+  <Location /perl-run>
+      SetHandler perl-script
+      PerlResponseHandler ModPerl::PerlRun
+      PerlOptions +ParseHeaders
+      Options +ExecCGI
+  </Location>
+</IfModule>
+
+
+sudo a2enmod cgi
+
+systemctl restart apache2
