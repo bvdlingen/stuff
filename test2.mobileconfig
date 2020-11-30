@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+        <dict>
+            <key>Name</key>
+            <string>vdl.io DNS over HTTPS</string>
+            <key>PayloadDescription</key>
+            <string>Configures device to use Quad9 Encrypted DNS over HTTPS</string>
+            <key>PayloadDisplayName</key>
+            <string>DNS over HTTPS</string>
+            <key>PayloadIdentifier</key>
+            <string>com.apple.dnsSettings.managed.9676cf26-3221-481b-8cba-9a12f0fa0bb7</string>
+            <key>PayloadType</key>
+            <string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key>
+            <string>9676cf26-3221-481b-8cba-9a12f0fa0bb7</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>HTTPS</string>
+                <key>ServerAddresses</key>
+                <array>
+                    <string>2620:fe::fe</string>
+                    <string>2620:fe::9</string>
+                    <string>9.9.9.9</string>
+                    <string>149.112.112.112</string>
+                </array>
+                <key>ServerURL</key>
+                <string>https://adguard.vdl.io/dns-query</string>
+            </dict>
+        </dict>
+    </array>
+	<key>PayloadDescription</key>
+	<string>Adds the DOH DNS to Big Sur and iOS 14 based systems</string>
+	<key>PayloadDisplayName</key>
+	<string>DOH DNS</string>
+	<key>PayloadIdentifier</key>
+    <string>macos.local.28a4f6e7-7a6c-43de-9be5-6f304d3ca732</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>28a4f6e7-7a6c-43de-9be5-6f304d3ca732</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
