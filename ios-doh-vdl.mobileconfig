@@ -1,52 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="2.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>PayloadContent</key>
 	<array>
-		<dict>
-			<key>DNSSettings</key>
-			<dict>
-				<key>DNSProtocol</key>
-				<string>HTTPS</string>
-				<key>ServerAddresses</key>
-				<array>
-					<string>2a10:50c0::ad1:ff</string>
-					<string>2620:fe::fe</string>
-					<string>9.9.9.9</string>
-					<string>1.1.1.1</string>
-				</array>
-				<key>ServerURL</key>
-				<string>https://adguard.vdl.io/dns-query</string>
-			</dict>
-			<key>PayloadDescription</key>
-			<string>Configures device to use vdl.io adfilter and Encrypted DNS over HTTPS</string>
-			<key>PayloadDisplayName</key>
-			<string>vdl.io Default DNS over HTTPS</string>
-			<key>PayloadIdentifier</key>
-			<string>com.apple.dnsSettings.managed.e17cf1fa-0f0f-48a9-a68b-395804ed1850</string>
-			<key>PayloadType</key>
-			<string>com.apple.dnsSettings.managed</string>
-			<key>PayloadUUID</key>
-			<string>28b90644-fc1e-409a-81e7-939598fee661</string>
-			<key>PayloadVersion</key>
-			<integer>1</integer>
-			<key>ProhibitDisablement</key>
-			<false/>
-		</dict>
-	</array>
+        <dict>
+            <key>Name</key>
+            <string>vdl.io DNS over HTTPS</string>
+            <key>PayloadDescription</key>
+            <string>Configures device to use vdl.io Encrypted DNS over HTTPS</string>
+            <key>PayloadDisplayName</key>
+            <string>vdl.io DNS over HTTPS</string>
+            <key>PayloadIdentifier</key>
+            <string>com.apple.dnsSettings.managed.2878a1d4-e055-4157-9c2c-8f3c2b0f475b</string>
+            <key>PayloadType</key>
+            <string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key>
+            <string>2878a1d4-e055-4157-9c2c-8f3c2b0f475b</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>HTTPS</string>
+                <key>ServerAddresses</key>
+                <array>
+                    <string>2606:4700:4700::1111</string>
+                    <string>2606:4700:4700::1001</string>
+                    <string>1.1.1.1</string>
+                    <string>1.0.0.1</string>
+                </array>
+                <key>ServerURL</key>
+                <string>https://adguard.vdl.io/dns-query</string>
+            </dict>
+        </dict>
+    </array>
 	<key>PayloadDescription</key>
-	<string>Adds ad-blocking DoH DNS to Big Sur and iOS 14 based systems</string>
+	<string>Adds the vdl.io DNS to Big Sur and iOS 14 based systems</string>
 	<key>PayloadDisplayName</key>
-	<string>vdl.io adblock & DNS over HTTPS</string>
+	<string>vdl.io DOH DNS</string>
 	<key>PayloadIdentifier</key>
-	<string>com.paulmillr.apple-dns</string>
+    <string>macos.local.77e8a747-f685-419d-b583-df879f79b68d</string>
 	<key>PayloadRemovalDisallowed</key>
 	<false/>
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>A4475135-633A-4F15-A79B-BE15093DC97A</string>
+	<string>77e8a747-f685-419d-b583-df879f79b68d</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
