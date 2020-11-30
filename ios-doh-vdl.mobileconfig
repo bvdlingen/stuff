@@ -20,7 +20,7 @@
 				<string>https://adguard.vdl.io/dns-query</string>
 			</dict>
 			<key>PayloadDescription</key>
-			<string>Configures device to use Adguard Default Encrypted DNS over HTTPS</string>
+			<string>Configures device to use vdl.io adfilter and Encrypted DNS over HTTPS</string>
 			<key>PayloadDisplayName</key>
 			<string>vdl.io Default DNS over HTTPS</string>
 			<key>PayloadIdentifier</key>
@@ -38,7 +38,7 @@
 	<key>PayloadDescription</key>
 	<string>Adds ad-blocking DoH DNS to Big Sur and iOS 14 based systems</string>
 	<key>PayloadDisplayName</key>
-	<string>Adguard Default DNS over HTTPS</string>
+	<string>vdl.io adblock & DNS over HTTPS</string>
 	<key>PayloadIdentifier</key>
 	<string>com.paulmillr.apple-dns</string>
 	<key>PayloadRemovalDisallowed</key>
