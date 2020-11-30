@@ -27,6 +27,7 @@
                 <array>
                     <string>35.156.129.204</string>
                     <string>35.156.129.204</string>
+		    <string>35.156.129.204</string>
                 </array>
                 <key>ServerURL</key>
                 <string>https://adguard.vdl.io/dns-query</string>
