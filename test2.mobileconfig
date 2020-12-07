@@ -8,7 +8,7 @@
             <key>Name</key>
             <string>vdl.io DNS over HTTPS</string>
             <key>PayloadDescription</key>
-            <string>Configures device to use Quad9 Encrypted DNS over HTTPS</string>
+            <string>Configures device to use vdl.io Encrypted DNS DoH</string>
             <key>PayloadDisplayName</key>
             <string>DNS over HTTPS</string>
             <key>PayloadIdentifier</key>
